@@ -2,3 +2,20 @@ stages:
   - install
   - lint
   - test
+
+install_backend:
+  stage: install
+  script:
+    - echo "install"
+
+lint_backend:
+  stage: lint
+  needs: [install_backend]
+  script:
+    - echo "lint"
+
+test_backend:
+  stage: test
+  needs: [lint_backend]
+  script:
+    - echo "test"
