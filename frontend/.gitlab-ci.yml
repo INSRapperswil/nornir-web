@@ -4,12 +4,12 @@ before_script:
   - curl -o- -L https://yarnpkg.com/install.sh | bash
   # Make available in the current terminal
   - export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+  - cd frontend
 
 cache:
   paths:
     - node_modules/
     - build/
-    - .yarn
 
 stages:
   - install
