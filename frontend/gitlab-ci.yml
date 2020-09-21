@@ -1,0 +1,26 @@
+cache:
+  paths:
+    - node_modules/
+    - build/
+
+stages:
+  - install
+  - lint
+  - test
+
+install_frontend:
+  stage: install
+  script:
+    - yarn
+
+lint_frontend:
+  stage: lint
+  needs: [install_frontend]
+  script:
+    - yarn lint
+
+test_frontend:
+  stage: test
+  needs: [lint_frontend]
+  script:
+    - yarn test

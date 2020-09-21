@@ -1,0 +1,4 @@
+stages:
+  - install
+  - lint
+  - test
