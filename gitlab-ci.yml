@@ -6,9 +6,14 @@ trigger_frontend:
   stage: triggers
   trigger:
     include: frontend/gitlab-ci.yml
-
+  rules:
+    - changes:
+      - frontend/*
 
 trigger_backend:
   stage: triggers
   trigger:
     include: backend/gitlab-ci.yml
+  rules:
+    - changes:
+      - backend/*
