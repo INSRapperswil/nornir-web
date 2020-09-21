@@ -1,4 +1,3 @@
-
 stages:
   - triggers
 
@@ -14,6 +13,6 @@ trigger_backend:
   stage: triggers
   trigger:
     include: backend/gitlab-ci.yml
-  - rules:
-    changes:
+  rules:
+    - changes:
       - backend/*
