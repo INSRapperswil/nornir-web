@@ -1,7 +1,10 @@
+image: node:latest
+
 cache:
   paths:
     - node_modules/
     - build/
+    - .yarn
 
 stages:
   - install
@@ -11,7 +14,7 @@ stages:
 install_frontend:
   stage: install
   script:
-    - yarn
+    - yarn install
 
 lint_frontend:
   stage: lint
