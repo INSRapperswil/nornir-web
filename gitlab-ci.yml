@@ -7,7 +7,7 @@ trigger_frontend:
   trigger:
     include: frontend/gitlab-ci.yml
   rules:
-    - changes:
+    changes:
       - frontend/*
 
 trigger_backend:
@@ -15,5 +15,5 @@ trigger_backend:
   trigger:
     include: backend/gitlab-ci.yml
   rules:
-    - changes:
+    changes:
       - backend/*
