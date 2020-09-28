@@ -1,7 +1,5 @@
 image: node:latest
 before_script:
-  - echo "this should be reached"
-  - node -v
   - cd frontend
 
 cache:
