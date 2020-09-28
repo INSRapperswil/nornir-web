@@ -1,7 +1,5 @@
 stages:
-  - install
-  - lint
-  - test
+  - check
 
 check_backend:
   stage: check
