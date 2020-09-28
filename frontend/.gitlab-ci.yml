@@ -1,7 +1,7 @@
 image: node:12.18.4
 before_script:
   # are we in a docker-executor
-  - if [ -f ../.dockerenv ]; then echo "docker-executor"; fi
+  - if [ -f /.dockerenv ]; then echo "docker-executor"; fi
   - echo "start ci"
   - node -v
   - cd frontend
