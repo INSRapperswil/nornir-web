@@ -11,28 +11,13 @@ cache:
     - .yarn
 
 stages:
-  - install
-  - lint
-  - test
+  - check
 
-install_frontend:
-  stage: install
+check_frontend:
+  stage: check
   script:
     # are we in a docker-executor
     - if [ -f /.dockerenv ]; then echo "docker-executor"; fi
     - yarn install
-    - echo "this should be reached"
-
-lint_frontend:
-  stage: lint
-  #needs: [install_frontend]
-  script:
-    - echo "this should be reached"
     - yarn lint
-    - echo "this should be reached as well"
-
-test_frontend:
-  stage: test
-  needs: [lint_frontend]
-  script:
     - yarn test
