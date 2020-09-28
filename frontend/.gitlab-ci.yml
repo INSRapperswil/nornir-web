@@ -27,6 +27,7 @@ lint_frontend:
   stage: lint
   needs: [install_frontend]
   script:
+    - echo "this should be reached"
     - yarn lint
     - echo "this should be reached as well"
 
