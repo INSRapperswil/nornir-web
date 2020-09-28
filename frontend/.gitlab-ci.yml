@@ -1,5 +1,7 @@
 image: node:12.18.4
 before_script:
+  # are we in a docker-executor
+  - if [ -f ../.dockerenv ]; then echo "docker-executor"; fi
   - echo "start ci"
   - node -v
   - cd frontend
@@ -16,8 +18,6 @@ stages:
 check_frontend:
   stage: check
   script:
-    # are we in a docker-executor
-    - if [ -f ../.dockerenv ]; then echo "docker-executor"; fi
     - yarn install
     - yarn lint
     - yarn test
