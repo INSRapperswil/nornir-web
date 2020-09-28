@@ -6,7 +6,6 @@ before_script:
   # Make available in the current terminal
   - export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
   - cd frontend
-  - yarn install
   # are we in a docker-executor
   - if [ -f /.dockerenv ]; then echo "docker-executor"; fi
 
@@ -23,6 +22,7 @@ stages:
 install_frontend:
   stage: install
   script:
+    - yarn install
 
 lint_frontend:
   stage: lint
