@@ -15,7 +15,7 @@ check_frontend:
   stage: check
   script:
     # are we in a docker-executor
-    - if [ -f /.dockerenv ]; then echo "docker-executor"; fi
+    - if [ -f ../.dockerenv ]; then echo "docker-executor"; fi
     - yarn install
     - yarn lint
     - yarn test
