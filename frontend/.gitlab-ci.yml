@@ -1,6 +1,7 @@
 image: node:latest
 before_script:
   - echo "start ci"
+  - node -v
   - cd frontend
 
 cache:
