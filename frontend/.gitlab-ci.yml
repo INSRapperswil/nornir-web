@@ -23,7 +23,8 @@ install_frontend:
   script:
     # are we in a docker-executor
     - if [ -f /.dockerenv ]; then echo "docker-executor"; fi
-    - yarn install
+    - echo "test text"
+    #- yarn install
 
 lint_frontend:
   stage: lint
