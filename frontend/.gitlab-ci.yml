@@ -28,6 +28,7 @@ lint_frontend:
   needs: [install_frontend]
   script:
     - yarn lint
+    - echo "this should be reached as well"
 
 test_frontend:
   stage: test
