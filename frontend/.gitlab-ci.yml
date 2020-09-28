@@ -1,4 +1,4 @@
-image: node:latest
+image: node:12.18.4
 before_script:
   - echo "start ci"
   - node -v
