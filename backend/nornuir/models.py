@@ -5,4 +5,4 @@ from django.db import models
 
 class Task(models.Model):
     name = models.CharField(max_length=200)
-    date_schedule = models.DateTimeField('Date Scheduled')
+    date_scheduled = models.DateTimeField('Date Scheduled')

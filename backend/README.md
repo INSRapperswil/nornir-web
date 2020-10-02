@@ -18,6 +18,7 @@ Run the following commands:
 ```
 venv/bin/python manage.py migrate
 venv/bin/python manage.py createsuperuser
+venv/bin/python manage.py create_groups
 venv/bin/python manage.py runserver
 ```
 
