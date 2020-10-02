@@ -1,8 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from nornuir.views import TaskViewSet, UserViewSet
+from api.views import TaskViewSet, UserViewSet
 
-app_name = 'nornuir'
+app_name = 'api'
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()

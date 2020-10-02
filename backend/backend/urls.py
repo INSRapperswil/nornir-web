@@ -22,7 +22,7 @@ from rest_framework.schemas import get_schema_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('nornuir.urls', namespace='nornuir')),
+    path('api/', include('api.urls', namespace='api')),
 ]
 
 urlpatterns += [
@@ -32,8 +32,8 @@ urlpatterns += [
 
 urlpatterns += [
     path('openapi', get_schema_view(
-        title='Nornuir',
-        description='Web interface for Nornir',
+        title='API',
+        description='API for Nornir Webinterface',
         version='0.0.1'
     ), name='openapi-schema'),
     path('swagger-ui/', TemplateView.as_view(

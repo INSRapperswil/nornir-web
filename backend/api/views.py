@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework import permissions, viewsets
 
-from nornuir.models import Task
-from nornuir.serializers import UserSerializer, TaskSerializer
+from api.models import Task
+from api.serializers import UserSerializer, TaskSerializer
 
 
 # Create your views here.

@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'nornuir',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'nornuir',
+        'NAME': 'nornir',
         'USER': 'postgres',
         'PASSWORD': 'v3rys3cur1ty',
         'HOST': '127.0.0.1',
