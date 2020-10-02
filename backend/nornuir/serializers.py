@@ -1,5 +1,11 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from nornuir.models import Task
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['name', 'date_scheduled']
 
 
 class UserSerializer(serializers.ModelSerializer):
