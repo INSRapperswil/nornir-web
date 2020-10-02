@@ -1,4 +1,4 @@
-import * as api from "./api";
+import * as api from "../api";
 
 export function fetchTasks() {
   return (dispatch, getState) => {
