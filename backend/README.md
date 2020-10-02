@@ -24,6 +24,9 @@ venv/bin/python manage.py runserver
 
 Server is accessible at http://127.0.0.1:8000/api
 
+To have a look at the api definition go to http://127.0.0.1:8000/swagger-ui to see the swagger definition.
+You can also have a look at the openapi yaml at http://127.0.0.1:8000/openapi
+
 ## API Authentication
 *Reference: https://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication*
 
