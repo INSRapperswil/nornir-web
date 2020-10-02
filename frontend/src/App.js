@@ -1,10 +1,11 @@
 import React from 'react';
 import './App.css';
-import { AppBar } from '@material-ui/core';
+import { AppBar, Container } from '@material-ui/core';
 import {
   BrowserRouter as Router,
   Route,
   Switch,
+  Redirect,
 } from 'react-router-dom';
 import NavTabs from './components/NavTabs';
 import Inventory from './pages/Inventory';
@@ -30,11 +31,14 @@ function App() {
           <h1 style={{marginLeft: 2 + 'rem'}}>nornUIr</h1>
           <NavTabs paths={paths} />
         </AppBar>
-        <Switch>
-          {paths.map((path) => {
-            return <Route key={path.value} path={path.value}>{path.component}</Route>
-          })}
-        </Switch>
+        <Container>
+          <Switch>
+            <Route exact path="/"><Redirect to={paths[0].value} /></Route>
+            {paths.map((path) => {
+              return <Route key={path.value} path={path.value}>{path.component}</Route>
+            })}
+          </Switch>
+        </Container>
       </Router>
     </div>
   );
