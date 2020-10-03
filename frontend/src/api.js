@@ -1,14 +1,18 @@
 const backend = "http://localhost";
 
-function getTasks() {
-  return getJson('/tasks').then(parseJson);
+export function getTasks(token) {
+  return getAuthenticatedJson('/tasks').then(parseJson);
+}
+
+export function runTask(token, params) {
+  return postAuthenticatedJson('/tasks', token, params).then(parseJson);
 }
 
 function getAuthenticatedJson(endpoint, token) {
   return fetch(`${backend}${endpoint}`, {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `token ${token}`,
       Accept: "application/json"
     }
   }).then(checkStatus);
@@ -25,7 +29,7 @@ function postAuthenticatedJson(endpoint, token, params) {
   return fetch(`${backend}${endpoint}`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `token ${token}`,
       "Content-Type": "application/json",
       Accept: "application/json"
     },

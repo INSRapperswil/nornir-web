@@ -10,6 +10,8 @@ import {
 import NavTabs from './components/NavTabs';
 import Inventory from './pages/Inventory';
 import Tasks from './pages/Tasks';
+import JobTemplates from './pages/JobTemplates';
+import Prototype from './pages/Prototype';
 
 function App() {
   const paths = [
@@ -19,9 +21,19 @@ function App() {
       component: <Inventory/>,
     },
     {
-      label: 'Tasks',
+      label: 'Tasks Dashboard',
       value: '/tasks',
       component: <Tasks/>,
+    },
+    {
+      label: 'Job Templates',
+      value: '/job-templates',
+      component: <JobTemplates/>
+    },
+    {
+      label: 'Prototype',
+      value: '/prototype',
+      component: <Prototype/>
     },
   ];
   return (
