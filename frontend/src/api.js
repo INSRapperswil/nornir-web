@@ -12,7 +12,7 @@ function getAuthenticatedJson(endpoint, token) {
   return fetch(`${backend}${endpoint}`, {
     method: "GET",
     headers: {
-      Authorization: `token ${token}`,
+      Authorization: `Token ${token}`,
       Accept: "application/json"
     }
   }).then(checkStatus);
@@ -29,7 +29,11 @@ function postAuthenticatedJson(endpoint, token, params) {
   return fetch(`${backend}${endpoint}`, {
     method: "POST",
     headers: {
+<<<<<<< HEAD
       Authorization: `token ${token}`,
+=======
+      Authorization: `Bearer ${token}`,
+>>>>>>> cee02227142589e6a74de9678a87ad632fdf000a
       "Content-Type": "application/json",
       Accept: "application/json"
     },
