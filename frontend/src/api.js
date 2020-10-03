@@ -29,11 +29,7 @@ function postAuthenticatedJson(endpoint, token, params) {
   return fetch(`${backend}${endpoint}`, {
     method: "POST",
     headers: {
-<<<<<<< HEAD
-      Authorization: `token ${token}`,
-=======
-      Authorization: `Bearer ${token}`,
->>>>>>> cee02227142589e6a74de9678a87ad632fdf000a
+      Authorization: `Token ${token}`,
       "Content-Type": "application/json",
       Accept: "application/json"
     },
