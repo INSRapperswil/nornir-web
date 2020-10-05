@@ -4,6 +4,13 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
+class JobTemplate(models.Model):
+    name = models.CharField(max_length=200)
+    description = models.TextField()
+    file_path = models.TextField()
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+
 class Task(models.Model):
     class Status(models.IntegerChoices):
         SCHEDULED = 1
@@ -21,13 +28,7 @@ class Task(models.Model):
     input = models.TextField()
     result = models.TextField()
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-
-
-class JobTemplate(models.Model):
-    name = models.CharField(max_length=200)
-    description = models.TextField()
-    file_path = models.TextField()
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    template = models.ForeignKey(JobTemplate, on_delete=models.SET_NULL, null=True)
 
 
 class Inventory(models.Model):
