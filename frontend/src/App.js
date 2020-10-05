@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom';
 import NavTabs from './components/NavTabs';
 import Inventory from './pages/Inventory';
-import Tasks from './pages/Tasks';
+import TaskDashboard from './pages/TaskDashboard';
 import JobTemplates from './pages/JobTemplates';
 import Prototype from './pages/Prototype';
 
@@ -22,8 +22,8 @@ function App() {
     },
     {
       label: 'Tasks Dashboard',
-      value: '/tasks',
-      component: <Tasks/>,
+      value: '/task-dashboard',
+      component: <TaskDashboard/>,
     },
     {
       label: 'Job Templates',

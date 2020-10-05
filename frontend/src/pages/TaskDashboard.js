@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Tasks() {
+function TaskDashboard() {
   return (
     <div id="tasks">
       <h1>Tasks</h1>
@@ -8,4 +8,4 @@ function Tasks() {
   );
 }
 
-export default Tasks;
+export default TaskDashboard;
