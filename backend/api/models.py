@@ -35,6 +35,9 @@ class Inventory(models.Model):
     hosts_file = models.TextField()
     groups_file = models.TextField()
 
+    # def get_hosts(self):
+    # TODO: execute nornir to list all hosts
+
 
 class InventoryFilter(models.Model):
     inventory = models.ForeignKey(Inventory, on_delete=models.CASCADE)
