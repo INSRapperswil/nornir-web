@@ -22,14 +22,16 @@ from rest_framework.schemas import get_schema_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('api.urls', namespace='api')),
+    path('api/', include('api.urls')),
 ]
 
+# Authentication URLs
 urlpatterns += [
     path('api-auth/', include('rest_framework.urls')),
     path('api-token-auth/', views.obtain_auth_token),
 ]
 
+# URLs for API Documentation
 urlpatterns += [
     path('openapi', get_schema_view(
         title='API',
