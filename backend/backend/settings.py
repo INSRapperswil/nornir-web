@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'nornir',
+        'NAME': 'web_nornir',
         'USER': 'postgres',
         'PASSWORD': 'v3rys3cur1ty',
         'HOST': '127.0.0.1',

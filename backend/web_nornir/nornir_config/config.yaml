@@ -1,0 +1,9 @@
+inventory:
+  plugin: SimpleInventory
+  options:
+    host_file: "nornir_config/hosts.yaml"
+    group_file: "nornir_config/groups.yaml"
+    defaults_file: "nornir_config/defaults.yaml"
+runner:
+  plugin: threaded
+

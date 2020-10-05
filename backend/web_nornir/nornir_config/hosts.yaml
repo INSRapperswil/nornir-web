@@ -1,0 +1,8 @@
+example.cmh:
+  host: 127.0.0.1
+  port: 2201
+  username: example
+  password: example
+  platform: linux
+  groups:
+    - global
