@@ -10,6 +10,7 @@ class Task(models.Model):
         RUNNING = 2
         FINISHED = 3
         FAILED = 4
+        ABORTED = 5
 
     name = models.CharField(max_length=200)
     status = models.IntegerField(choices=Status.choices, default=Status.SCHEDULED)
