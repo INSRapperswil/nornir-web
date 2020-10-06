@@ -3,3 +3,4 @@ djangorestframework~=3.12.1
 pyyaml~=5.3.1
 psycopg2~=2.8.6
 uritemplate~=3.0.1
+nornir==3.0.0
