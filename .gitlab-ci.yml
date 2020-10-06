@@ -1,55 +1,18 @@
-# stages:
-#   - triggers
-
-# trigger_frontend:
-#   stage: triggers
-#   trigger:
-#     include: frontend/.gitlab-ci.yml
-#   rules:
-#     - changes:
-#       - frontend/*
-
-# trigger_backend:
-#   stage: triggers
-#   trigger:
-#     include: backend/.gitlab-ci.yml
-#   rules:
-#     - changes:
-#       - backend/*
-image: python:latest
-
-# Check out: http://docs.gitlab.com/ce/ci/docker/using_docker_images.html#what-is-a-service
-services:
-  - postgres:latest
-
 stages:
-  - build
-  - test
+  - triggers
 
-variables:
-  POSTGRES_DB: nornir
+trigger_frontend:
+  stage: triggers
+  trigger:
+    include: frontend/.gitlab-ci.yml
+  rules:
+    - changes:
+      - frontend/*
 
-# This folder is cached between builds
-# http://docs.gitlab.com/ce/ci/yaml/README.html#cache
-cache:
-  paths:
-    - ~/.cache/pip/
-
-# This is a basic example for a gem or script which doesn't use
-# services such as redis or postgres
-before_script:
-  - "cd backend"
-  - "python -V"  # Print out python version for debugging
-  - "pip install -r requirements.txt"
-
-build:
-  stage: build
-  script:
-    - "python manage.py migrate"
-
-test:
-  stage: test
-  # variables:
-  #   DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
-  script:
-    - "python manage.py test"
+trigger_backend:
+  stage: triggers
+  trigger:
+    include: backend/.gitlab-ci.yml
+  rules:
+    - changes:
+      - backend/*
