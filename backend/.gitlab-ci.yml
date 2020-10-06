@@ -25,7 +25,7 @@ before_script:
 test:
   stage: test
   variables:
-    DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/$POSTGRES_DB"
+    DATABASE_URL: "postgresql://postgres:v3rys3cur1ty@localhost:5432/$POSTGRES_DB"
   script:
     - python manage.py migrate
     - python manage.py test
