@@ -1,8 +1,19 @@
 example.cmh:
-  host: 127.0.0.1
+  hostname: 127.0.0.1
   port: 2201
   username: example
   password: example
   platform: linux
   groups:
     - global
+test.com:
+  hostname: 127.1.0.1
+  port: 2202
+  username: example
+  password: example
+  platform: ios
+  groups:
+    - global
+  data:
+    ospf: 1
+    asn: 65001
