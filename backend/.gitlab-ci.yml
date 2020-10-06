@@ -21,6 +21,7 @@ before_script:
   - pip install -r requirements.txt
 
 test:
+  stage: test
   variables:
     DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/$POSTGRES_DB"
   script:

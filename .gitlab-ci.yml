@@ -1,5 +1,6 @@
 stages:
   - triggers
+  - test
 
 trigger_frontend:
   stage: triggers
