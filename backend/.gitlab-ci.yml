@@ -16,7 +16,8 @@ cache:
 # This is a basic example for a gem or script which doesn't use
 # services such as redis or postgres
 before_script:
-  - ls -la /
+  - ls -la
+  - cd backend
   - python -V  # Print out python version for debugging
   - pip install -r requirements.txt
 
