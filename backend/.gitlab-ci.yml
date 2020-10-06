@@ -6,6 +6,7 @@ services:
 
 variables:
   POSTGRES_DB: nornir
+  POSTGRES_PASSWORD=v3rys3cur1ty
 
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
