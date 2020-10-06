@@ -22,4 +22,5 @@ stages:
 test:
   stage: test
   script:
+    - echo hello world
     - ls -la /
