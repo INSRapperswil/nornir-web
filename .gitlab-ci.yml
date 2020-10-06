@@ -39,8 +39,8 @@ before_script:
   - pip install -r requirements.txt
 
 test:
-  variables:
-    DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/$POSTGRES_DB"
+  # variables:
+  #   DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/$POSTGRES_DB"
   script:
     - python manage.py migrate
     - python manage.py test
