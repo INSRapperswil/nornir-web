@@ -26,6 +26,5 @@ test:
   variables:
     DB_CONNECTION_STRING: "sqlite:///db.sqlite3"
   script:
-    - pwd
     - python manage.py migrate
     - python manage.py test
