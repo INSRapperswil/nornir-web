@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from web_nornir import nornir_handler
 
 
 # Create your models here.
@@ -35,6 +36,18 @@ class Inventory(models.Model):
     name = models.CharField(max_length=200)
     hosts_file = models.TextField()
     groups_file = models.TextField()
+
+    # In Zukunft umbauen, so dass die entsprechenden Properties des Inventory übergeben werden
+    # Aktuell alles hardwired (auch in NornirHandler)
+    @staticmethod
+    def get_hosts():
+        nh = nornir_handler.NornirHandler()
+        return nh.get_hosts()
+
+    @staticmethod
+    def get_groups():
+        nh = nornir_handler.NornirHandler()
+        return nh.get_groups()
 
 
 class InventoryFilter(models.Model):

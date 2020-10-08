@@ -3,7 +3,7 @@ from .job_discovery import get_job_function, get_job_definitions
 
 
 class NornirHandler:
-    def __init__(self, config="nornir_config/example_config/config.yaml"):
+    def __init__(self, config="web_nornir/nornir_config/example_config/config.yaml"):
         self.nr = InitNornir(config_file=config)
 
     def get_hosts(self):
