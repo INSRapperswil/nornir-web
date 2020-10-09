@@ -7,7 +7,7 @@ class NornirHandler:
         self.nr = InitNornir(config_file=config)
 
     def get_hosts(self):
-        hosts: list = []
+        hosts = []
         for host in self.nr.inventory.hosts:
             host_data = self.nr.inventory.hosts[host].dict()
             host_data.pop('connection_options', None)
