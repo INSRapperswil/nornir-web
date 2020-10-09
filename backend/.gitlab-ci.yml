@@ -27,4 +27,6 @@ test_backend:
     DB_CONNECTION_STRING: "sqlite:///db.sqlite3"
   script:
     - python manage.py migrate
+    - python manage.py create_groups
+    - python manage.py testdb_setup
     - pytest
