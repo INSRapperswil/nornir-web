@@ -94,7 +94,8 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 #     }
 # }
 
-DB_CONNECTION_STRING = os.environ.get('DB_CONNECTION_STRING', 'postgresql://postgres:v3rys3cur1ty@localhost:5432/nornir')
+DB_CONNECTION_STRING = os.environ.get('DB_CONNECTION_STRING',
+                                      'postgresql://postgres:v3rys3cur1ty@localhost:5432/nornir')
 DATABASES = {'default': dj_database_url.parse(DB_CONNECTION_STRING)}
 
 # Password validation
