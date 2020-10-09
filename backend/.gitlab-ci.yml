@@ -27,4 +27,4 @@ test_backend:
     DB_CONNECTION_STRING: "sqlite:///db.sqlite3"
   script:
     - python manage.py migrate
-    - python manage.py test
+    - pytest
