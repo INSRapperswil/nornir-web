@@ -20,7 +20,8 @@ class TaskSerializer(serializers.ModelSerializer):
             'variables',
             'input',
             'result',
-            'created_by'
+            'created_by',
+            'template'
         ]
 
 

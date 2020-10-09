@@ -25,9 +25,9 @@ class Task(models.Model):
     date_scheduled = models.DateTimeField('Date Scheduled')
     date_started = models.DateTimeField('Date Started', null=True)
     date_finished = models.DateTimeField('Date Finished', null=True)
-    variables = models.TextField()
+    variables = models.JSONField()
     input = models.TextField()
-    result = models.TextField()
+    result = models.JSONField()
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     template = models.ForeignKey(JobTemplate, on_delete=models.SET_NULL, null=True)
 

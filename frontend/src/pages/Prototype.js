@@ -1,19 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@material-ui/core';
-import { runTask } from '../api';
+import { authenticate, runTask } from '../api';
 
 function Prototype() {
+  let [token, setToken] = useState('');
+  let [result, setResult] = useState([]);
+  
+  useEffect(() => {
+    if (token === '') {
+      authenticate('felixkubli', 'v3rys3cur3').then((response) => setToken(response.token));
+    }
+  }, [token, setToken]);
+  
   const params = {
     inventorySelection: [
       { hostname: '127.0.0.1' },
     ],
-    task: { taskId: 1, name: 'get configuration' },
+    template: { id: 1, name: 'hello_world' },
   };
-  const token = 'token';
-  let [result, setResult] = useState('')
-
   const handleRunTask = async (event) => {
-    setResult(await runTask(token, params));
+    setResult([...result, await runTask(token, params)]);
   };
 
   return (
@@ -26,11 +32,13 @@ function Prototype() {
           return <li key={value.hostname}>{value.hostname}</li>;
         })}
       </ul>
-      <h3>Task</h3>
-      <p>Task: {params.task.name}</p>
+      <h3>Job Template</h3>
+      <p>Template: {params.template.name}</p>
       <Button variant="contained" onClick={handleRunTask}>run task</Button>
       <h3>Result</h3>
-      <div>{result}</div>
+      {result.map((value, index) => {
+        return <div key={index}>{JSON.stringify(value)}</div>
+      })}
     </div>
   );
 }

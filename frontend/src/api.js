@@ -1,11 +1,15 @@
-const backend = "http://localhost";
+const backend = "http://localhost:8000";
 
 export function getTasks(token) {
-  return getAuthenticatedJson('/tasks').then(parseJson);
+  return getAuthenticatedJson('/api/tasks/').then(parseJson);
 }
 
 export function runTask(token, params) {
-  return postAuthenticatedJson('/tasks', token, params).then(parseJson);
+  return postAuthenticatedJson('/api/tasks/', token, params).then(parseJson);
+}
+
+export function authenticate(username, password) {
+  return postJson('/api-token-auth/', { username, password }).then(parseJson)
 }
 
 function getAuthenticatedJson(endpoint, token) {
@@ -31,7 +35,7 @@ function postAuthenticatedJson(endpoint, token, params) {
     headers: {
       Authorization: `Token ${token}`,
       "Content-Type": "application/json",
-      Accept: "application/json"
+      "Accept": "application/json"
     },
     body: JSON.stringify(params)
   }).then(checkStatus);
@@ -42,9 +46,9 @@ function postJson(endpoint, params) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Accept: "application/json"
+      "Accept": "application/json"
     },
-    body: JSON.stringify(params)
+    body: JSON.stringify(params),
   }).then(checkStatus);
 }
 

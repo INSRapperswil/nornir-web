@@ -18,6 +18,9 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [permissions.DjangoModelPermissions]
 
+    def create(self, request):
+        return Response({ 'name': "example", 'result': { 'host': 'asdf' } })
+
 
 class JobTemplateViewSet(viewsets.ModelViewSet):
     """
