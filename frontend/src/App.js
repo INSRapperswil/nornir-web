@@ -40,7 +40,7 @@ function App() {
     <div className="App">
       <Router>
         <AppBar position="static">
-          <h1 style={{marginLeft: 2 + 'rem'}}>nornUIr</h1>
+          <h1 style={{marginLeft: 2 + 'rem'}}>nornir</h1>
           <NavTabs paths={paths} />
         </AppBar>
         <Container>
