@@ -7,7 +7,15 @@ class NornirHandler:
         self.nr = InitNornir(config_file=config)
 
     def get_hosts(self):
-        return self.nr.inventory.hosts
+        hosts = []
+        for host in self.nr.inventory.hosts:
+            host_data = self.nr.inventory.hosts[host].dict()
+            host_data.pop('connection_options', None)
+            host_data.pop('username', None)
+            host_data.pop('password', None)
+            hosts.append(host_data)
+
+        return hosts
 
     def get_groups(self):
         return self.nr.inventory.groups
