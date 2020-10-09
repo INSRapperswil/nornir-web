@@ -1,13 +1,13 @@
 """
 Create permission groups.
 """
-from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission
 
 GROUPS = ['superuser', 'netadmin', 'support']
-MODELS = ContentType.objects.filter(app_label='api').all()
-PERMISSIONS = Permission.objects.filter(content_type__app_label='api').all()
+PERMISSIONS_ALL = Permission.objects.filter(content_type__app_label='api').all()
+PERMISSIONS_TASKS = Permission.objects.filter(content_type__app_label='api', name__contains='task').all()
+PERMISSIONS_READ = Permission.objects.filter(content_type__app_label='api', name__contains='view').all()
 
 
 class Command(BaseCommand):
@@ -18,8 +18,20 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for group in GROUPS:
-            Group.objects.get_or_create(name=group)
+            new_group, created = Group.objects.get_or_create(name=group)
 
-        # TODO: Add permissions to groups.
+            if group == 'superuser':
+                for permission in PERMISSIONS_ALL:
+                    new_group.permissions.add(permission)
 
-        print("Created default group.")
+            if group == 'netadmin':
+                for permission in PERMISSIONS_READ:
+                    new_group.permissions.add(permission)
+                for permission in PERMISSIONS_TASKS:
+                    new_group.permissions.add(permission)
+
+            if group == 'support':
+                for permission in PERMISSIONS_READ:
+                    new_group.permissions.add(permission)
+
+        print("Created groups and loaded with permissions.")
