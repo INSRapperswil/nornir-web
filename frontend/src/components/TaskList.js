@@ -1,3 +1,4 @@
+import React from 'react';
 import Task from "./Task";
 import { connect } from "react-redux";
 import { fetchTasks } from "../actions";
