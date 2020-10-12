@@ -43,7 +43,11 @@ class Task(models.Model):
 
 
 class Inventory(models.Model):
+    class InventoryType(models.IntegerChoices):
+        SIMPLE = 1
+
     name = models.CharField(max_length=200)
+    type = models.IntegerField(choices=InventoryType.choices, default=InventoryType.SIMPLE)
     hosts_file = models.TextField()
     groups_file = models.TextField()
 

@@ -50,6 +50,7 @@ class InventorySerializer(serializers.ModelSerializer):
             'id',
             'detail',
             'name',
+            'type',
             'hosts_file',
             'groups_file',
         ]
