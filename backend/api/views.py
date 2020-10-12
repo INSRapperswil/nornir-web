@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.serializers import serialize
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -18,8 +19,14 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [permissions.DjangoModelPermissions]
 
-    def create(self, request):
-        return Response({ 'name': "example", 'result': { 'host': 'asdf' } })
+    @action(detail=False, methods=['POST'])
+    def run(self, request):
+        data = request.data
+        result = Task.run_task(data)
+        if result.items():
+            return Response(result.__dict__)
+        else:
+            return Response('no result objects in AggregatedResult')
 
 
 class JobTemplateViewSet(viewsets.ModelViewSet):

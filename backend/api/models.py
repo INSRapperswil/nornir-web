@@ -1,9 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
+from nornir.core.task import AggregatedResult
+
 from web_nornir import nornir_handler
 
 
 # Create your models here.
+from web_nornir.nornir_handler import NornirHandler
+
 
 class JobTemplate(models.Model):
     name = models.CharField(max_length=200)
@@ -30,6 +34,12 @@ class Task(models.Model):
     result = models.JSONField()
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     template = models.ForeignKey(JobTemplate, on_delete=models.SET_NULL, null=True)
+
+    @staticmethod
+    def run_task(data):
+        nr = NornirHandler()
+        result: AggregatedResult = nr.execute_task(data['template']['name'], data['params'], data['inventorySelection'])
+        return result
 
 
 class Inventory(models.Model):

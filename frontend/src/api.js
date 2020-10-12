@@ -5,7 +5,7 @@ export function getTasks(token) {
 }
 
 export function runTask(token, params) {
-  return postAuthenticatedJson('/api/tasks/', token, params).then(parseJson);
+  return postAuthenticatedJson('/api/tasks/run/', token, params).then(parseJson);
 }
 
 export function authenticate(username, password) {

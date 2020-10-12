@@ -13,10 +13,9 @@ function Prototype() {
   }, [token, setToken]);
   
   const params = {
-    inventorySelection: [
-      { hostname: '127.0.0.1' },
-    ],
+    inventorySelection: { hostname: '127.0.0.1' },
     template: { id: 1, name: 'hello_world' },
+    params: { name: 'prototype hello_world execution' }
   };
   const handleRunTask = async (event) => {
     setResult([...result, await runTask(token, params)]);
@@ -28,9 +27,9 @@ function Prototype() {
       <h2>Run the Task</h2>
       <h3>Inventory</h3>
       <ul>
-        {params.inventorySelection.map((value) => {
+        {/* {params.inventorySelection.map((value) => {
           return <li key={value.hostname}>{value.hostname}</li>;
-        })}
+        })} */}
       </ul>
       <h3>Job Template</h3>
       <p>Template: {params.template.name}</p>
