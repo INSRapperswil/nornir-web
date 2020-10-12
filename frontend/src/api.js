@@ -1,7 +1,15 @@
 const backend = "http://localhost:8000";
 
 export function getTasks(token) {
-  return getAuthenticatedJson('/api/tasks/').then(parseJson);
+  return getAuthenticatedJson('/api/tasks/', token).then(parseJson);
+}
+
+export function getJobTemplates(token) {
+  return getAuthenticatedJson('/api/templates/', token).then(parseJson);
+}
+
+export function getInventoryHosts(token) {
+  return getAuthenticatedJson('/api/inventories/1/hosts', token).then(parseJson);
 }
 
 export function runTask(token, params) {
