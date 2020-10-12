@@ -1,13 +1,5 @@
 image: python:latest
 
-# Check out: http://docs.gitlab.com/ce/ci/docker/using_docker_images.html#what-is-a-service
-#services:
-#  - postgres:latest
-#
-#variables:
-#  POSTGRES_DB: nornir
-#  POSTGRES_PASSWORD: v3rys3cur1ty
-
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
 cache:
