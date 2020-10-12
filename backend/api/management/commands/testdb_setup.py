@@ -43,9 +43,9 @@ class Command(BaseCommand):
                                           file_path='update_cisco.py')
 
         print('----    Creating Tasks    ----')
-        models.Task.objects.create(name='Get Hello World', date_scheduled=datetime.utcnow(), created_by_id=3,
+        models.Task.objects.create(name='Get Hello World', date_scheduled='2020-10-09T15:52:52.650855Z', created_by_id=3,
                                    template_id=1)
-        models.Task.objects.create(name='Update Firmware', date_scheduled=datetime.utcnow(), created_by_id=2,
+        models.Task.objects.create(name='Update Firmware', date_scheduled='2020-10-09T15:52:52.657905Z', created_by_id=2,
                                    template_id=2)
 
         print('----    Creating Inventory Filters    ----')

@@ -18,8 +18,6 @@ cache:
 # services such as redis or postgres
 before_script:
   - cd backend
-  - ls
-  - rm -rf db.sqlite3
   - python -V  # Print out python version for debugging
   - pip install -r requirements.txt
 
