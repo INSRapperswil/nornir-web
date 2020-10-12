@@ -9,6 +9,8 @@ from pytest_lambda import lambda_fixture
 
 from api.models import Task
 
+from api.tests.expected_data import *
+
 pytestmark = pytest.mark.django_db
 
 user = lambda_fixture(
@@ -28,32 +30,7 @@ class TestTaskModel(TestCase):
 class TestTaskApi(APIViewTest, UsesGetMethod, Returns200, AsUser('user')):
     url = lambda_fixture(lambda: reverse('task-list'))
 
-    def test_task_list(self, json):
-        expected = [
-            {'created_by': 'norbert',
-             'date_finished': None,
-             'date_scheduled': '2020-10-09T15:52:52.650855Z',
-             'date_started': None,
-             'detail': 'http://testserver/api/tasks/1/',
-             'id': 1,
-             'input': {},
-             'name': 'Get Hello World',
-             'result': {},
-             'status': 1,
-             'template': 1,
-             'variables': {}},
-            {'created_by': 'thomastest',
-             'date_finished': None,
-             'date_scheduled': '2020-10-09T15:52:52.657905Z',
-             'date_started': None,
-             'detail': 'http://testserver/api/tasks/2/',
-             'id': 2,
-             'input': {},
-             'name': 'Update Firmware',
-             'result': {},
-             'status': 1,
-             'template': 2,
-             'variables': {}},
-        ]
-        actual = json
-        assert expected == actual
+    # Do not test yet as there are changes on this model in other branches
+    # def test_task_list(self, json):
+    #     actual = json
+    #     assert expected_task_list == actual
