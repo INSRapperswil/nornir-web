@@ -1,4 +1,4 @@
-image: node:12.18.4
+image: node:lts
 before_script:
   # are we in a docker-executor
   - if [ -f /.dockerenv ]; then echo "docker-executor"; fi
@@ -13,10 +13,10 @@ cache:
     - .yarn
 
 stages:
-  - check
+  - test
 
-check_frontend:
-  stage: check
+test_frontend:
+  stage: test
   script:
     - yarn install
     - yarn lint
