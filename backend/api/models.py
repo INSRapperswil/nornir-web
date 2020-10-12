@@ -1,12 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 from nornir.core.task import AggregatedResult
-
-from web_nornir import nornir_handler
+from web_nornir.nornir_handler import NornirHandler
 
 
 # Create your models here.
-from web_nornir.nornir_handler import NornirHandler
 
 
 class JobTemplate(models.Model):
@@ -55,12 +53,12 @@ class Inventory(models.Model):
     # Aktuell alles hardwired (auch in NornirHandler)
     @staticmethod
     def get_hosts():
-        nh = nornir_handler.NornirHandler()
+        nh = NornirHandler()
         return nh.get_hosts()
 
     @staticmethod
     def get_groups():
-        nh = nornir_handler.NornirHandler()
+        nh = NornirHandler()
         return nh.get_groups()
 
 
