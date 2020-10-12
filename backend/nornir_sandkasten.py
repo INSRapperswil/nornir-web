@@ -1,6 +1,5 @@
 from nornir import InitNornir
 
-
 def main():
     nr = InitNornir(config_file='web_nornir/nornir_config/example_config/config.yaml')
     hosts: list = []

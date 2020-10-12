@@ -25,6 +25,6 @@ class NornirHandler:
         return get_job_definitions()
 
     def execute_task(self, job_name: str, params: dict, filter_arguments: dict):
-        selection = self.nr.filter(filter_arguments)
+        selection = self.nr.filter(**filter_arguments)
         params['task'] = get_job_function(job_name)
-        return selection.run(params)
+        return selection.run(**params)
