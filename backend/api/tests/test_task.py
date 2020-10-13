@@ -30,7 +30,6 @@ class TestTaskModel(TestCase):
 class TestTaskApi(APIViewTest, UsesGetMethod, Returns200, AsUser('user')):
     url = lambda_fixture(lambda: reverse('task-list'))
 
-    # Do not test yet as there are changes on this model in other branches
-    # def test_task_list(self, json):
-    #     actual = json
-    #     assert expected_task_list == actual
+    def test_task_list(self, json):
+        actual = json
+        assert expected_task_list == actual
