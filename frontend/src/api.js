@@ -1,11 +1,23 @@
 const backend = "http://localhost:8000";
 
 export function getTasks(token) {
-  return getAuthenticatedJson('/api/tasks/').then(parseJson);
+  return getAuthenticatedJson('/api/tasks/', token).then(parseJson);
 }
 
-export function runTask(token, params) {
-  return postAuthenticatedJson('/api/tasks/run/', token, params).then(parseJson);
+export function getTask(token, id) {
+  return getAuthenticatedJson(`/api/tasks/${id}/`, token).then(parseJson);
+}
+
+export function createTask(token, params) {
+  return postAuthenticatedJson('/api/tasks/', token, params).then(parseJson);
+}
+
+export function runTask(token, id) {
+  return postAuthenticatedJson(`/api/tasks/${id}/run/`, token).then(parseJson);
+}
+
+export function runTaskAsync(token, id) {
+  return postAuthenticatedJson(`/api/tasks/${id}/run_async/`, token);
 }
 
 export function authenticate(username, password) {

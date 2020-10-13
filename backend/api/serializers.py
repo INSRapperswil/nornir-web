@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from api.models import Task, JobTemplate, Inventory, InventoryFilter
+from api.models import Task, JobTemplate, Inventory
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -18,10 +18,11 @@ class TaskSerializer(serializers.ModelSerializer):
             'date_started',
             'date_finished',
             'variables',
-            'input',
+            'result_host_selection',
+            'filters',
             'result',
             'created_by',
-            'template'
+            'template',
         ]
 
 
@@ -53,20 +54,6 @@ class InventorySerializer(serializers.ModelSerializer):
             'type',
             'hosts_file',
             'groups_file',
-        ]
-
-
-class InventoryFilterSerializer(serializers.ModelSerializer):
-    detail = serializers.HyperlinkedIdentityField(view_name='inventoryfilter-detail', read_only=True)
-
-    class Meta:
-        model = InventoryFilter
-        fields = [
-            'id',
-            'detail',
-            'inventory',
-            'task',
-            'filter'
         ]
 
 

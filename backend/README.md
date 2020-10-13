@@ -20,6 +20,8 @@ venv/bin/python manage.py migrate
 venv/bin/python manage.py createsuperuser
 venv/bin/python manage.py create_groups
 venv/bin/python manage.py runserver
+docker run --name redis -p 6379:6379 -d redis
+celery -A backend worker
 ```
 
 Server is accessible at http://127.0.0.1:8000/api
