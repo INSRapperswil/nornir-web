@@ -1,12 +1,10 @@
 from django.contrib.auth.models import User
-from django.core.serializers import serialize
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api.models import Task, JobTemplate, Inventory, InventoryFilter
-from api.serializers import TaskSerializer, JobTemplateSerializer, InventorySerializer, InventoryFilterSerializer, \
-    UserSerializer
+from api.models import Task, JobTemplate, Inventory
+from api.serializers import TaskSerializer, JobTemplateSerializer, InventorySerializer, UserSerializer
 
 
 # Create your views here.
@@ -19,14 +17,18 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [permissions.DjangoModelPermissions]
 
-    @action(detail=False, methods=['POST'])
-    def run(self, request):
-        data = request.data
-        result = Task.run_task(data)
-        if result.items():
-            return Response(result.__dict__)
-        else:
-            return Response('no result objects in AggregatedResult')
+    @action(detail=True, methods=['POST'])
+    def run(self, request, pk):
+        task = self.get_object()
+        task.run_task()
+        serializer = self.get_serializer(task)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['POST'])
+    def run_async(self, request, pk):
+        task = self.get_object()
+        task.schedule()
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 class JobTemplateViewSet(viewsets.ModelViewSet):
@@ -57,15 +59,6 @@ class InventoryViewSet(viewsets.ModelViewSet):
         inventory = self.get_object()
         groups = inventory.get_groups()
         return Response(groups)
-
-
-class InventoryFilterViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet which shows all Filters over inventories which have been applied to tasks
-    """
-    queryset = InventoryFilter.objects.all()
-    serializer_class = InventoryFilterSerializer
-    permission_classes = [permissions.DjangoModelPermissions]
 
 
 class UserViewSet(viewsets.ModelViewSet):

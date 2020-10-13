@@ -5,7 +5,6 @@ from api import views
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
 router.register(r'inventories', views.InventoryViewSet)
-router.register(r'inventoryfilters', views.InventoryFilterViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'tasks', views.TaskViewSet)
 router.register(r'templates', views.JobTemplateViewSet)
