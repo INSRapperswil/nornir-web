@@ -9,7 +9,7 @@ function Prototype() {
   
   useEffect(() => {
     if (token === '') {
-      authenticate('felixkubli', 'v3rys3cur3').then((response) => setToken(response.token));
+      authenticate('norbert', 'netzwerk').then((response) => setToken(response.token));
     }
   }, [token, setToken]);
   

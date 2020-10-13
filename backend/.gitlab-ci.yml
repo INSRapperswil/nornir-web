@@ -20,5 +20,5 @@ test_backend:
   script:
     - python manage.py migrate
     - python manage.py create_groups
-    - python manage.py testdb_setup
+    - python manage.py create_testdb
     - pytest -vv

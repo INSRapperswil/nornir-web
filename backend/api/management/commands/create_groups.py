@@ -13,7 +13,7 @@ PERMISSIONS_READ = Permission.objects.filter(content_type__app_label='api', name
 class Command(BaseCommand):
     help = 'This script prepares the groups and permissions for Web-Nornir\n' \
            '- Group "Superuser": Can read and write on all API nodes.\n' \
-           '- Group "Netadmin": Can read on all API nodes, can write on API node "task", "inventoryfilter".\n' \
+           '- Group "Netadmin": Can read on all API nodes, can write on API node "task".\n' \
            '- Group "Support": Can only read on all API nodes.\n'
 
     def handle(self, *args, **options):

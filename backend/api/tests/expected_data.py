@@ -7,25 +7,12 @@ expected_inventory_list = [
      'type': 1},
 ]
 
-expected_inventoryfilter_list = [
-    {'detail': 'http://testserver/api/inventoryfilters/1/',
-     'filter': 'filter(site="cmh", role="host")',
-     'id': 1,
-     'inventory': 1,
-     'task': 2},
-    {'detail': 'http://testserver/api/inventoryfilters/2/',
-     'filter': 'filter(platform="ios", role="host")',
-     'id': 2,
-     'inventory': 1,
-     'task': 1},
-]
-
 expected_jobtemplate_list = [
     {'description': 'This prints a hello world',
      'detail': 'http://testserver/api/templates/1/',
      'file_path': 'helo.py',
      'id': 1,
-     'name': 'Hello World'},
+     'name': 'hello_world'},
     {'description': 'Updates Cisco Firmware',
      'detail': 'http://testserver/api/templates/2/',
      'file_path': 'update_cisco.py',

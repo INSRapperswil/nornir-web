@@ -37,7 +37,7 @@ class Command(BaseCommand):
         models.Inventory.objects.create(name='Base', hosts_file='hosts.yml', groups_file='groups.yml', type=1)
 
         print('----    Creating Job Templates    ----')
-        models.JobTemplate.objects.create(name='Hello World', description='This prints a hello world',
+        models.JobTemplate.objects.create(name='hello_world', description='This prints a hello world',
                                           file_path='helo.py')
         models.JobTemplate.objects.create(name='Update Firmware', description='Updates Cisco Firmware',
                                           file_path='update_cisco.py')
@@ -47,9 +47,5 @@ class Command(BaseCommand):
                                    template_id=1)
         models.Task.objects.create(name='Update Firmware', date_scheduled='2020-10-09T15:52:52.657905Z', created_by_id=1,
                                    template_id=2)
-
-        print('----    Creating Inventory Filters    ----')
-        models.InventoryFilter.objects.create(inventory_id=1, task_id=2, filter='filter(site="cmh", role="host")')
-        models.InventoryFilter.objects.create(inventory_id=1, task_id=1, filter='filter(platform="ios", role="host")')
 
         print('----    ALL DONE!!    ----')
