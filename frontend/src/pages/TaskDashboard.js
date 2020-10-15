@@ -54,6 +54,7 @@ function TaskDashboard() {
               <TableCell>Started</TableCell>
               <TableCell>Finished</TableCell>
               <TableCell>Parameters</TableCell>
+              <TableCell>Filters</TableCell>
               <TableCell>Input</TableCell>
               <TableCell>Result</TableCell>
               <TableCell>Creator</TableCell>
@@ -72,7 +73,8 @@ function TaskDashboard() {
                 <TableCell>{beautifyDate(value.date_started)}</TableCell>
                 <TableCell>{beautifyDate(value.date_finished)}</TableCell>
                 <TableCell>{JSON.stringify(value.variables)}</TableCell>
-                <TableCell>{JSON.stringify(value.input)}</TableCell>
+                <TableCell>{JSON.stringify(value.filters)}</TableCell>
+                <TableCell>{JSON.stringify(value.result_host_selection)}</TableCell>
                 <TableCell>{JSON.stringify(value.result)}</TableCell>
                 <TableCell>{value.created_by}</TableCell>
                 <TableCell>{value.template}</TableCell>
