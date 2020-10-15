@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@material-ui/core';
-import { authenticate, runTask } from '../api';
+import { authenticate, runTask, createTask, getTask, runTaskAsync } from '../api';
 
 function Prototype() {
   let [token, setToken] = useState('');
-  let [result, setResult] = useState([]);
+  let [results, setResults] = useState([]);
+  let [taskId, setTaskId] = useState({});
   
   useEffect(() => {
     if (token === '') {
@@ -12,31 +13,52 @@ function Prototype() {
     }
   }, [token, setToken]);
   
-  const params = {
-    inventorySelection: { hostname: '127.0.0.1' },
-    template: { id: 1, name: 'hello_world' },
-    params: { name: 'prototype hello_world execution' }
+  const template = {
+    id: 1,
+    name: 'hello_world',
   };
+  const taskParams = {
+    name: 'prototype hello_world execution',
+    filters: { hostname: '127.0.0.1' },
+    template: template.id,
+  };
+
   const handleRunTask = async (event) => {
-    setResult([...result, await runTask(token, params)]);
+    const task = await createTask(token, taskParams);
+    setTaskId(task.id);
+    const result = await runTask(token, task.id);
+    setResults([...results, result]);
+  };
+
+  const handleRunTaskAsync = async (event) => {
+    const task = await createTask(token, taskParams);
+    setTaskId(task.id);
+    await runTaskAsync(token, task.id);
+    const result = await getTask(token, task.id);
+    setResults([...results, result]);
+  };
+
+  const handleGetTask = async (event) => {
+    const result = await getTask(token, taskId);
+    setResults([...results, result]);
   };
 
   return (
     <div id="prototype">
       <h1>Prototype</h1>
       <h2>Run the Task</h2>
-      <h3>Inventory</h3>
+      <h3>Filter</h3>
       <ul>
-        {/* {params.inventorySelection.map((value) => {
-          return <li key={value.hostname}>{value.hostname}</li>;
-        })} */}
+  <li>hostname: { taskParams.filters.hostname }</li>
       </ul>
       <h3>Job Template</h3>
-      <p>Template: {params.template.name}</p>
-      <Button variant="contained" onClick={handleRunTask}>run task</Button>
+      <p>Template: {template.name}</p>
+      <Button variant="contained" onClick={handleRunTask}>create and run task</Button>
+      <Button variant="contained" onClick={handleRunTaskAsync}>create and run task async</Button>
+      <Button variant="contained" onClick={handleGetTask}>get task result</Button>
       <h3>Result</h3>
-      {result.map((value, index) => {
-        return <div key={index}>{JSON.stringify(value)}</div>
+      {results.map((value, index) => {
+        return <p key={index}>ID: {value.id}, status: {value.status}, result: {JSON.stringify(value.result)}</p>
       })}
     </div>
   );

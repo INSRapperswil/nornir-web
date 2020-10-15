@@ -12,8 +12,20 @@ export function getInventoryHosts(inventoryId, token) {
   return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts`, token).then(parseJson);
 }
 
-export function runTask(token, params) {
-  return postAuthenticatedJson('/api/tasks/run/', token, params).then(parseJson);
+export function getTask(token, id) {
+  return getAuthenticatedJson(`/api/tasks/${id}/`, token).then(parseJson);
+}
+
+export function createTask(token, params) {
+  return postAuthenticatedJson('/api/tasks/', token, params).then(parseJson);
+}
+
+export function runTask(token, id) {
+  return postAuthenticatedJson(`/api/tasks/${id}/run/`, token).then(parseJson);
+}
+
+export function runTaskAsync(token, id) {
+  return postAuthenticatedJson(`/api/tasks/${id}/run_async/`, token);
 }
 
 export function authenticate(username, password) {

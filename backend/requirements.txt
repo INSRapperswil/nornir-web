@@ -6,3 +6,4 @@ psycopg2~=2.8.6
 uritemplate~=3.0.1
 nornir==3.0.0
 django-cors-headers~=3.5.0
+celery[redis]~=5.0.0
