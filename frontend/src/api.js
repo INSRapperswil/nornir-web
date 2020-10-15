@@ -4,6 +4,14 @@ export function getTasks(token) {
   return getAuthenticatedJson('/api/tasks/', token).then(parseJson);
 }
 
+export function getJobTemplates(token) {
+  return getAuthenticatedJson('/api/templates/', token).then(parseJson);
+}
+
+export function getInventoryHosts(token, inventoryId) {
+  return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts/`, token).then(parseJson);
+}
+
 export function getTask(token, id) {
   return getAuthenticatedJson(`/api/tasks/${id}/`, token).then(parseJson);
 }
