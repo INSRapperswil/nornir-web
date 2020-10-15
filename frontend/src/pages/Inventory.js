@@ -18,7 +18,7 @@ function Inventory() {
     if (token === '') {
       authenticate('norbert', 'netzwerk').then((response) => {
         if (inventory.length === 0) {
-          getInventoryHosts("1", response.token).then((response) => setInventory(response));
+          getInventoryHosts(response.token, "1").then((response) => setInventory(response));
         }
       });
     }
