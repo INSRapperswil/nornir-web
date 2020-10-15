@@ -9,7 +9,7 @@ export function getJobTemplates(token) {
 }
 
 export function getInventoryHosts(inventoryId, token) {
-  return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts`, token).then(parseJson);
+  return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts/`, token).then(parseJson);
 }
 
 export function getTask(token, id) {
