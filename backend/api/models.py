@@ -5,6 +5,7 @@ from nornir.core.task import AggregatedResult
 from web_nornir.nornir_handler import NornirHandler
 from celery import shared_task
 
+
 # Create your models here.
 
 
@@ -13,6 +14,28 @@ class JobTemplate(models.Model):
     description = models.TextField()
     file_path = models.TextField()
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+
+class Inventory(models.Model):
+    class InventoryType(models.IntegerChoices):
+        SIMPLE = 1
+
+    name = models.CharField(max_length=200)
+    type = models.IntegerField(choices=InventoryType.choices, default=InventoryType.SIMPLE)
+    hosts_file = models.TextField()
+    groups_file = models.TextField()
+
+    # In Zukunft umbauen, so dass die entsprechenden Properties des Inventory übergeben werden
+    # Aktuell alles hardwired (auch in NornirHandler)
+    @staticmethod
+    def get_hosts():
+        nh = NornirHandler()
+        return nh.get_hosts()
+
+    @staticmethod
+    def get_groups():
+        nh = NornirHandler()
+        return nh.get_groups()
 
 
 class Task(models.Model):
@@ -35,6 +58,7 @@ class Task(models.Model):
     result = models.JSONField(default=dict, null=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     template = models.ForeignKey(JobTemplate, on_delete=models.SET_NULL, null=True)
+    inventory = models.ForeignKey(Inventory, on_delete=models.SET_NULL, null=True)
     celery_task_id = models.CharField(blank=True, max_length=40)
 
     def schedule(self):
@@ -72,25 +96,3 @@ class Task(models.Model):
         else:
             self.status = self.Status.FINISHED
         self.date_finished = timezone.now()
-
-
-class Inventory(models.Model):
-    class InventoryType(models.IntegerChoices):
-        SIMPLE = 1
-
-    name = models.CharField(max_length=200)
-    type = models.IntegerField(choices=InventoryType.choices, default=InventoryType.SIMPLE)
-    hosts_file = models.TextField()
-    groups_file = models.TextField()
-
-    # In Zukunft umbauen, so dass die entsprechenden Properties des Inventory übergeben werden
-    # Aktuell alles hardwired (auch in NornirHandler)
-    @staticmethod
-    def get_hosts():
-        nh = NornirHandler()
-        return nh.get_hosts()
-
-    @staticmethod
-    def get_groups():
-        nh = NornirHandler()
-        return nh.get_groups()
