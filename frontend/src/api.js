@@ -8,8 +8,8 @@ export function getJobTemplates(token) {
   return getAuthenticatedJson('/api/templates/', token).then(parseJson);
 }
 
-export function getInventoryHosts(token) {
-  return getAuthenticatedJson('/api/inventories/1/hosts', token).then(parseJson);
+export function getInventoryHosts(inventoryId, token) {
+  return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts`, token).then(parseJson);
 }
 
 export function runTask(token, params) {
