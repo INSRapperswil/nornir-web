@@ -23,6 +23,7 @@ venv/bin/python manage.py runserver
 docker run --name redis -p 6379:6379 -d redis
 celery -A backend worker
 ```
+In development you can use the `venv/bin/python manage.py create_testdb` command to put some sample data into your database.
 
 Server is accessible at http://127.0.0.1:8000/api
 
@@ -54,24 +55,17 @@ To authenticate regular requests, use the following HTTP-Header:
 
 ## Register new Job Templates
 To register a new Job Template, to to the web_nornir/job_templates folder and place you Template in it.
+Then Go to the admin dashboard and create a new Job Template in the database. The name you give it in the database
+must be equal to the filename without the file extension (If for example the file is called `hello_world.py`, the name is `hello_world`)
 
 ### What should the Template look like?
-Each template needs to contain the `job_definition` dictionary and the `job_function` function.
+Each template needs to contain the `job_function` function.
 Here is an example Template:
 ```python
 from nornir.core.task import Task, Result
 
-# This definition will be displayed in the frontend.
-job_definition = {
-    'name': 'say',
-    'description': 'lets each host say a text',
-    # For each parameter you define here, the user will get an input field,
-    # where he can specify the needed information.
-    # Make sure the names of the parameters are the same as in the function signature.
-    'params': ['text'],
-}
-
-
+# The function must be called job_function, so that the application will automatically find it.
+# Consult the nornir documentation on how to write a nornir Task.
 def job_function(task: Task, text: str) -> Result:
     return Result(
         host=task.host,
