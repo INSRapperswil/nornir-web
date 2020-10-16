@@ -1,5 +1,5 @@
 from nornir import InitNornir
-from .job_discovery import get_job_function, get_job_definitions
+from .job_discovery import JobDiscovery
 
 
 class NornirHandler:
@@ -22,10 +22,10 @@ class NornirHandler:
 
     @staticmethod
     def get_job_template_definitions():
-        return get_job_definitions()
+        return JobDiscovery().get_job_definitions()
 
     def execute_task(self, job_name: str, params: dict, filter_arguments: dict):
         selection = self.nr.filter(**filter_arguments)
         params_copy = params.copy()
-        params_copy['task'] = get_job_function(job_name)
+        params_copy['task'] = JobDiscovery().get_job_function(job_name)
         return selection.run(**params_copy)
