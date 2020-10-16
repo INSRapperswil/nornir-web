@@ -23,6 +23,7 @@ class TaskSerializer(serializers.ModelSerializer):
             'result',
             'created_by',
             'template',
+            'inventory',
         ]
 
 
