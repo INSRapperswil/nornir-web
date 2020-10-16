@@ -20,10 +20,6 @@ class NornirHandler:
     def get_groups(self):
         return self.nr.inventory.groups
 
-    @staticmethod
-    def get_job_template_definitions():
-        return get_job_definitions()
-
     def execute_task(self, job_name: str, params: dict, filter_arguments: dict):
         selection = self.nr.filter(**filter_arguments)
         params_copy = params.copy()
