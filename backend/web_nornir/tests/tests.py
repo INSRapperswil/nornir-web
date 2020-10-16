@@ -13,11 +13,12 @@ class TestWebNornir:
         assert len(list(filter(lambda x: x['name'] == 'hello_test', result))) > 0
 
     def test_get_job_function(self):
-        result = self.jd.get_job_function('hello_test')
+        result = self.jd.get_job_function('hello_test', 'job_function')
         assert callable(result)
 
     def test_get_job_function_with_invalid_name(self):
         wrong_name = 'wrong_name'
         with pytest.raises(Exception) as e:
-            assert self.jd.get_job_function(wrong_name)
+            assert self.jd.get_job_function(wrong_name, 'job_function')
         assert str(e.value) == f'job template "{wrong_name}" not found'
+

@@ -1,4 +1,5 @@
 from nornir import InitNornir
+
 from .job_discovery import JobDiscovery
 
 
@@ -21,11 +22,12 @@ class NornirHandler:
         return self.nr.inventory.groups
 
     @staticmethod
-    def get_job_template_definitions():
-        return JobDiscovery().get_job_definitions()
+    def get_job_template_definitions(package_path=None):
+        return JobDiscovery(package_path).get_job_definitions()
 
-    def execute_task(self, job_name: str, params: dict, filter_arguments: dict):
+    def execute_task(self, job_template, params: dict, filter_arguments: dict):
+        jd = JobDiscovery(job_template.get_package_path())
         selection = self.nr.filter(**filter_arguments)
         params_copy = params.copy()
-        params_copy['task'] = JobDiscovery().get_job_function(job_name)
+        params_copy['task'] = jd.get_job_function(job_template.file_name, job_template.function_name)
         return selection.run(**params_copy)

@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from nornir.core.task import AggregatedResult
 from web_nornir.nornir_handler import NornirHandler
 from celery import shared_task
+from backend.settings import BASE_DIR
 
 
 # Create your models here.
@@ -12,8 +13,13 @@ from celery import shared_task
 class JobTemplate(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
-    file_path = models.TextField()
+    package_path = models.TextField(default='/web_nornir/job_templates/')
+    file_name = models.TextField()
+    function_name = models.TextField(default='job_function')
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+    def get_package_path(self):
+        return str(BASE_DIR.as_posix()) + self.package_path
 
 
 class Inventory(models.Model):
@@ -81,7 +87,7 @@ class Task(models.Model):
         self.start()
         self.variables['name'] = self.name
         self.save()
-        task_result: AggregatedResult = nr.execute_task(self.template.name, self.variables, self.filters)
+        task_result: AggregatedResult = nr.execute_task(self.template, self.variables, self.filters)
         self.finish(task_result)
         self.save()
 
