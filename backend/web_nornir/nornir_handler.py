@@ -1,5 +1,5 @@
 from nornir import InitNornir
-from .job_discovery import get_job_function, get_job_definitions
+from .job_discovery import get_job_function
 
 
 class NornirHandler:
