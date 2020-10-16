@@ -38,9 +38,9 @@ class Command(BaseCommand):
 
         print('----    Creating Job Templates    ----')
         models.JobTemplate.objects.create(name='hello_world', description='This prints a hello world',
-                                          file_path='hello_world.py')
+                                          file_name='hello_world.py')
         models.JobTemplate.objects.create(name='Update Firmware', description='Updates Cisco Firmware',
-                                          file_path='update_cisco.py')
+                                          file_name='update_cisco.py')
 
         print('----    Creating Tasks    ----')
         models.Task.objects.create(name='Get Hello World', date_scheduled='2020-10-09T15:52:52.650855Z', created_by_id=2,
