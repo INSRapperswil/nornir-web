@@ -6,7 +6,7 @@ from api import models
 
 class JobTemplateAdmin(admin.ModelAdmin):
     # Settings for Overview
-    list_display = ('name', 'description', 'file_path', 'created_by')
+    list_display = ('name', 'package_path', 'file_name', 'function_name', 'created_by')
     list_filter = ['created_by']
     search_fields = ['name', 'description']
 
@@ -18,7 +18,7 @@ class JobTemplateAdmin(admin.ModelAdmin):
         ),
         (
             'Module Name & Path',
-            {'fields': ['file_path']}
+            {'fields': ['package_path', 'file_name', 'function_name']}
         ),
         (
             'Author',
