@@ -15,6 +15,9 @@ class JobTemplate(models.Model):
     file_path = models.TextField()
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
+    def __str__(self):
+        return f'{self.id}: {self.name}'
+
 
 class Inventory(models.Model):
     class InventoryType(models.IntegerChoices):
@@ -24,6 +27,9 @@ class Inventory(models.Model):
     type = models.IntegerField(choices=InventoryType.choices, default=InventoryType.SIMPLE)
     hosts_file = models.TextField()
     groups_file = models.TextField()
+
+    def __str__(self):
+        return f'{self.id}: {self.name}'
 
     # In Zukunft umbauen, so dass die entsprechenden Properties des Inventory übergeben werden
     # Aktuell alles hardwired (auch in NornirHandler)
@@ -60,6 +66,9 @@ class Task(models.Model):
     template = models.ForeignKey(JobTemplate, on_delete=models.SET_NULL, null=True)
     inventory = models.ForeignKey(Inventory, on_delete=models.SET_NULL, null=True)
     celery_task_id = models.CharField(blank=True, max_length=40)
+
+    def __str__(self):
+        return f'{self.id}: {self.name}'
 
     def schedule(self):
         self.status = self.Status.SCHEDULED
