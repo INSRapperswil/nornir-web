@@ -1,0 +1,23 @@
+image: node:lts
+before_script:
+  # are we in a docker-executor
+  - if [ -f /.dockerenv ]; then echo "docker-executor"; fi
+  - echo "start ci"
+  - node -v
+  - cd frontend
+
+cache:
+  paths:
+    - node_modules/
+    - build/
+    - .yarn
+
+stages:
+  - test
+
+test_frontend:
+  stage: test
+  script:
+    - yarn install
+    - yarn lint
+    - yarn test

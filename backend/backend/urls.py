@@ -16,12 +16,30 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
+from django.views.generic import TemplateView
+from rest_framework.authtoken import views
+from rest_framework.schemas import get_schema_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('nornuir.urls', namespace='nornuir')),
+    path('api/', include('api.urls')),
 ]
 
+# Authentication URLs
 urlpatterns += [
     path('api-auth/', include('rest_framework.urls')),
+    path('api-token-auth/', views.obtain_auth_token),
+]
+
+# URLs for API Documentation
+urlpatterns += [
+    path('openapi', get_schema_view(
+        title='API',
+        description='API for Nornir Webinterface',
+        version='0.0.1'
+    ), name='openapi-schema'),
+    path('swagger-ui/', TemplateView.as_view(
+        template_name='swagger-ui.html',
+        extra_context={'schema_url': 'openapi-schema'}
+    ), name='swagger-ui'),
 ]
