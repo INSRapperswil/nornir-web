@@ -10,12 +10,16 @@ expected_inventory_list = [
 expected_jobtemplate_list = [
     {'description': 'This prints a hello world',
      'detail': 'http://testserver/api/templates/1/',
-     'file_path': 'helo.py',
+     'file_name': 'hello_world.py',
+     'package_path': '/web_nornir/job_templates/',
+     'function_name': 'job_function',
      'id': 1,
      'name': 'hello_world'},
     {'description': 'Updates Cisco Firmware',
      'detail': 'http://testserver/api/templates/2/',
-     'file_path': 'update_cisco.py',
+     'package_path': '/web_nornir/job_templates/',
+     'function_name': 'job_function',
+     'file_name': 'update_cisco.py',
      'id': 2,
      'name': 'Update Firmware'},
 ]
