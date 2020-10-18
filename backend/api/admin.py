@@ -41,7 +41,8 @@ class TaskAdmin(admin.ModelAdmin):
         ),
         (
             'Schedules & Status',
-            {'fields': ['date_scheduled', 'date_started', 'date_finished', 'status']}
+            {'classes': ('collapse',),
+             'fields': ['date_scheduled', 'date_started', 'date_finished', 'status']}
         ),
         (
             'Filters, Variables, Results',
@@ -52,6 +53,8 @@ class TaskAdmin(admin.ModelAdmin):
             {'fields': ['template', 'inventory', 'created_by']}
         )
     ]
+
+    readonly_fields = ['date_scheduled', 'date_started', 'date_finished', 'status', 'result']
 
 
 class InventoryAdmin(admin.ModelAdmin):
