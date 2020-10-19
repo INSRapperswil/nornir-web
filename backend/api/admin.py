@@ -1,8 +1,27 @@
 from django.contrib import admin
+from django.contrib.admin import AdminSite
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.admin import UserAdmin, GroupAdmin
+
 from api import models
 
 
-# Register your models here.
+# TODO: Breaks login function. User can not login with this custom admin site active.
+class GroupBasedAdminSite(AdminSite):
+    def has_permission(self, request):
+        # If Django Superuser (is_staff, is_superuser == true
+        if request.user.is_active and request.user.is_staff and request.user.is_superuser:
+            return True
+        # Web Nornir User in superuser group
+        elif request.user.is_active and request.user.groups.filter(name='superuser').exists():
+            return True
+        else:
+            return False
+
+
+# override default admin site
+admin.site = GroupBasedAdminSite()
+
 
 class JobTemplateAdmin(admin.ModelAdmin):
     # Settings for Overview
@@ -79,3 +98,5 @@ class InventoryAdmin(admin.ModelAdmin):
 admin.site.register(models.JobTemplate, JobTemplateAdmin)
 admin.site.register(models.Task, TaskAdmin)
 admin.site.register(models.Inventory, InventoryAdmin)
+admin.site.register(User, UserAdmin)
+admin.site.register(Group, GroupAdmin)
