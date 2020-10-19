@@ -20,10 +20,8 @@ class JobDiscovery:
         return job_definitions
 
     def get_job_function(self, file_name: str, function_name: str):
-
-        job = list(filter(lambda x: x.name == file_name, pkgutil.walk_packages([self.module_path])))
-        if job:
-            spec = importlib.util.spec_from_file_location(file_name, f'{self.module_path}/{file_name}.py')
+        spec = importlib.util.spec_from_file_location(file_name, f'{self.module_path}/{file_name}')
+        if spec:
             task = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(task)
             return getattr(task, function_name)
