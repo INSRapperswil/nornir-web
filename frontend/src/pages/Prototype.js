@@ -1,17 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@material-ui/core';
-import { authenticate, runTask, createTask, getTask, runTaskAsync } from '../api';
+import { runTask, createTask, getTask, runTaskAsync } from '../api';
+import { connect } from 'react-redux';
+import { getToken } from '../redux/reducers';
 
-function Prototype() {
-  let [token, setToken] = useState('');
+function Prototype({ token }) {
   let [results, setResults] = useState([]);
   let [taskId, setTaskId] = useState({});
-  
-  useEffect(() => {
-    if (token === '') {
-      authenticate('norbert', 'netzwerk').then((response) => setToken(response.token));
-    }
-  }, [token, setToken]);
   
   const template = {
     id: 1,
@@ -64,4 +59,10 @@ function Prototype() {
   );
 }
 
-export default Prototype;
+const mapStateToProps = (state) => {
+  return {
+    token: getToken(state),
+  };
+};
+
+export default connect(mapStateToProps)(Prototype);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { authenticate, getInventoryHosts } from '../api';
+import { getInventoryHosts } from '../api';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,21 +8,17 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import { getToken } from '../redux/reducers';
+import { connect } from 'react-redux';
 
-
-function Inventory() {
-  let [token, setToken] = useState('');
+function Inventory({ token }) {
   let [inventory, setInventory] = useState([]);
 
   useEffect(() => {
-    if (token === '') {
-      authenticate('norbert', 'netzwerk').then((response) => {
-        if (inventory.length === 0) {
-          getInventoryHosts(response.token, "1").then((response) => setInventory(response));
-        }
-      });
+    if (inventory.length === 0) {
+      getInventoryHosts(token, "1").then((response) => setInventory(response));
     }
-  }, [inventory, setInventory]);
+  }, [inventory, setInventory, token]);
 
 
   const useStyles = makeStyles({
@@ -69,4 +65,10 @@ function Inventory() {
   );
 }
 
-export default Inventory;
+const mapStateToProps = (state) => {
+  return {
+    token: getToken(state),
+  };
+};
+
+export default connect(mapStateToProps)(Inventory);

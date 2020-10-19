@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { authenticate, getTasks } from '../api';
+import { getTasks } from '../api';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,6 +8,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import { getToken } from '../redux/reducers';
+import { connect } from 'react-redux';
 
 function beautifyDate(isoDate) {
   let date = new Date(isoDate);
@@ -18,19 +20,14 @@ function beautifyDate(isoDate) {
 
 }
 
-function TaskDashboard() {
-  let [token, setToken] = useState('');
+function TaskDashboard({ token }) {
   let [tasks, setTasks] = useState([]);
 
   useEffect(() => {
-    if (token === '') {
-      authenticate('norbert', 'netzwerk').then((response) => {
-        if (tasks.length === 0) {
-          getTasks(response.token).then((response) => setTasks(response));
-        }
-      });
+    if (tasks.length === 0) {
+      getTasks(token).then((response) => setTasks(response));
     }
-  }, [tasks, setTasks]);
+  }, [tasks, setTasks, token]);
 
   const useStyles = makeStyles({
     table: {
@@ -88,4 +85,10 @@ function TaskDashboard() {
   );
 }
 
-export default TaskDashboard;
+const mapStateToProps = (state) => {
+  return {
+    token: getToken(state),
+  };
+};
+
+export default connect(mapStateToProps)(TaskDashboard);

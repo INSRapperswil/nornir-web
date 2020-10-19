@@ -29,7 +29,11 @@ export function runTaskAsync(token, id) {
 }
 
 export function authenticate(username, password) {
-  return postJson('/api-token-auth/', { username, password }).then(parseJson)
+  return postJson('/api-token-auth/', { username, password }).then(parseJson);
+}
+
+export function getUser(id, token) {
+  return getAuthenticatedJson(`/api/users/${id}/`, token).then(parseJson);
 }
 
 function getAuthenticatedJson(endpoint, token) {

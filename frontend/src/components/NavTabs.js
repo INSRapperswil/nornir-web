@@ -1,8 +1,10 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { Tabs, Tab } from '@material-ui/core';
+import { getIsAuthenticated } from '../redux/reducers';
+import { connect } from 'react-redux';
 
-function NavTabs({ paths, history, props }) {
+function NavTabs({ paths, history, isAuthenticated, props }) {
   const handleCallToRouter = (event, value) => {
     history.push(value);
   }
@@ -12,10 +14,24 @@ function NavTabs({ paths, history, props }) {
           onChange={handleCallToRouter} 
           aria-label="page menu">
       {paths.map((path) => {
-        return (<Tab label={path.label} value={path.value} key={path.value} />)
+        if(isAuthenticated) {
+          if(path.value !== '/login') {
+            return (<Tab label={path.label} value={path.value} key={path.value} />);
+          }
+        } else if(!path.protected) {
+          return (<Tab label={path.label} value={path.value} key={path.value} />);
+        } else {
+          return '';
+        }
       })}
     </Tabs>
   );
 }
 
-export default withRouter(NavTabs);
+const mapStateToProps = (state) => {
+  return {
+    isAuthenticated: getIsAuthenticated(state),
+  }
+}
+
+export default connect(mapStateToProps)(withRouter(NavTabs));
