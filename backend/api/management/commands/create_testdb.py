@@ -17,6 +17,7 @@ class Command(BaseCommand):
         print('----    Creating Users    ----')
         User.objects.get_or_create(username='thomastest', password=make_password('imatestin'))
         thomas = User.objects.get(username='thomastest')
+        thomas.is_staff = True
 
         User.objects.get_or_create(username='norbert', password=make_password('netzwerk'))
         norbert = User.objects.get(username='norbert')

@@ -6,7 +6,7 @@ from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from api import models
 
 
-# TODO: Breaks login function. User can not login with this custom admin site active.
+# TODO: Breaks login function. Users from Group superuser can not login, somehow restricted to is_staff == true
 class GroupBasedAdminSite(AdminSite):
     def has_permission(self, request):
         # If Django Superuser (is_staff, is_superuser == true
@@ -61,7 +61,7 @@ class TaskAdmin(admin.ModelAdmin):
         (
             'Schedules & Status',
             {'classes': ('collapse',),
-             'fields': ['date_scheduled', 'date_started', 'date_finished', 'status']}
+             'fields': ['status', 'date_scheduled', 'date_started', 'date_finished']}
         ),
         (
             'Filters, Variables, Results',
