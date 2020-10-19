@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { authenticate, getJobTemplates } from '../api';
+import { getJobTemplates } from '../api';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,21 +8,17 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import { getToken } from '../redux/reducers';
+import { connect } from 'react-redux';
 
-function JobTemplates() {
-  let [token, setToken] = useState('');
+function JobTemplates({ token }) {
   let [templates, setTemplates] = useState([]);
 
   useEffect(() => {
-    if (token === '') {
-      authenticate('norbert', 'netzwerk').then((response) => {
-        if (templates.length === 0) {
-          getJobTemplates(response.token).then((response) => setTemplates(response));
-        }
-      });
+    if (templates.length === 0) {
+      getJobTemplates(token).then((response) => setTemplates(response));
     }
-  }, [templates, setTemplates]);
-
+  }, [templates, setTemplates, token]);
 
   const useStyles = makeStyles({
     table: {
@@ -63,4 +59,10 @@ function JobTemplates() {
   );
 }
 
-export default JobTemplates;
+const mapStateToProps = (state) => {
+  return {
+    token: getToken(state),
+  };
+};
+
+export default connect(mapStateToProps)(JobTemplates);

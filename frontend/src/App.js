@@ -12,6 +12,10 @@ import Inventory from './pages/Inventory';
 import TaskDashboard from './pages/TaskDashboard';
 import JobTemplates from './pages/JobTemplates';
 import Prototype from './pages/Prototype';
+import Site404 from './pages/Site404';
+import LoginPage from './pages/LoginPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import Logout from './components/Logout';
 
 function App() {
   const paths = [
@@ -19,21 +23,36 @@ function App() {
       label: 'Inventory',
       value: '/inventory',
       component: <Inventory/>,
+      protected: true,
     },
     {
       label: 'Tasks Dashboard',
       value: '/task-dashboard',
       component: <TaskDashboard/>,
+      protected: true,
     },
     {
       label: 'Job Templates',
       value: '/job-templates',
-      component: <JobTemplates/>
+      component: <JobTemplates/>,
+      protected: true,
     },
     {
       label: 'Prototype',
       value: '/prototype',
-      component: <Prototype/>
+      component: <Prototype/>,
+      protected: true,
+    },
+    {
+      label: 'Login',
+      value: '/login',
+      component: <LoginPage/>,
+    },
+    {
+      label: 'Logout',
+      value: '/logout',
+      component: <Logout/>,
+      protected: true,
     },
   ];
   return (
@@ -47,8 +66,15 @@ function App() {
           <Switch>
             <Route exact path="/"><Redirect to={paths[0].value} /></Route>
             {paths.map((path) => {
-              return <Route key={path.value} path={path.value}>{path.component}</Route>
+              if(path.protected) {
+                return <ProtectedRoute key={path.value} path={path.value}>{path.component}</ProtectedRoute>;
+              } else {
+                return <Route key={path.value} path={path.value}>{path.component}</Route>;
+              }
             })}
+            <Route path="*">
+              <Site404 />
+            </Route>
           </Switch>
         </Container>
       </Router>
