@@ -12,11 +12,14 @@ from backend.settings import BASE_DIR
 
 class JobTemplate(models.Model):
     name = models.CharField(max_length=200)
-    description = models.TextField()
-    package_path = models.TextField(default='/web_nornir/job_templates/')
-    file_name = models.TextField()
-    function_name = models.TextField(default='job_function')
+    description = models.TextField(null=True)
+    package_path = models.CharField(max_length=256, default='/web_nornir/job_templates/')
+    file_name = models.CharField(max_length=256)
+    function_name = models.CharField(max_length=256, default='job_function')
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return f'{self.id}: {self.name}'
 
     def get_package_path(self):
         return str(BASE_DIR.as_posix()) + self.package_path
@@ -28,8 +31,11 @@ class Inventory(models.Model):
 
     name = models.CharField(max_length=200)
     type = models.IntegerField(choices=InventoryType.choices, default=InventoryType.SIMPLE)
-    hosts_file = models.TextField()
-    groups_file = models.TextField()
+    hosts_file = models.CharField(max_length=256)
+    groups_file = models.CharField(max_length=256)
+
+    def __str__(self):
+        return f'{self.id}: {self.name}'
 
     # In Zukunft umbauen, so dass die entsprechenden Properties des Inventory übergeben werden
     # Aktuell alles hardwired (auch in NornirHandler)
@@ -66,6 +72,9 @@ class Task(models.Model):
     template = models.ForeignKey(JobTemplate, on_delete=models.SET_NULL, null=True)
     inventory = models.ForeignKey(Inventory, on_delete=models.SET_NULL, null=True)
     celery_task_id = models.CharField(blank=True, max_length=40)
+
+    def __str__(self):
+        return f'{self.id}: {self.name}'
 
     def schedule(self):
         self.status = self.Status.SCHEDULED
