@@ -32,16 +32,20 @@ admin.site = GroupBasedAdminSite()
 
 
 class JobTemplateAdmin(admin.ModelAdmin):
+    readonly_fields = ['id']
+
     # Settings for Overview
-    list_display = ('name', 'package_path', 'file_name', 'function_name', 'created_by')
+    list_display = ['id', 'name', 'package_path', 'file_name', 'function_name', 'created_by']
+    list_display_links = ['id', 'name']
     list_filter = ['created_by']
+    ordering = ['id']
     search_fields = ['name', 'description']
 
     # Settings for detail view
     fieldsets = [
         (
             'Title & Description',
-            {'fields': ['name', 'description']}
+            {'fields': ['id', 'name', 'description']}
         ),
         (
             'Module Name & Path',
@@ -55,16 +59,20 @@ class JobTemplateAdmin(admin.ModelAdmin):
 
 
 class TaskAdmin(admin.ModelAdmin):
+    readonly_fields = ['id', 'date_scheduled', 'date_started', 'date_finished', 'status', 'result']
+
     # Settings for Overview
-    list_display = ('name', 'status', 'created_by', 'template', 'inventory', 'celery_task_id')
+    list_display = ['id', 'name', 'status', 'created_by', 'template', 'inventory', 'celery_task_id']
+    list_display_links = ['id', 'name']
     list_filter = ['created_by', 'template', 'inventory']
+    ordering = ['id']
     search_fields = ['name', 'status', 'template']
 
     # Settings for detail view
     fieldsets = [
         (
             'Title',
-            {'fields': ['name']}
+            {'fields': ['id', 'name']}
         ),
         (
             'Schedules & Status',
@@ -81,20 +89,22 @@ class TaskAdmin(admin.ModelAdmin):
         )
     ]
 
-    readonly_fields = ['date_scheduled', 'date_started', 'date_finished', 'status', 'result']
-
 
 class InventoryAdmin(admin.ModelAdmin):
+    readonly_fields = ['id']
+
     # Settings for Overview
-    list_display = ('name', 'type', 'hosts_file', 'groups_file')
+    list_display = ['id', 'name', 'type', 'hosts_file', 'groups_file']
+    list_display_links = ['id', 'name']
     list_filter = ['type']
+    ordering = ['id']
     search_fields = ['name', 'hosts_file', 'groups_file']
 
     # Settings for detail view
     fieldsets = [
         (
             'Name & Type',
-            {'fields': ['name', 'type']}
+            {'fields': ['id', 'name', 'type']}
         ),
         (
             'Configuration Files',
