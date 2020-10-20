@@ -1,13 +1,21 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 
 from api import models
 
 
-# TODO: Breaks login function. Users from Group superuser can not login, somehow restricted to is_staff == true
 class GroupBasedAdminSite(AdminSite):
+    """
+    Custom Admin Site which allows users with is_staff property or group 'superuser' to access the admin panel.
+    Overrides login_form to use the _default_ AuthenticationForm instead of AdminAuthenticationForm.
+    This will allow every user to login, but with our custom has_permission method below, access is still restricted.
+    """
+
+    login_form = AuthenticationForm
+
     def has_permission(self, request):
         # If Django Superuser (is_staff, is_superuser == true
         if request.user.is_active and request.user.is_staff and request.user.is_superuser:
