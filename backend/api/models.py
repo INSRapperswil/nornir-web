@@ -31,16 +31,12 @@ class Inventory(models.Model):
     hosts_file = models.TextField()
     groups_file = models.TextField()
 
-    # In Zukunft umbauen, so dass die entsprechenden Properties des Inventory übergeben werden
-    # Aktuell alles hardwired (auch in NornirHandler)
-    @staticmethod
-    def get_hosts():
-        nh = NornirHandler()
+    def get_hosts(self):
+        nh = NornirHandler(self.hosts_file, self.groups_file)
         return nh.get_hosts()
 
-    @staticmethod
-    def get_groups():
-        nh = NornirHandler()
+    def get_groups(self):
+        nh = NornirHandler(self.hosts_file, self.groups_file)
         return nh.get_groups()
 
 
@@ -83,7 +79,7 @@ class Task(models.Model):
         task.run_task()
 
     def run_task(self):
-        nr = NornirHandler()
+        nr = NornirHandler(self.inventory.hosts_file, self.inventory.groups_file)
         self.start()
         self.variables['name'] = self.name
         self.save()

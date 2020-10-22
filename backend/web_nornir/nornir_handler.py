@@ -5,8 +5,13 @@ from .job_discovery import JobDiscovery
 
 
 class NornirHandler:
-    def __init__(self, config="web_nornir/nornir_config/example_config/config.yaml"):
-        self.nr = InitNornir(config_file=config)
+    def __init__(self, host_file, group_file):
+        self.nr = InitNornir(config_file='web_nornir/nornir_config/configuration.yaml',
+                             inventory={'plugin': 'SimpleInventory',
+                                        'options': {
+                                            'host_file': host_file,
+                                            'group_file': group_file
+                                        }}, )
 
     def get_hosts(self):
         hosts = []
