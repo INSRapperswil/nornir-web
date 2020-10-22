@@ -102,3 +102,13 @@ class Task(models.Model):
         else:
             self.status = self.Status.FINISHED
         self.date_finished = timezone.now()
+
+
+class ConfigurationModel():
+    @staticmethod
+    def get():
+        return NornirHandler.get_configuration()
+
+    @staticmethod
+    def set(new_configuration):
+        return NornirHandler.set_configuration(new_configuration)

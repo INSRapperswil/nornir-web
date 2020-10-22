@@ -9,16 +9,6 @@ from nornir import InitNornir
 # - logging file
 # - logging format
 
-def load_runner(num_workers):
-    if num_workers is None:
-        return None
-    else:
-        return {'plugin': 'threaded',
-                'options': {
-                    'num_workers': num_workers
-                }}
-
-
 def load_inventory(group_file, host_file):
     if group_file is not None and host_file is not None:
         return {'plugin': 'SimpleInventory',
@@ -28,18 +18,14 @@ def load_inventory(group_file, host_file):
                 }}
 
 
-def load_logging(level, file, format):
-    pass
-
-
 def main():
-    num_workers = None
     # group_file = 'web_nornir/nornir_config/other_config/groups.yaml'
     group_file = None
     host_file = 'web_nornir/nornir_config/other_config/hosts.yaml'
+
+    # If group file or host file are missing, defaulting to the inventory in configuration
     nr = InitNornir(
-        config_file='web_nornir/nornir_config/example_config/config.yaml',
-        runner=load_runner(num_workers=num_workers),
+        config_file='web_nornir/nornir_config/configuration.yaml',
         inventory=load_inventory(group_file=group_file, host_file=host_file),
 
     )

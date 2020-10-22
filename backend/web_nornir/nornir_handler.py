@@ -1,3 +1,4 @@
+import yaml
 from nornir import InitNornir
 
 from .job_discovery import JobDiscovery
@@ -31,3 +32,15 @@ class NornirHandler:
         params_copy = params.copy()
         params_copy['task'] = jd.get_job_function(job_template.file_name, job_template.function_name)
         return selection.run(**params_copy)
+
+    @staticmethod
+    def get_configuration() -> dict:
+        conf_yml = open('web_nornir/nornir_config/configuration.yaml', 'r')
+        conf_dict = yaml.load(conf_yml, Loader=yaml.FullLoader)
+        return conf_dict
+
+    @staticmethod
+    def set_configuration(new_configuration) -> dict:
+        conf_yml = open('web_nornir/nornir_config/configuration.yaml', 'w')
+        conf_yml.write(yaml.dump(new_configuration))
+        return new_configuration

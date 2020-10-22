@@ -9,7 +9,8 @@ router.register(r'users', views.UserViewSet)
 router.register(r'tasks', views.TaskViewSet)
 router.register(r'templates', views.JobTemplateViewSet)
 
-# The API URLs are now determined automatically by the router.
 urlpatterns = [
     path('', include(router.urls)),
+    # TODO: Path configuration is not discovered by DRF in API Root and Swagger
+    path('configuration/', views.ConfigurationView.as_view()),
 ]

@@ -1,0 +1,14 @@
+inventory:
+  options:
+    group_file: web_nornir/nornir_config/example_config/groups.yaml
+    host_file: web_nornir/nornir_config/example_config/hosts.yaml
+  plugin: SimpleInventory
+logging:
+  enabled: true
+  format: '%(asctime)s - %(name)12s - %(levelname)8s - %(funcName)10s() - %(message)s'
+  level: INFO
+  log_file: nornir.log
+runner:
+  options:
+    num_workers: 100
+  plugin: threaded
