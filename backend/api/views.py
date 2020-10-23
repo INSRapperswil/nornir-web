@@ -2,7 +2,6 @@ from django.contrib.auth.models import User
 from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from api.models import Task, JobTemplate, Inventory, ConfigurationModel
 from api.serializers import TaskSerializer, JobTemplateSerializer, InventorySerializer, UserSerializer
@@ -69,14 +68,14 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.DjangoModelPermissions]
 
 
-class ConfigurationView(APIView):
+class ConfigurationView(viewsets.ViewSet):
     """
     Static Model to pipe the configuration from NornirHandler to the view
     """
-    def get(self, request, format=None):
+    def list(self, request, format=None):
         configuration = ConfigurationModel.get()
         return Response(configuration)
 
-    def post(self, request, format=None):
+    def create(self, request, format=None):
         configuration = ConfigurationModel.set(request.data)
         return Response(configuration)

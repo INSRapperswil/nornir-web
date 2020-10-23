@@ -7,8 +7,6 @@ from .job_discovery import JobDiscovery
 
 class NornirHandler:
     def __init__(self, host_file, group_file):
-        # TODO: Does not check if files exist, norir will throw exception if file not found.
-        # TODO: maybe put this in a try/except
         if Path(host_file).is_file() and Path(group_file).is_file():
             self.nr = InitNornir(config_file='web_nornir/nornir_config/configuration.yaml',
                                  inventory={'plugin': 'SimpleInventory',
@@ -17,8 +15,13 @@ class NornirHandler:
                                                 'group_file': group_file
                                             }}, )
         else:
-            # TODO: Load default values
-            pass
+            # Default to example_config
+            self.nr = InitNornir(config_file='web_nornir/nornir_config/configuration.yaml',
+                                 inventory={'plugin': 'SimpleInventory',
+                                            'options': {
+                                                'host_file': 'web_nornir/nornir_config/example_config/hosts.yaml',
+                                                'group_file': 'web_nornir/nornir_config/example_config/groups.yaml'
+                                            }}, )
 
     def get_hosts(self):
         hosts = []

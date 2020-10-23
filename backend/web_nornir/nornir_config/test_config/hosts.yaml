@@ -1,0 +1,27 @@
+host1.test:
+  hostname: 127.0.0.1
+  port: 22
+  username: example
+  password: example
+  platform: linux
+  groups:
+    - testgroup
+host2.test:
+  hostname: 127.0.2.1
+  port: 22
+  username: example
+  password: example
+  platform: linux
+  groups:
+    - testgroup
+device1.test:
+  hostname: 127.127.0.1
+  port: 2202
+  username: example
+  password: example
+  platform: ios
+  groups:
+    - testgroup
+  data:
+    ospf: 1
+    asn: 65001
