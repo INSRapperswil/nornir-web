@@ -70,7 +70,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class ConfigurationView(viewsets.ViewSet):
     """
-    Static Model to pipe the configuration from NornirHandler to the view
+    Shows the global Nornir configuration and allows to set the configuration
     """
     def list(self, request, format=None):
         configuration = Configuration.get()
