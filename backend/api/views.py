@@ -3,7 +3,7 @@ from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api.models import Task, JobTemplate, Inventory, ConfigurationModel
+from api.models import Task, JobTemplate, Inventory, Configuration
 from api.serializers import TaskSerializer, JobTemplateSerializer, InventorySerializer, UserSerializer
 
 
@@ -73,9 +73,9 @@ class ConfigurationView(viewsets.ViewSet):
     Static Model to pipe the configuration from NornirHandler to the view
     """
     def list(self, request, format=None):
-        configuration = ConfigurationModel.get()
+        configuration = Configuration.get()
         return Response(configuration)
 
     def create(self, request, format=None):
-        configuration = ConfigurationModel.set(request.data)
+        configuration = Configuration.set(request.data)
         return Response(configuration)

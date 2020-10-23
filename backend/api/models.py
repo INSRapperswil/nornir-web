@@ -100,7 +100,7 @@ class Task(models.Model):
         self.date_finished = timezone.now()
 
 
-class ConfigurationModel():
+class Configuration:
     @staticmethod
     def get():
         return NornirHandler.get_configuration()
