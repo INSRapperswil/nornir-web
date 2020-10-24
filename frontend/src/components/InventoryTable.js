@@ -20,7 +20,6 @@ function InventoryTable({ token }) {
     }
   }, [inventory, setInventory, token]);
 
-
   const useStyles = makeStyles({
     table: {
       minWidth: 650,

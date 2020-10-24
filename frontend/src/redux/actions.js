@@ -24,6 +24,24 @@ export function fetchUser() {
   };
 }
 
+export function postTaskWizard(task) {
+  return (dispatch, getState) => {
+    dispatch({ type: "POST_TASK_WIZARD_STARTED" });
+
+    return api.postTask(getState().user.token, task)
+    .then(({ result: task }) => {
+      dispatch({ type: "POST_TASK_WIZARD_SUCCEEDED", task })
+    })
+    .catch((error) => dispatch({ type: "POST_TASK_WIZARD_FAILED", error }));
+  };
+}
+
+export function updateTaskWizard(task) {
+  return (dispatch, getState) => {
+    dispatch({ type: "UPDATE_TASK_WIZARD", task: { ...getState().taskWizard.task, ...task }});
+  };
+}
+
 export function authenticate(username, password) {
   return (dispatch, getState) => {
     dispatch({ type: "FETCH_USER_STARTED" });
