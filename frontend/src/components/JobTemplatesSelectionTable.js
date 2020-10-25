@@ -1,26 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { DataGrid } from '@material-ui/data-grid';
 import { updateTaskWizard } from '../redux/actions';
 import { getTaskWizard, getToken } from '../redux/reducers';
 import { getJobTemplates } from '../api';
 import { makeStyles } from '@material-ui/styles';
+import {
+  RadioGroup, Radio,
+  Table, TableHead, TableBody, TableContainer, TableRow, TableCell,
+  Paper,
+  FormControlLabel,
+} from '@material-ui/core';
 
-
-const columns = [
-  { field: 'id', headerName: 'id' },
-  { field: 'name', headerName: 'name' },
-  { field: 'description', headerName: 'description' },
-  { field: 'function_name', headerName: 'function_name' },
-  { field: 'file_name', headerName: 'file name' },
-  { field: 'package_path', headerName: 'package path' },
-];
 
 const useStyle = makeStyles((theme) => ({
   root: {
-    '.MuiDataGrid-cellCheckbox': {
-      backgroundColor: 'gray'
-    }
   }
 }));
 
@@ -39,20 +32,41 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard }) {
   }, [templates, setTemplates, token]);
 
   const handleSelectionChange = (params) => {
-    updateTaskWizard({ template: params.data.id });
+    updateTaskWizard({ template: parseInt(params.target.value) });
   }
 
   return (
-    <div id="job-templates-selection-table" style={{ height: 400, width: '100%' }}>
-      <DataGrid
-        className={classes.root}
-        autoHeight="true"
-        rows={templates}
-        columns={columns}
-        pageSize={50}
-        loading={loading}
-        onRowSelected={handleSelectionChange}
-        />
+    <div id="job-templates-selection-table">
+      <TableContainer component={Paper}>
+        <RadioGroup name="template-id" value={task.template} onChange={handleSelectionChange}>
+          <Table className={classes.table} aria-label="templates table" size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>select</TableCell>
+                <TableCell>#</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell>Path</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {templates.map((value, index) => (
+                <TableRow key={index}>
+                  <TableCell padding="checkbox">
+                    <FormControlLabel value={value.id} control={<Radio/>}/>
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {value.id}
+                  </TableCell>
+                  <TableCell>{value.name}</TableCell>
+                  <TableCell>{value.description}</TableCell>
+                  <TableCell>{value.file_path}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </RadioGroup>
+      </TableContainer>
     </div>
   );
 }

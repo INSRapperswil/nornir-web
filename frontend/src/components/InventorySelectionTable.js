@@ -3,16 +3,20 @@ import { getTaskWizard, getToken } from '../redux/reducers';
 import { updateTaskWizard } from '../redux/actions';
 import { connect } from 'react-redux';
 import { getInventoryHosts } from '../api';
-import { DataGrid } from '@material-ui/data-grid';
+import { EnhancedTable } from './EnhancedTable';
 
-const columns = [
-  { field: 'id', headerName: 'id' },
-  { field: 'name', headerName: 'name' },
-  { field: 'hostname', headerName: 'hostname' },
-  { field: 'port', headerName: 'port' },
-  { field: 'platform', headerName: 'platform' },
-  { field: 'groups', headerName: 'groups' },
-  { field: 'data', headerName: 'data', valueGetter: (params) => JSON.stringify(params.getValue('data')) },
+
+const headCells = [
+  { id: 'name', numeric: false, label: 'Friendly Name', disablePadding: true },
+  { id: 'hostname', numeric: false, label: 'Hostname' },
+  { id: 'port', numeric: false, label: 'Port' },
+  { id: 'groups', numeric: false, label: 'Groups', getValue: (value) => JSON.stringify(value) },
+  { id: 'data', numeric: false, label: 'Data-Attributes', getValue: (value) => JSON.stringify(value) },
+  { id: 'platform', numeric: false, label: 'Platform' },
+];
+
+const rows = [
+  { name: 'example.cmh', hostname: '127.0.0.1', port: '3000', groups: [], data: {}, platform: 'linux' },
 ];
 
 function InventorySelectionTable({ token, task, updateTaskWizard }) {
@@ -30,20 +34,13 @@ function InventorySelectionTable({ token, task, updateTaskWizard }) {
   }, [inventory, setInventory, token]);
 
   const handleSelectionChange = (params) => {
-    updateTaskWizard({ filters: params.rows });
+    updateTaskWizard({ filters: params });
   }
 
   return (
-    <div id="inventory-selection-table" style={{ height: 400, width: '100%' }}>
-      <DataGrid
-        autoHeight="true"
-        rows={inventory}
-        columns={columns}
-        pageSize={50}
-        loading={loading}
-        onSelectionChange={handleSelectionChange}
-        checkboxSelection />
-    </div>   
+    <div id="inventory-selection-table">
+      <EnhancedTable rows={inventory} headCells={headCells} selected={task.filters} setSelected={handleSelectionChange}/>
+    </div>
   );
 }
 
