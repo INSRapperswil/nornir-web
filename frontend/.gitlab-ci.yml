@@ -1,4 +1,5 @@
 image: node:lts
+
 before_script:
   # are we in a docker-executor
   - if [ -f /.dockerenv ]; then echo "docker-executor"; fi
@@ -14,6 +15,7 @@ cache:
 
 stages:
   - test
+  - deploy_frontend
 
 test_frontend:
   stage: test
@@ -21,3 +23,12 @@ test_frontend:
     - yarn install
     - yarn lint
     - yarn test
+
+deploy_frontend:
+  stage: deploy_backend
+  only:
+    - master
+  script:
+    - yarn build
+    # TODO: Copy to server
+    # - serve -s build -l 80
