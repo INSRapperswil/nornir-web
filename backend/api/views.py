@@ -3,11 +3,9 @@ from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api.models import Task, JobTemplate, Inventory
+from api.models import Task, JobTemplate, Inventory, Configuration
 from api.serializers import TaskSerializer, JobTemplateSerializer, InventorySerializer, UserSerializer
 
-
-# Create your views here.
 
 class TaskViewSet(viewsets.ModelViewSet):
     """
@@ -68,3 +66,16 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.DjangoModelPermissions]
+
+
+class ConfigurationView(viewsets.ViewSet):
+    """
+    Shows the global Nornir configuration and allows to set the configuration
+    """
+    def list(self, request, format=None):
+        configuration = Configuration.get()
+        return Response(configuration)
+
+    def create(self, request, format=None):
+        configuration = Configuration.set(request.data)
+        return Response(configuration)

@@ -3,6 +3,11 @@ from django.urls import reverse, resolve
 
 class TestUrls:
 
+    def test_configuration_url(self):
+        path = reverse('configuration-list')
+        assert resolve(path).view_name == 'configuration-list'
+        assert path == '/api/configuration/'
+
     def test_inventory_list_url(self):
         path = reverse('inventory-list')
         assert resolve(path).view_name == 'inventory-list'
