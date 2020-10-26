@@ -10,19 +10,21 @@ import {
   FormControlLabel,
 } from '@material-ui/core';
 
-function JobTemplatesSelectionTable({ token, task, updateTaskWizard }) {
+function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepValid }) {
   let [templates, setTemplates] = useState([]);
 
   useEffect(() => {
     if (templates.length === 0) {
       getJobTemplates(token).then((response) => {
         setTemplates(response);
+        setStepValid(task.template.id !== 0);
       });
     }
-  }, [templates, setTemplates, token]);
+  }, [templates, setTemplates, setStepValid, task, token]);
 
   const handleSelectionChange = (params) => {
     const temp = templates.find(item => parseInt(params.target.value) === item.id);
+    setStepValid(temp.id !== 0);
     updateTaskWizard({ template: temp });
   }
 

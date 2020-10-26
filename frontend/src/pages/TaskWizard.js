@@ -10,35 +10,37 @@ import FinishTask from '../components/FinishTask';
 
 
 function TaskWizard({ task, postTaskWizard }) {
+  const [activeStep, setActiveStep] = useState(0);
+  const [stepValid, setStepValid] = useState(false);
   const steps = [
     {
-      label: 'Select Template',
-      component: <JobTemplatesSelectionTable/>,
+      label: 'Select Inventory',
+      component: <InventorySelectionTable setStepValid={setStepValid}/>,
       completed: false,
     },
     {
-      label: 'Select Inventory',
-      component: <InventorySelectionTable/>,
+      label: 'Select Template',
+      component: <JobTemplatesSelectionTable setStepValid={setStepValid}/>,
       completed: false,
     },
     {
       label: 'Set Variables',
-      component: <VariableSetter/>,
+      component: <VariableSetter setStepValid={setStepValid}/>,
       completed: false,
     },
     {
       label: 'Finish',
-      component: <FinishTask/>,
+      component: <FinishTask setStepValid={setStepValid}/>,
       completed: false,
     },
   ];
-  const [activeStep, setActiveStep] = useState(0);
 
   const handleFinish = (event) => {
     postTaskWizard();
     handleNext(event);
   }
   const handleNext = (event) => {
+    setStepValid(false);
     setActiveStep(activeStep + 1);
   };
   const handleBack = (event) => {
@@ -60,7 +62,7 @@ function TaskWizard({ task, postTaskWizard }) {
         })}
       </Stepper>
       { activeStep !== 0 && activeStep < steps.length ? <Button onClick={handleBack}>Back</Button> : '' }
-      { activeStep < steps.length-1 ? <Button onClick={handleNext}>Next</Button> : '' }
+      { activeStep < steps.length-1 ? <Button onClick={handleNext} disabled={!stepValid}>Next</Button> : '' }
       { activeStep === steps.length-1 ? <Button onClick={handleFinish}>Finish</Button> : '' }
       { activeStep < steps.length ? steps[activeStep].component : <h2>Task Details: {task.date_started}</h2> }
     </div>

@@ -15,7 +15,11 @@ const headCells = [
   { id: 'platform', numeric: false, label: 'Platform' },
 ];
 
-function InventorySelectionTable({ token, task, updateTaskWizard }) {
+function checkStepValidity(filters) {
+  return (filters !== undefined && filters.length > 0);
+}
+
+function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }) {
   let [inventory, setInventory] = useState([]);
 
   useEffect(() => {
@@ -23,12 +27,15 @@ function InventorySelectionTable({ token, task, updateTaskWizard }) {
       getInventoryHosts(token, "1").then((response) => {
         response.forEach((item, id) => item.id = id);
         setInventory(response);
+        setStepValid(checkStepValidity(task.filters));
       });
     }
-  }, [inventory, setInventory, token]);
+  }, [inventory, setInventory, token, task, setStepValid]);
 
   const handleSelectionChange = (params) => {
     updateTaskWizard({ filters: params });
+    const valid = checkStepValidity(params);
+    setStepValid(valid);
   }
 
   return (

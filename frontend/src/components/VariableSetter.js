@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button, Checkbox, TextField, FormControlLabel,
 } from '@material-ui/core';
@@ -24,9 +24,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function VariableSetter({ token, task, updateTaskWizard }) {
+function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
   const [runNow, setRunNow] = useState(true);
   const classes = useStyles();
+
+  useEffect(() => {
+    setStepValid(task.name !== '');
+  }, [task, setStepValid]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -41,6 +45,7 @@ function VariableSetter({ token, task, updateTaskWizard }) {
       taskAttr.date_scheduled = scheduledDate.toUTCString();
     }
     updateTaskWizard(taskAttr);
+    setStepValid(taskAttr.name !== '');
   };
   
   const handleCheckedChange = (event) => setRunNow(event.target.checked);
@@ -59,6 +64,7 @@ function VariableSetter({ token, task, updateTaskWizard }) {
       <form className={classes.root} onSubmit={handleSubmit}>
         <TextField
           id="name"
+          required
           defaultValue={task.name}
           label="Name"
           className={classes.textField}
