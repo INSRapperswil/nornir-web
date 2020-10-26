@@ -25,7 +25,7 @@ test_frontend:
     - yarn test
 
 deploy_frontend:
-  stage: deploy_backend
+  stage: deploy_frontend
   only:
     - master
   script:
