@@ -1,0 +1,40 @@
+spine1:
+  hostname: 10.20.0.201
+  port: 22
+  username: cisco
+  password: cisco
+  platform: ios
+  groups:
+    - spine
+spine2:
+  hostname: 10.20.0.202
+  port: 22
+  username: cisco
+  password: cisco
+  platform: ios
+  groups:
+    - spine
+leaf1:
+  hostname: 10.20.0.203
+  port: 22
+  username: cisco
+  password: cisco
+  platform: ios
+  groups:
+    - leaf
+leaf2:
+  hostname: 10.20.0.204
+  port: 22
+  username: cisco
+  password: cisco
+  platform: ios
+  groups:
+    - leaf
+leaf3:
+  hostname: 10.20.0.205
+  port: 22
+  username: cisco
+  password: cisco
+  platform: ios
+  groups:
+    - leaf
