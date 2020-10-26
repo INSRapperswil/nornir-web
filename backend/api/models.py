@@ -92,7 +92,7 @@ class Task(models.Model):
         self.start()
         self.variables['name'] = self.name
         self.save()
-        task_result: AggregatedResult = nr.execute_task(self.template, self.variables, self.filters)
+        task_result = nr.execute_task(self.template, self.variables, self.filters)
         self.finish(task_result)
         self.save()
 
@@ -101,8 +101,9 @@ class Task(models.Model):
         self.date_started = timezone.now()
 
     def finish(self, result):
-        self.result: dict = result.__dict__
-        if result.failed:
+        self.result = result
+
+        if result['failed']:
             self.status = self.Status.FAILED
         else:
             self.status = self.Status.FINISHED

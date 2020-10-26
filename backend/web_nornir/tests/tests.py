@@ -13,7 +13,7 @@ class TestWebNornir:
         assert len(list(filter(lambda x: x['name'] == 'hello_test', result))) > 0
 
     def test_get_job_function(self):
-        result = self.jd.get_job_function('hello_test', 'job_function')
+        result = self.jd.get_job_function('hello_test.py', 'job_function')
         assert callable(result)
 
     def test_get_job_function_with_invalid_file_name(self):
