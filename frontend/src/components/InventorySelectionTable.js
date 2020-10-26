@@ -15,20 +15,14 @@ const headCells = [
   { id: 'platform', numeric: false, label: 'Platform' },
 ];
 
-const rows = [
-  { name: 'example.cmh', hostname: '127.0.0.1', port: '3000', groups: [], data: {}, platform: 'linux' },
-];
-
 function InventorySelectionTable({ token, task, updateTaskWizard }) {
   let [inventory, setInventory] = useState([]);
-  let [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (inventory.length === 0) {
       getInventoryHosts(token, "1").then((response) => {
         response.forEach((item, id) => item.id = id);
         setInventory(response);
-        setLoading(false);
       });
     }
   }, [inventory, setInventory, token]);
@@ -39,7 +33,12 @@ function InventorySelectionTable({ token, task, updateTaskWizard }) {
 
   return (
     <div id="inventory-selection-table">
-      <EnhancedTable rows={inventory} headCells={headCells} selected={task.filters} setSelected={handleSelectionChange}/>
+      <EnhancedTable
+        rows={inventory}
+        headCells={headCells}
+        selectionKey="hostname"
+        selected={task.filters}
+        setSelected={handleSelectionChange}/>
     </div>
   );
 }

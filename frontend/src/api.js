@@ -17,7 +17,7 @@ export function getTask(token, id) {
 }
 
 export function postTask(token, task) {
-  return postAuthenticatedJson('/api/tasks/', token).then(parseJson);
+  return postAuthenticatedJson('/api/tasks/', token, task).then(parseJson);
 }
 
 export function createTask(token, params) {

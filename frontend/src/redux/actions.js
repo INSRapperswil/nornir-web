@@ -24,13 +24,18 @@ export function fetchUser() {
   };
 }
 
-export function postTaskWizard(task) {
+export function postTaskWizard() {
   return (dispatch, getState) => {
     dispatch({ type: "POST_TASK_WIZARD_STARTED" });
 
-    return api.postTask(getState().user.token, task)
+    let task = getState().taskWizard.task;
+    task.template = task.template.id;
+    if(!task.date_scheduled) {
+      delete task.date_scheduled;
+    }
+    return api.postTask(getState().user.token, getState().taskWizard.task)
     .then(({ result: task }) => {
-      dispatch({ type: "POST_TASK_WIZARD_SUCCEEDED", task })
+      dispatch({ type: "POST_TASK_WIZARD_SUCCEEDED", task: {} })
     })
     .catch((error) => dispatch({ type: "POST_TASK_WIZARD_FAILED", error }));
   };

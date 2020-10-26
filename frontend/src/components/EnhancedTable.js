@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  Table, TableHead, TableRow, TableCell, TableSortLabel, TableBody,
+  Table, TableHead, TableRow, TableCell, TableBody,
   TableContainer,
   Checkbox, Paper,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 function EnhancedTableHead(props) {
-  const { headCells, classes, onSelectAllClick, numSelected, rowCount } = props;
+  const { headCells, onSelectAllClick, numSelected, rowCount } = props;
 
   return (
     <TableHead>
@@ -26,7 +26,7 @@ function EnhancedTableHead(props) {
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'default'}
           >
-              {headCell.label}
+            {headCell.label}
           </TableCell>
         ))}
       </TableRow>
@@ -46,18 +46,18 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 750,
   },
 }));
-export default function EnhancedTable({ headCells, rows, dense, selected, setSelected }) {
+export default function EnhancedTable({ headCells, rows, dense, selectionKey, selected, setSelected }) {
   const classes = useStyles();
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.name);
+      const newSelecteds = rows.map((n) => n[selectionKey]);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
+  const handleCheckboxClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
 
@@ -98,17 +98,17 @@ export default function EnhancedTable({ headCells, rows, dense, selected, setSel
             />
             <TableBody>
               {rows.map((row, index) => {
-                  const isItemSelected = isSelected(row.name);
+                  const isItemSelected = isSelected(row[selectionKey]);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.name)}
+                      onClick={(event) => handleCheckboxClick(event, row[selectionKey])}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.name}
+                      key={row[selectionKey]}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
