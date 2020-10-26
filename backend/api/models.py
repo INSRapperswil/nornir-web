@@ -12,7 +12,7 @@ from backend.settings import BASE_DIR
 
 class JobTemplate(models.Model):
     name = models.CharField(max_length=200)
-    description = models.TextField(null=True)
+    description = models.TextField(blank=True, null=True)
     package_path = models.CharField(max_length=256, default='/web_nornir/job_templates/')
     file_name = models.CharField(max_length=256)
     function_name = models.CharField(max_length=256, default='job_function')
@@ -60,10 +60,10 @@ class Task(models.Model):
     date_scheduled = models.DateTimeField('Date Scheduled', null=True)
     date_started = models.DateTimeField('Date Started', null=True)
     date_finished = models.DateTimeField('Date Finished', null=True)
-    variables = models.JSONField(default=dict, null=True)
-    filters = models.JSONField(default=dict, null=True)
-    result_host_selection = models.TextField(null=True)
-    result = models.JSONField(default=dict, null=True)
+    variables = models.JSONField(default=dict, blank=True, null=True)
+    filters = models.JSONField(default=dict, blank=True, null=True)
+    result_host_selection = models.TextField(blank=True, null=True)
+    result = models.JSONField(default=dict, blank=True, null=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     template = models.ForeignKey(JobTemplate, on_delete=models.SET_NULL, null=True)
     inventory = models.ForeignKey(Inventory, on_delete=models.SET_NULL, null=True)
