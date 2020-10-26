@@ -61,6 +61,7 @@ const initialTaskWizardState = () => {
       template: { id: 0, },
       inventory: 1,
     },
+    lastCreatedTaskId: 0,
     isLoading: false,
     error: null,
   }
@@ -71,7 +72,7 @@ function taskWizard(state = initialTaskWizardState(), action) {
     case "POST_TASK_WIZARD_STARTED":
       return { ...state, isLoading: true, error: null };
     case "POST_TASK_WIZARD_SUCCEEDED":
-      return initialTaskWizardState();
+      return { ...initialTaskWizardState(), lastCreatedTaskId: action.lastCreatedTaskId };
     case "UPDATE_TASK_WIZARD":
       return { ...state, isLoading: false, task: action.task };
     case "POST_TASK_WIZARD_FAILED":

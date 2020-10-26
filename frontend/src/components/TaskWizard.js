@@ -3,42 +3,16 @@ import { connect } from 'react-redux';
 import { getTaskWizard } from '../redux/reducers';
 import { updateTaskWizard, postTaskWizard } from '../redux/actions';
 import { Stepper, Step, StepLabel, Button } from '@material-ui/core';
-import InventorySelectionTable from '../components/InventorySelectionTable';
-import JobTemplatesSelectionTable from '../components/JobTemplatesSelectionTable';
-import VariableSetter from '../components/VariableSetter';
-import FinishTask from '../components/FinishTask';
 
-
-function TaskWizard({ task, postTaskWizard }) {
+function TaskWizard({ task, getSteps, postTaskWizard }) {
   const [activeStep, setActiveStep] = useState(0);
   const [stepValid, setStepValid] = useState(false);
-  const steps = [
-    {
-      label: 'Select Inventory',
-      component: <InventorySelectionTable setStepValid={setStepValid}/>,
-      completed: false,
-    },
-    {
-      label: 'Select Template',
-      component: <JobTemplatesSelectionTable setStepValid={setStepValid}/>,
-      completed: false,
-    },
-    {
-      label: 'Set Variables',
-      component: <VariableSetter setStepValid={setStepValid}/>,
-      completed: false,
-    },
-    {
-      label: 'Finish',
-      component: <FinishTask setStepValid={setStepValid}/>,
-      completed: false,
-    },
-  ];
+  const steps = getSteps(setStepValid);
 
   const handleFinish = (event) => {
     postTaskWizard();
     handleNext(event);
-  }
+  };
   const handleNext = (event) => {
     setStepValid(false);
     setActiveStep(activeStep + 1);

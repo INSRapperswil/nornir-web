@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import JobTemplatesSelectionTable from '../components/JobTemplatesSelectionTable';
-import { Button } from '@material-ui/core';
+import React from 'react';
 import InventorySelectionTable from '../components/InventorySelectionTable';
+import JobTemplatesSelectionTable from '../components/JobTemplatesSelectionTable';
 import VariableSetter from '../components/VariableSetter';
 import FinishTask from '../components/FinishTask';
 import TaskWizard from '../components/TaskWizard';
@@ -11,6 +10,11 @@ function getSteps(setStepValid) {
     {
       label: 'Select Inventory',
       component: <InventorySelectionTable setStepValid={setStepValid}/>,
+      completed: false,
+    },
+    {
+      label: 'Select Template',
+      component: <JobTemplatesSelectionTable setStepValid={setStepValid}/>,
       completed: false,
     },
     {
@@ -26,22 +30,12 @@ function getSteps(setStepValid) {
   ];
 }
 
-function JobTemplates() {
-  let [stepValid, setStepValid] = useState(false);
-  let [runTaskWizard, setRunTaskWizard] = useState(false);
-
-  const handleRunOnSelection = () => {
-    setRunTaskWizard(true);
-  };
-
+function TaskWizardPage() {
   return (
-    <div id="job-templates">
-      <h1>Job Templates</h1>
-      <Button onClick={handleRunOnSelection} disabled={!stepValid}>Run on Selection</Button>
-      { runTaskWizard ? <TaskWizard getSteps={getSteps} /> :
-      <JobTemplatesSelectionTable setStepValid={setStepValid}/> }
+    <div>
+      <TaskWizard getSteps={getSteps}/>
     </div>
   );
 }
 
-export default JobTemplates;
+export default TaskWizardPage;
