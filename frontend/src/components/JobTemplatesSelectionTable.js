@@ -44,7 +44,11 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
             </TableHead>
             <TableBody>
               {templates.map((value, index) => (
-                <TableRow key={index}>
+                <TableRow
+                  hover
+                  onClick={(event) => handleSelectionChange({ target: { value: value.id } })}
+                  selected={value.id === task.template.id}
+                  key={index}>
                   <TableCell padding="checkbox">
                     <FormControlLabel value={value.id} control={<Radio/>}/>
                   </TableCell>
