@@ -2,24 +2,42 @@ import React from 'react';
 import { getTaskWizard, getToken } from '../redux/reducers';
 import { updateTaskWizard } from '../redux/actions';
 import { connect } from 'react-redux';
+import { Table, TableRow, TableCell, Paper } from '@material-ui/core';
 
 function FinishTask({ token, task, updateTaskWizard }) {
   return (
     <div id="finish-task">
       <h2>Task Overview</h2>
-      <p><strong>Name:</strong></p>
-      <p>{task.name}</p>
-      <p><strong>Scheduled: </strong></p> 
-      { task.date_scheduled ?
-        <p>{new Date(task.date_scheduled).toLocaleString()}</p> :
-        <p>run now</p>
-      }
-      <p><strong>Template:</strong></p>
-      <p>{task.template.name}</p>
-      <p><strong>Hosts:</strong></p>
-      {task.filters.map(item => {
-        return <p key={item}>hostname: {item}</p>
-      })}
+      <Paper style={{ maxWidth: 600, marginBottom: 20 }}>
+      <Table>
+        <TableRow>
+          <TableCell><strong>Name:</strong></TableCell>
+          <TableCell>{task.name}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell><strong>Scheduled:</strong></TableCell>
+          <TableCell>
+            { 
+              task.date_scheduled ?
+              <p>{new Date(task.date_scheduled).toLocaleString()}</p> :
+              <p>run now</p>
+            }   
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell><strong>Template:</strong></TableCell>
+          <TableCell>{task.template.name}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell><strong>Hosts:</strong></TableCell>
+          <TableCell>
+            {task.filters.map(item => {
+              return <p key={item}>hostname: {item}</p>
+            })}
+          </TableCell>
+        </TableRow>
+      </Table>
+      </Paper>
     </div>
   );
 }
