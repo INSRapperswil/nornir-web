@@ -56,7 +56,7 @@ const initialTaskWizardState = () => {
     task: {
       name: '',
       date_scheduled: '',
-      variables: {},
+      variables: [],
       filters: [],
       template: { id: 0, },
       inventory: 1,

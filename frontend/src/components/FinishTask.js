@@ -1,10 +1,9 @@
 import React from 'react';
 import { getTaskWizard, getToken } from '../redux/reducers';
-import { updateTaskWizard } from '../redux/actions';
 import { connect } from 'react-redux';
 import { Table, TableRow, TableCell, Paper } from '@material-ui/core';
 
-function FinishTask({ token, task, updateTaskWizard }) {
+function FinishTask({ task }) {
   return (
     <div id="finish-task">
       <h2>Task Overview</h2>
@@ -45,11 +44,7 @@ function FinishTask({ token, task, updateTaskWizard }) {
 const mapStateToProps = (state) => {
   return {
     task: getTaskWizard(state),
-    token: getToken(state),
   };
 };
-const mapDispatchToProps = {
-  updateTaskWizard,
-};
 
-export default connect(mapStateToProps, mapDispatchToProps)(FinishTask);
+export default connect(mapStateToProps)(FinishTask);
