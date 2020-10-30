@@ -63,7 +63,7 @@ class NornirHandler:
     def execute_task(self, job_template, params: dict, filter_arguments: dict) -> dict:
         jd = JobDiscovery(job_template.get_package_path())
         hosts = filter_arguments.pop('hosts', None)
-        selection = self.nr.filter(F(hosts_any=hosts)) if hosts else self.nr
+        selection = self.nr.filter(F(hosts__any=hosts)) if hosts else self.nr
         selection = selection.filter(**filter_arguments)
         params_copy = params.copy()
         params_copy['task'] = jd.get_job_function(job_template.file_name, job_template.function_name)
