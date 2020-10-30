@@ -41,6 +41,10 @@ class Inventory(models.Model):
         nh = NornirHandler(self.hosts_file, self.groups_file)
         return nh.get_hosts()
 
+    def get_host_detail(self, name):
+        nh = NornirHandler(self.hosts_file, self.groups_file)
+        return nh.get_host_detail(name)
+
     def get_groups(self):
         nh = NornirHandler(self.hosts_file, self.groups_file)
         return nh.get_groups()

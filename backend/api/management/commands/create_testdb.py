@@ -32,10 +32,10 @@ class Command(BaseCommand):
         support.user_set.add(stefan)
 
         print('----    Creating Inventory    ----')
-        models.Inventory.objects.create(name='Example', hosts_file='web_nornir/nornir_config/example_config/hosts.yml',
-                                        groups_file='web_nornir/nornir_config/example_config/groups.yml', type=1)
-        models.Inventory.objects.create(name='INS Lab', hosts_file='web_nornir/nornir_config/inslab_config/hosts.yml',
-                                        groups_file='web_nornir/nornir_config/inslab_config/groups.yml', type=1)
+        models.Inventory.objects.create(name='Example', hosts_file='web_nornir/nornir_config/example_config/hosts.yaml',
+                                        groups_file='web_nornir/nornir_config/example_config/groups.yaml', type=1)
+        models.Inventory.objects.create(name='INS Lab', hosts_file='web_nornir/nornir_config/inslab_config/hosts.yaml',
+                                        groups_file='web_nornir/nornir_config/inslab_config/groups.yaml', type=1)
 
         print('----    Creating Job Templates    ----')
         models.JobTemplate.objects.create(name='hello_world', description='This prints a hello world',
