@@ -1,6 +1,7 @@
 import yaml
 from nornir import InitNornir
 from nornir.core.task import AggregatedResult
+from nornir.core.filter import F
 from pathlib import Path
 
 from .job_discovery import JobDiscovery
@@ -61,7 +62,9 @@ class NornirHandler:
 
     def execute_task(self, job_template, params: dict, filter_arguments: dict) -> dict:
         jd = JobDiscovery(job_template.get_package_path())
-        selection = self.nr.filter(**filter_arguments)
+        hosts = filter_arguments.pop('hosts', None)
+        selection = self.nr.filter(F(hosts_any=hosts)) if hosts else self.nr
+        selection = selection.filter(**filter_arguments)
         params_copy = params.copy()
         params_copy['task'] = jd.get_job_function(job_template.file_name, job_template.function_name)
         result = selection.run(**params_copy)

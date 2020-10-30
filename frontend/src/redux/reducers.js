@@ -56,8 +56,8 @@ const initialTaskWizardState = () => {
     task: {
       name: '',
       date_scheduled: '',
-      variables: [],
-      filters: [],
+      variables: {},
+      filters: { hosts: [] },
       template: { id: 0, },
       inventory: 1,
     },
@@ -94,8 +94,12 @@ export function getTasks(state) {
   return state.tasks.tasks;
 }
 
-export function getTaskWizard(state) {
+export function getWizardTask(state) {
   return state.taskWizard.task;
+}
+
+export function getWizard(state) {
+  return state.taskWizard;
 }
 
 export function getToken(state) {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { updateTaskWizard } from '../redux/actions';
-import { getTaskWizard, getToken } from '../redux/reducers';
+import { getWizardTask, getToken } from '../redux/reducers';
 import { getJobTemplates } from '../api';
 import {
   RadioGroup, Radio,
@@ -70,7 +70,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
 
 const mapStateToProps = (state) => {
   return {
-    task: getTaskWizard(state),
+    task: getWizardTask(state),
     token: getToken(state),
   };
 };

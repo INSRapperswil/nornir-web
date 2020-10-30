@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Button, Checkbox, TextField, FormControlLabel,
 } from '@material-ui/core';
-import { getTaskWizard, getToken } from '../redux/reducers';
+import { getWizardTask, getToken } from '../redux/reducers';
 import { updateTaskWizard } from '../redux/actions';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,7 +12,8 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexWrap: 'wrap',
     flexDirection: 'column',
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
+    marginBottom: 10,
   },
   textField: {
     marginBottom: theme.spacing(1),
@@ -40,6 +41,9 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
       date_scheduled: '',
       variables: {},
     };
+    for (let variable of task.template.variables) {
+      taskAttr.variables[variable] = target[variable].value;
+    }
     if(!runNow) {
       const scheduledDate = new Date(target['scheduled-date'].value + 'T' + target['scheduled-time'].value);
       taskAttr.date_scheduled = scheduledDate.toUTCString();
@@ -47,7 +51,7 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
     updateTaskWizard(taskAttr);
     setStepValid(taskAttr.name !== '');
   };
-  
+
   const handleCheckedChange = (event) => setRunNow(event.target.checked);
   const getDefaultDate = () => {
     const now = new Date();
@@ -88,6 +92,16 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
           disabled={runNow}
           variant="outlined"
           label="Time Scheduled"/>
+        {
+          task.template.variables.map((variable) => {
+            return <TextField
+              key={variable}
+              id={variable}
+              className={classes.textField}
+              variant="outlined"
+              label={variable}/>
+          })
+        }
         <Button type="submit" variant="contained">Save</Button>
       </form>
     </div>
@@ -96,7 +110,7 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
 
 const mapStateToProps = (state) => {
   return {
-    task: getTaskWizard(state),
+    task: getWizardTask(state),
     token: getToken(state),
   };
 };

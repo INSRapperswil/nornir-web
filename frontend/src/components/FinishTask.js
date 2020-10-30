@@ -1,5 +1,5 @@
 import React from 'react';
-import { getTaskWizard, getToken } from '../redux/reducers';
+import { getWizardTask, getToken } from '../redux/reducers';
 import { connect } from 'react-redux';
 import { Table, TableRow, TableCell, Paper, TableBody } from '@material-ui/core';
 
@@ -29,9 +29,17 @@ function FinishTask({ task }) {
               <TableCell>{task.template.name}</TableCell>
             </TableRow>
             <TableRow>
+              <TableCell><strong>Variables:</strong></TableCell>
+              <TableCell>
+                {Object.keys(task.variables).map(item => {
+                  return <p key={item}>{item}: {task.variables[item]}</p>
+                })}
+              </TableCell>
+            </TableRow>
+            <TableRow>
               <TableCell><strong>Hosts:</strong></TableCell>
               <TableCell>
-                {task.filters.map(item => {
+                {task.filters.hosts.map(item => {
                   return <p key={item}>hostname: {item}</p>
                 })}
               </TableCell>
@@ -45,7 +53,7 @@ function FinishTask({ task }) {
 
 const mapStateToProps = (state) => {
   return {
-    task: getTaskWizard(state),
+    task: getWizardTask(state),
   };
 };
 

@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
-from nornir.core.task import AggregatedResult
 from web_nornir.nornir_handler import NornirHandler
 from celery import shared_task
 from backend.settings import BASE_DIR
@@ -13,6 +12,7 @@ from backend.settings import BASE_DIR
 class JobTemplate(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
+    variables = models.JSONField(default=list, blank=True, null=True)
     package_path = models.CharField(max_length=256, default='/web_nornir/job_templates/')
     file_name = models.CharField(max_length=256)
     function_name = models.CharField(max_length=256, default='job_function')

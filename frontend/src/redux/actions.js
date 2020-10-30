@@ -34,8 +34,9 @@ export function postTaskWizard() {
       delete task.date_scheduled;
     }
     return api.postTask(getState().user.token, getState().taskWizard.task)
-    .then(({ result: task }) => {
-      dispatch({ type: "POST_TASK_WIZARD_SUCCEEDED", lastCreatedTaskId: task.id })
+    .then((result) => {
+      dispatch({ type: "POST_TASK_WIZARD_SUCCEEDED", lastCreatedTaskId: result.id })
+      return result.id;
     })
     .catch((error) => dispatch({ type: "POST_TASK_WIZARD_FAILED", error }));
   };

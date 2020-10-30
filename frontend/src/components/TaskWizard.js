@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { getTaskWizard } from '../redux/reducers';
+import { getWizardTask, getWizard, getToken } from '../redux/reducers';
 import { updateTaskWizard, postTaskWizard } from '../redux/actions';
 import { Stepper, Step, StepLabel, Button } from '@material-ui/core';
+import { runTask } from '../api';
 
-function TaskWizard({ task, getSteps, postTaskWizard }) {
+function TaskWizard({ task, getSteps, postTaskWizard, wizard, token }) {
   const [activeStep, setActiveStep] = useState(0);
   const [stepValid, setStepValid] = useState(false);
   const steps = getSteps(setStepValid);
 
   const handleFinish = (event) => {
-    postTaskWizard();
+    postTaskWizard().then(result => {
+      runTask(token, result);
+    })
     handleNext(event);
   };
   const handleNext = (event) => {
@@ -38,14 +41,16 @@ function TaskWizard({ task, getSteps, postTaskWizard }) {
       { activeStep !== 0 && activeStep < steps.length ? <Button onClick={handleBack}>Back</Button> : '' }
       { activeStep < steps.length-1 ? <Button onClick={handleNext} disabled={!stepValid}>Next</Button> : '' }
       { activeStep === steps.length-1 ? <Button onClick={handleFinish}>Finish</Button> : '' }
-      { activeStep < steps.length ? steps[activeStep].component : <h2>Task Details: {task.date_started}</h2> }
+      { activeStep < steps.length ? steps[activeStep].component : <h2>Task Details: {wizard.lastCreatedTaskId}</h2> }
     </div>
   );
 }
 
 const mapStateToProps = (state) => {
   return {
-    task: getTaskWizard(state),
+    task: getWizardTask(state),
+    wizard: getWizard(state),
+    token: getToken(state),
   };
 };
 const mapDispatchToProps = {

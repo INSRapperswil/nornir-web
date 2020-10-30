@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getTaskWizard, getToken } from '../redux/reducers';
+import { getWizardTask, getToken } from '../redux/reducers';
 import { updateTaskWizard } from '../redux/actions';
 import { connect } from 'react-redux';
 import { getInventoryHosts } from '../api';
@@ -33,7 +33,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
   }, [inventory, setInventory, token, task, setStepValid]);
 
   const handleSelectionChange = (params) => {
-    updateTaskWizard({ filters: params });
+    updateTaskWizard({ filters: { hosts: params } });
     const valid = checkStepValidity(params);
     setStepValid(valid);
   }
@@ -43,8 +43,8 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
       <EnhancedTable
         rows={inventory}
         headCells={headCells}
-        selectionKey="hostname"
-        selected={task.filters}
+        selectionKey="name"
+        selected={task.filters.hosts}
         setSelected={handleSelectionChange}/>
     </div>
   );
@@ -52,7 +52,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
 
 const mapStateToProps = (state) => {
   return {
-    task: getTaskWizard(state),
+    task: getWizardTask(state),
     token: getToken(state),
   };
 };

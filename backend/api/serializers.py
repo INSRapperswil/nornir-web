@@ -38,6 +38,7 @@ class JobTemplateSerializer(serializers.ModelSerializer):
             'detail',
             'name',
             'description',
+            'variables',
             'file_name',
             'package_path',
             'function_name',
