@@ -4,12 +4,13 @@ import web_nornir.job_templates
 
 
 class JobDiscovery:
-    def __init__(self, module: str=None):
+    def __init__(self, module: str = None):
         if module is None:
-            self.module_path = web_nornir.job_templates.__path__
+            self.module_path = web_nornir.job_templates.__path__[0]
         else:
             self.module_path = module
 
+    # obsolete?
     def get_job_definitions(self):
         job_definitions = []
         for job in pkgutil.walk_packages([self.module_path]):
