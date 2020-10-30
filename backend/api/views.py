@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.models import Task, JobTemplate, Inventory, Configuration
+from api.permissions import ConfigurationPermission
 from api.serializers import TaskSerializer, JobTemplateSerializer, InventorySerializer, UserSerializer
 
 
@@ -72,6 +73,9 @@ class ConfigurationView(viewsets.ViewSet):
     """
     Shows the global Nornir configuration and allows to set the configuration
     """
+
+    permission_classes = [ConfigurationPermission]
+
     def list(self, request, format=None):
         configuration = Configuration.get()
         return Response(configuration)
