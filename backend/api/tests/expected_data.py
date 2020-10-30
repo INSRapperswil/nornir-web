@@ -4,16 +4,16 @@ expected_inventory_list = [
         "detail": "http://testserver/api/inventories/1/",
         "name": "Example",
         "type": 1,
-        "hosts_file": "web_nornir/nornir_config/example_config/hosts.yml",
-        "groups_file": "web_nornir/nornir_config/example_config/groups.yml"
+        "hosts_file": "web_nornir/nornir_config/example_config/hosts.yaml",
+        "groups_file": "web_nornir/nornir_config/example_config/groups.yaml"
     },
     {
         "id": 2,
         "detail": "http://testserver/api/inventories/2/",
         "name": "INS Lab",
         "type": 1,
-        "hosts_file": "web_nornir/nornir_config/inslab_config/hosts.yml",
-        "groups_file": "web_nornir/nornir_config/inslab_config/groups.yml"
+        "hosts_file": "web_nornir/nornir_config/inslab_config/hosts.yaml",
+        "groups_file": "web_nornir/nornir_config/inslab_config/groups.yaml"
     }
 ]
 

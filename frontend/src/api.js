@@ -12,6 +12,10 @@ export function getInventoryHosts(token, inventoryId) {
   return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts/`, token).then(parseJson);
 }
 
+export function getHostDetails(token, inventoryId, friendly_name) {
+  return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts/${friendly_name}`, token).then(parseJson);
+}
+
 export function getTask(token, id) {
   return getAuthenticatedJson(`/api/tasks/${id}/`, token).then(parseJson);
 }
@@ -43,13 +47,6 @@ function getAuthenticatedJson(endpoint, token) {
       Authorization: `Token ${token}`,
       Accept: "application/json"
     }
-  }).then(checkStatus);
-}
-
-function getJson(endpoint) {
-  return fetch(`${backend}${endpoint}`, {
-    method: "GET",
-    Accept: "application/json"
   }).then(checkStatus);
 }
 
