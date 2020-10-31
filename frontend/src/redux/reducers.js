@@ -59,7 +59,7 @@ const initialTaskWizardState = () => {
       variables: {},
       filters: { hosts: [] },
       template: { id: 0, },
-      inventory: 1,
+      inventory: 2,
     },
     lastCreatedTaskId: 0,
     isLoading: false,

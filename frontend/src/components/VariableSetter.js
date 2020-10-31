@@ -93,14 +93,14 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
           variant="outlined"
           label="Time Scheduled"/>
         {
-          task.template.variables.map((variable) => {
+          Array.isArray(task.template.variables) ? task.template.variables.map((variable) => {
             return <TextField
               key={variable}
               id={variable}
               className={classes.textField}
               variant="outlined"
               label={variable}/>
-          })
+          }) : ''
         }
         <Button type="submit" variant="contained">Save</Button>
       </form>

@@ -24,7 +24,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
 
   useEffect(() => {
     if (inventory.length === 0) {
-      getInventoryHosts(token, "1").then((response) => {
+      getInventoryHosts(token, task.inventory).then((response) => {
         response.forEach((item, id) => item.id = id);
         setInventory(response);
         setStepValid(checkStepValidity(task.filters));

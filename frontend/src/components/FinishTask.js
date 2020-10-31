@@ -40,7 +40,7 @@ function FinishTask({ task }) {
               <TableCell><strong>Hosts:</strong></TableCell>
               <TableCell>
                 {task.filters.hosts.map(item => {
-                  return <p key={item}>hostname: {item}</p>
+                  return <p key={item}>host: {item}</p>
                 })}
               </TableCell>
             </TableRow>
