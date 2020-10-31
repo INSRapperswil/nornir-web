@@ -4,6 +4,7 @@ import { updateTaskWizard } from '../redux/actions';
 import { connect } from 'react-redux';
 import { getInventoryHosts } from '../api';
 import { EnhancedTable } from './EnhancedTable';
+import InventoryHostDetail from './InventoryHostDetail';
 
 
 const headCells = [
@@ -11,7 +12,6 @@ const headCells = [
   { id: 'hostname', numeric: false, label: 'Hostname' },
   { id: 'port', numeric: false, label: 'Port' },
   { id: 'groups', numeric: false, label: 'Groups', getValue: (value) => JSON.stringify(value) },
-  { id: 'data', numeric: false, label: 'Data-Attributes', getValue: (value) => JSON.stringify(value) },
   { id: 'platform', numeric: false, label: 'Platform' },
 ];
 
@@ -21,6 +21,10 @@ function checkStepValidity(filters) {
 
 function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }) {
   let [inventory, setInventory] = useState([]);
+
+  const detailComponentFunction = (name) => {
+    return <InventoryHostDetail inventoryId={task.inventory} name={name} />
+  }
 
   useEffect(() => {
     if (inventory.length === 0) {
@@ -45,7 +49,8 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
         headCells={headCells}
         selectionKey="name"
         selected={task.filters.hosts}
-        setSelected={handleSelectionChange}/>
+        setSelected={handleSelectionChange}
+        detailComponentFunction={detailComponentFunction}/>
     </div>
   );
 }

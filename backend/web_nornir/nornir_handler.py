@@ -1,5 +1,6 @@
 import yaml
 from nornir import InitNornir
+from nornir.core.inventory import Host
 from nornir.core.task import AggregatedResult
 from nornir.core.filter import F
 from pathlib import Path
@@ -25,40 +26,21 @@ class NornirHandler:
                                                 'group_file': 'web_nornir/nornir_config/example_config/groups.yaml'
                                             }}, )
 
-    def get_hosts(self):
+    def get_hosts(self) -> list:
         hosts = []
-        for host in self.nr.inventory.hosts:
-            host_data = self.nr.inventory.hosts[host].dict()
-            host_data.pop('connection_options', None)
-            host_data.pop('username', None)
-            host_data.pop('password', None)
-            hosts.append(host_data)
-
+        for name in self.nr.inventory.hosts:
+            hosts.append(self.get_host_detail(name))
         return hosts
 
-    def get_groups(self):
+    def get_host_detail(self, name: str) -> dict:
+        try:
+            host = self.nr.inventory.hosts[name]
+            return self.format_host(host)
+        except KeyError:
+            raise LookupError
+
+    def get_groups(self) -> dict:
         return self.nr.inventory.groups
-
-    @staticmethod
-    def get_job_template_definitions(package_path=None):
-        return JobDiscovery(package_path).get_job_definitions()
-
-    @staticmethod
-    def format_result(aggregated_result: AggregatedResult) -> dict:
-        result = {
-            'failed': aggregated_result.failed,
-            'hosts': []
-        }
-
-        for host_results in aggregated_result:
-            host_dict = {
-                'hostname': aggregated_result[host_results].host.hostname,
-                'failed': aggregated_result[host_results].failed,
-                'result': f'{aggregated_result[host_results].result[0]}'
-            }
-            result['hosts'].append(host_dict)
-
-        return result
 
     def execute_task(self, job_template, params: dict, filter_arguments: dict) -> dict:
         filter_arguments_copy = filter_arguments.copy()
@@ -70,6 +52,53 @@ class NornirHandler:
         params_copy['task'] = jd.get_job_function(job_template.file_name, job_template.function_name)
         result = selection.run(**params_copy)
         return self.format_result(result)
+
+    @staticmethod
+    def get_job_template_definitions(package_path=None):
+        return JobDiscovery(package_path).get_job_definitions()
+
+    @staticmethod
+    def format_host(nornir_host: Host) -> dict:
+        # remove unwanted or critical properties
+        host = nornir_host.dict()
+        host.pop('connection_options', None)
+        host.pop('username', None)
+        host.pop('password', None)
+        host.pop('data', None)
+
+        # add hierarchical data attributes.
+        # basically copied from protected method _resolve_data in Host(InventoryElement)
+        processed = []
+        data = {}
+        for k, v in nornir_host.data.items():
+            processed.append(k)
+            data[k] = v
+        for g in nornir_host.groups:
+            for k, v in g.items():
+                if k not in processed:
+                    processed.append(k)
+                    data[k] = v
+
+        host.update({'data': data})
+        return host
+
+    @staticmethod
+    def format_result(aggregated_result: AggregatedResult) -> dict:
+        result = {
+            'failed': aggregated_result.failed,
+            'hosts': []
+        }
+
+        for host_results in aggregated_result:
+            host_dict = {
+                'hostname': aggregated_result[host_results].host.hostname,
+                'name': aggregated_result[host_results].host.name,
+                'failed': aggregated_result[host_results].failed,
+                'result': f'{aggregated_result[host_results].result[0]}'
+            }
+            result['hosts'].append(host_dict)
+
+        return result
 
     @staticmethod
     def get_configuration() -> dict:

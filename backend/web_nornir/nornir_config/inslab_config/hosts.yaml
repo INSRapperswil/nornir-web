@@ -4,6 +4,8 @@ spine1:
   username: cisco
   password: cisco
   platform: ios
+  data:
+    protocol: isis
   groups:
     - spine
 spine2:
@@ -12,6 +14,8 @@ spine2:
   username: cisco
   password: cisco
   platform: ios
+  data:
+    protocol: isis
   groups:
     - spine
 leaf1:

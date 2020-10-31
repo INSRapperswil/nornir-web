@@ -10,19 +10,18 @@ function NavTabs({ paths, history, isAuthenticated, props }) {
   }
 
   return (
-    <Tabs value={history.location.pathname} 
-          onChange={handleCallToRouter} 
-          aria-label="page menu">
+    <Tabs value={history.location.pathname}
+      onChange={handleCallToRouter}
+      aria-label="page menu">
       {paths.map((path) => {
-        if(isAuthenticated) {
-          if(path.value !== '/login') {
+        if (isAuthenticated) {
+          if (path.value !== '/login') {
             return (<Tab label={path.label} value={path.value} key={path.value} />);
           }
-        } else if(!path.protected) {
+        } else if (!path.protected) {
           return (<Tab label={path.label} value={path.value} key={path.value} />);
-        } else {
-          return '';
         }
+        return '';
       })}
     </Tabs>
   );

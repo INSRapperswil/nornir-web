@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  Table, TableHead, TableRow, TableCell, TableBody,
-  TableContainer,
-  Checkbox, Paper,
+  Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
+  Checkbox, Paper, Typography, Collapse, Box, IconButton,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
 function EnhancedTableHead(props) {
   const { headCells, onSelectAllClick, numSelected, rowCount } = props;
@@ -29,6 +30,7 @@ function EnhancedTableHead(props) {
             {headCell.label}
           </TableCell>
         ))}
+        <TableCell></TableCell>
       </TableRow>
     </TableHead>
   );
@@ -46,8 +48,17 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 750,
   },
 }));
-export default function EnhancedTable({ headCells, rows, dense, selectionKey, selected, setSelected }) {
+export default function EnhancedTable({
+  headCells,
+  rows,
+  dense,
+  selectionKey,
+  selected,
+  setSelected,
+  detailComponentFunction,
+}) {
   const classes = useStyles();
+  let [opened, setOpened] = useState([]);
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
       const newSelecteds = rows.map((n) => n[selectionKey]);
@@ -57,26 +68,37 @@ export default function EnhancedTable({ headCells, rows, dense, selectionKey, se
     setSelected([]);
   };
 
-  const handleCheckboxClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleSelection = (items, name) => {
+    const selectedIndex = items.indexOf(name);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(items, name);
     } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
+      newSelected = newSelected.concat(items.slice(1));
+    } else if (selectedIndex === items.length - 1) {
+      newSelected = newSelected.concat(items.slice(0, -1));
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        items.slice(0, selectedIndex),
+        items.slice(selectedIndex + 1),
       );
     }
+    return newSelected;
+  }
+
+  const handleCheckboxClick = (event, name) => {
+    const newSelected = handleSelection(selected, name);
     setSelected(newSelected);
   };
 
+  const setOpen = (event, name) => {
+    const newOpened = handleSelection(opened, name);
+    setOpened(newOpened);
+  }
+
   const isSelected = (name) => selected.indexOf(name) !== -1;
+  const isOpen = (name) => opened.indexOf(name) !== -1;
 
   return (
     <div className={classes.root}>
@@ -99,16 +121,17 @@ export default function EnhancedTable({ headCells, rows, dense, selectionKey, se
             <TableBody>
               {rows.map((row, index) => {
                   const isItemSelected = isSelected(row[selectionKey]);
+                  const isItemOpen = isOpen(row[selectionKey]);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
+                    <React.Fragment key={row[selectionKey]}>
                     <TableRow
                       hover
-                      onClick={(event) => handleCheckboxClick(event, row[selectionKey])}
+                      // onClick={(event) => handleCheckboxClick(event, row[selectionKey])}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row[selectionKey]}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
@@ -128,7 +151,34 @@ export default function EnhancedTable({ headCells, rows, dense, selectionKey, se
                           </TableCell>
                         )
                       })}
+                      { detailComponentFunction ? 
+                      <TableCell>
+                        <IconButton
+                          aria-label="expand row"
+                          size="small"
+                          onClick={(event) => setOpen(event, row[selectionKey])}
+                        >
+                          {isItemOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                        </IconButton>
+                      </TableCell>
+                      : ''
+                      }
                     </TableRow>
+                    {
+                      detailComponentFunction ?
+                      <TableRow>
+                        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={headCells.length+2}>
+                          <Collapse in={isItemOpen} timeout="auto" unmountOnExit>
+                            <Box margin={1}>
+                              <Typography variant="h6" gutterBottom component="div">Details</Typography>
+                              { detailComponentFunction(row[selectionKey]) }
+                            </Box>
+                          </Collapse>
+                        </TableCell>
+                      </TableRow>
+                      : ''
+                    }
+                    </React.Fragment>
                   );
                 })}
             </TableBody>
