@@ -33,16 +33,21 @@ class Inventory(models.Model):
     type = models.IntegerField(choices=InventoryType.choices, default=InventoryType.SIMPLE)
     hosts_file = models.CharField(max_length=256)
     groups_file = models.CharField(max_length=256)
+    defaults_file = models.CharField(max_length=256, blank=True, null=True)
 
     def __str__(self):
         return f'{self.id}: {self.name}'
 
     def get_hosts(self):
-        nh = NornirHandler(self.hosts_file, self.groups_file)
+        nh = NornirHandler(self.hosts_file, self.groups_file, self.defaults_file)
         return nh.get_hosts()
 
-    def get_groups(self):
+    def get_host_detail(self, name):
         nh = NornirHandler(self.hosts_file, self.groups_file)
+        return nh.get_host_detail(name)
+
+    def get_groups(self):
+        nh = NornirHandler(self.hosts_file, self.groups_file, self.defaults_file)
         return nh.get_groups()
 
 
@@ -88,7 +93,7 @@ class Task(models.Model):
         task.run_task()
 
     def run_task(self):
-        nr = NornirHandler(self.inventory.hosts_file, self.inventory.groups_file)
+        nr = NornirHandler(self.inventory.hosts_file, self.inventory.groups_file, self.inventory.defaults_file)
         self.start()
         self.variables['name'] = self.name
         self.save()

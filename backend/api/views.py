@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.http import Http404
 from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -52,6 +53,16 @@ class InventoryViewSet(viewsets.ModelViewSet):
         inventory = self.get_object()
         hosts = inventory.get_hosts()
         return Response(hosts)
+
+    # allows url pattern: /api/inventory/{inventory_id}/host/{name}
+    @action(detail=True, methods=['GET'], name='hosts', url_path='hosts/(?P<name>[a-z0-9]+)')
+    def host_detail(self, request, pk, name=None):
+        inventory = self.get_object()
+        try:
+            host_detail = inventory.get_host_detail(name)
+            return Response(host_detail)
+        except LookupError:
+            raise Http404
 
     @action(detail=True, methods=['GET'])
     def groups(self, request, pk):

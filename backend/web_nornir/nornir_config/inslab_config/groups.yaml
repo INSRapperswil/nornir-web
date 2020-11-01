@@ -1,6 +1,8 @@
 spine:
   data:
+    role: spine
     domain: ins.hsr.ch
 leaf:
   data:
+    role: leaf
     domain: ins.hsr.ch

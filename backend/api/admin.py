@@ -98,7 +98,7 @@ class InventoryAdmin(admin.ModelAdmin):
     list_display_links = ['id', 'name']
     list_filter = ['type']
     ordering = ['id']
-    search_fields = ['name', 'hosts_file', 'groups_file']
+    search_fields = ['name', 'hosts_file', 'groups_file', 'defaults_file']
 
     # Settings for detail view
     fieldsets = [
@@ -108,7 +108,7 @@ class InventoryAdmin(admin.ModelAdmin):
         ),
         (
             'Configuration Files',
-            {'fields': ['hosts_file', 'groups_file']}
+            {'fields': ['hosts_file', 'groups_file', 'defaults_file']}
         )
     ]
 

@@ -1,18 +1,76 @@
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+    - $CI_PROJECT_DIR/backend/venv/
+    - $CI_PROJECT_DIR/frontend/node_modules/
+    - $CI_PROJECT_DIR/frontend/build/
+    - $CI_PROJECT_DIR/frontend/.yarn
+
 stages:
-  - triggers
+  - test
+  - deploy
 
-trigger_frontend:
-  stage: triggers
-  trigger:
-    include: frontend/.gitlab-ci.yml
+# Backend CI/CD
+test_backend:
+  image: python:latest
+  stage: test
+  variables:
+    DB_CONNECTION_STRING: "sqlite:///db.sqlite3"
+  before_script:
+    - cd backend
+    - python -m venv venv
+    - source venv/bin/activate
+    - pip install -r requirements.txt
+  script:
+    - python manage.py migrate
+    - python manage.py create_groups
+    - python manage.py create_testdb
+    - pytest -vv
   rules:
     - changes:
-      - frontend/*
+        - backend/*
 
-trigger_backend:
-  stage: triggers
-  trigger:
-    include: backend/.gitlab-ci.yml
+deploy_backend:
+  image: python:latest
+  stage: deploy
+  only:
+    - master
+  before_script:
+    - cd backend
+    - python -m venv venv
+    - source venv/bin/activate
+    - pip install -r requirements.txt
+  script:
+    - python manage.py collectstatic
+    # TODO: Copy to server
+    # - daphne backend.asgi:application -b 0.0.0.0
+
+# Frontend CI/CD
+test_frontend:
+  image: node:lts
+  stage: test
+  before_script:
+    - cd frontend
+    - yarn install
+  script:
+    - yarn lint
+    - yarn test
   rules:
     - changes:
-      - backend/*
+        - frontend/*
+
+deploy_frontend:
+  image: node:lts
+  stage: deploy
+  only:
+    - master
+  before_script:
+    - cd frontend
+    - yarn install
+  script:
+    - yarn build
+    # TODO: Copy to server
+    # - serve -s build -l 80
