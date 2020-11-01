@@ -128,7 +128,7 @@ export default function EnhancedTable({
                     <React.Fragment key={row[selectionKey]}>
                     <TableRow
                       hover
-                      // onClick={(event) => handleCheckboxClick(event, row[selectionKey])}
+                      onClick={(event) => handleCheckboxClick(event, row[selectionKey])}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
