@@ -6,24 +6,27 @@ from pathlib import Path
 
 from .job_discovery import JobDiscovery
 
+# Global defaults for all nornir inventories
+DEFAULT_FILE = 'web_nornir/nornir_config/defaults.yaml'
+
 
 class NornirHandler:
-    def __init__(self, host_file, group_file):
-        if Path(host_file).is_file() and Path(group_file).is_file():
-            self.nr = InitNornir(config_file='web_nornir/nornir_config/configuration.yaml',
-                                 inventory={'plugin': 'SimpleInventory',
-                                            'options': {
-                                                'host_file': host_file,
-                                                'group_file': group_file
-                                            }}, )
-        else:
-            # Default to example_config
-            self.nr = InitNornir(config_file='web_nornir/nornir_config/configuration.yaml',
-                                 inventory={'plugin': 'SimpleInventory',
-                                            'options': {
-                                                'host_file': 'web_nornir/nornir_config/example_config/hosts.yaml',
-                                                'group_file': 'web_nornir/nornir_config/example_config/groups.yaml'
-                                            }}, )
+    def __init__(self, host_file, group_file, default_file=DEFAULT_FILE):
+        # Load default configs if invalid file path given
+        if not Path(host_file).is_file():
+            host_file = 'web_nornir/nornir_config/example_config/hosts.yaml'
+        if not Path(group_file).is_file():
+            group_file = 'web_nornir/nornir_config/example_config/groups.yaml'
+        if not Path(default_file).is_file():
+            default_file = DEFAULT_FILE
+
+        self.nr = InitNornir(config_file='web_nornir/nornir_config/configuration.yaml',
+                             inventory={'plugin': 'SimpleInventory',
+                                        'options': {
+                                            'host_file': host_file,
+                                            'group_file': group_file,
+                                            'defaults_file': default_file
+                                        }}, )
 
     def get_hosts(self) -> list:
         hosts = []
