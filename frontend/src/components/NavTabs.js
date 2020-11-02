@@ -10,7 +10,7 @@ function NavTabs({ paths, history, isAuthenticated, props }) {
   }
 
   return (
-    <Tabs value={paths.includes(history.location.pathname) ? history.location.pathname : '/login'}
+    <Tabs value={ paths.find((item) => item.value === history.location.pathname) ? history.location.pathname : '/login' }
       onChange={handleCallToRouter}
       aria-label="page menu">
       {paths.map((path) => {
