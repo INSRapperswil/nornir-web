@@ -26,17 +26,19 @@ expected_jobtemplate_list = [
         "file_name": "hello_world.py",
         "package_path": "/web_nornir/job_templates/",
         "function_name": "job_function",
-        "created_by": "thomastest"
+        "created_by": "thomastest",
+        "variables": [],
     },
     {
         "id": 2,
         "detail": "http://testserver/api/templates/2/",
         "name": "Get CDP Neighbors",
         "description": "Lists all CDP neighbors",
-        "file_name": "get_cdp_neighbors.py",
+        "file_name": "get_cdp_neighbor.py",
         "package_path": "/web_nornir/job_templates/",
         "function_name": "job_function",
-        "created_by": "thomastest"
+        "created_by": "thomastest",
+        "variables": [],
     },
     {
         "id": 3,
@@ -46,7 +48,8 @@ expected_jobtemplate_list = [
         "file_name": "get_interfaces.py",
         "package_path": "/web_nornir/job_templates/",
         "function_name": "job_function",
-        "created_by": "thomastest"
+        "created_by": "thomastest",
+        "variables": [],
     }
 ]
 
