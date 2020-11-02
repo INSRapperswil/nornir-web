@@ -51,15 +51,55 @@ function user(state = initialUserFunction(), action) {
   }
 }
 
+const initialTaskWizardState = () => {
+  return {
+    task: {
+      name: '',
+      date_scheduled: '',
+      variables: {},
+      filters: { hosts: [] },
+      template: { id: 0, },
+      inventory: 2,
+    },
+    lastCreatedTaskId: 0,
+    isLoading: false,
+    error: null,
+  }
+};
+
+function taskWizard(state = initialTaskWizardState(), action) {
+  switch (action.type) {
+    case "POST_TASK_WIZARD_STARTED":
+      return { ...state, isLoading: true, error: null };
+    case "POST_TASK_WIZARD_SUCCEEDED":
+      return { ...initialTaskWizardState(), lastCreatedTaskId: action.lastCreatedTaskId };
+    case "UPDATE_TASK_WIZARD":
+      return { ...state, isLoading: false, task: action.task };
+    case "POST_TASK_WIZARD_FAILED":
+      return { ...state, isLoading: false, error: action.error };
+    default:
+      return state;
+  }
+}
+
 const reducers = combineReducers({
   tasks,
   user,
+  taskWizard,
 });
 
 export default reducers;
 
 export function getTasks(state) {
   return state.tasks.tasks;
+}
+
+export function getWizardTask(state) {
+  return state.taskWizard.task;
+}
+
+export function getWizard(state) {
+  return state.taskWizard;
 }
 
 export function getToken(state) {

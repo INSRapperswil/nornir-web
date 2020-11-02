@@ -49,7 +49,7 @@ class JobTemplateAdmin(admin.ModelAdmin):
         ),
         (
             'Module Name & Path',
-            {'fields': ['package_path', 'file_name', 'function_name']}
+            {'fields': ['package_path', 'file_name', 'function_name', 'variables']}
         ),
         (
             'Author',

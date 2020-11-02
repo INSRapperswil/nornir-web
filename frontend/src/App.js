@@ -16,6 +16,7 @@ import Site404 from './pages/Site404';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import Logout from './components/Logout';
+import TaskWizardPage from './pages/TaskWizardPage';
 
 function App() {
   const paths = [
@@ -41,6 +42,12 @@ function App() {
       label: 'Prototype',
       value: '/prototype',
       component: <Prototype/>,
+      protected: true,
+    },
+    {
+      label: 'Task Wizard',
+      value: '/wizard',
+      component: <TaskWizardPage/>,
       protected: true,
     },
     {

@@ -5,6 +5,7 @@ from nornir import InitNornir
 from nornir.core.inventory import Host
 from nornir.core.task import AggregatedResult, MultiResult, Task
 from nornir_netmiko import netmiko_send_command
+from web_nornir.nornir_handler import NornirHandler
 
 
 # With Processor
@@ -40,7 +41,12 @@ class SaveResultToDict:
 
 
 def get_interfaces_with_processors():
-    nr = InitNornir(config_file='web_nornir/nornir_config/inslab_config/config.yaml')
+    nr = InitNornir(config_file='web_nornir/nornir_config/configuration.yaml',
+                                 inventory={'plugin': 'SimpleInventory',
+                                            'options': {
+                                                'host_file': 'web_nornir/nornir_config/inslab_config/hosts.yaml',
+                                                'group_file': 'web_nornir/nornir_config/inslab_config/groups.yaml'
+                                            }}, )
     result: dict = {}
 
     nr_with_processors = nr.with_processors([SaveResultToDict(result)])
@@ -84,24 +90,34 @@ def load_inventory(group_file, host_file):
                     'group_file': group_file
                 }}
 
+class TestTemplate:
+    file_name = 'get_interfaces.py'
+    function_name = 'job_function'
+    
+    def get_package_path(self):
+        return 'web_nornir/job_templates'
 
 def main():
     # get_interfaces()
-    get_interfaces_with_processors()
+    # get_interfaces_with_processors()
+    nr = NornirHandler('web_nornir/nornir_config/inslab_config/hosts.yaml', 'web_nornir/nornir_config/inslab_config/groups.yaml')
+    # print(nr.get_hosts())
+    result = nr.execute_task(TestTemplate(), { 'name': 'test run get interfaces'}, { 'hosts': ['spine1'] })
+    print(result)
 
     # group_file = 'web_nornir/nornir_config/other_config/groups.yaml'
-    group_file = None
-    host_file = 'web_nornir/nornir_config/other_config/hosts.yaml'
+    # group_file = None
+    # host_file = 'web_nornir/nornir_config/other_config/hosts.yaml'
 
     # If group file or host file are missing, defaulting to the inventory in configuration
-    nr = InitNornir(
-        config_file='web_nornir/nornir_config/configuration.yaml',
-        inventory=load_inventory(group_file=group_file, host_file=host_file),
+    # nr = InitNornir(
+    #     config_file='web_nornir/nornir_config/configuration.yaml',
+    #     inventory=load_inventory(group_file=group_file, host_file=host_file),
 
-    )
-    print(nr.config.runner.options['num_workers'])
-    print(nr.config.inventory.options['host_file'])
-    print(nr.config.inventory.options['group_file'])
+    # )
+    # print(nr.config.runner.options['num_workers'])
+    # print(nr.config.inventory.options['host_file'])
+    # print(nr.config.inventory.options['group_file'])
 
 
 if __name__ == "__main__":

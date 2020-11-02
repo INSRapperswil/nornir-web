@@ -39,7 +39,7 @@ function InventoryHostDetail({ token, inventoryId, name }) {
         </TableHead>
         <TableBody>
           {Object.keys(data).map((key) => (
-            <TableRow>
+            <TableRow key={key}>
               <TableCell>{key}</TableCell>
               <TableCell>{data[key]}</TableCell>
             </TableRow>
