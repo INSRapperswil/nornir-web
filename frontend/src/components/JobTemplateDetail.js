@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getHostDetails } from '../api';
+import { getJobTemplateDetails } from '../api';
 import { getToken } from '../redux/reducers';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
@@ -8,14 +8,14 @@ import {
 } from '@material-ui/core';
 import { objectToTable } from '../helperFunctions';
 
-function InventoryHostDetail({ token, inventoryId, name }) {
-  let [host, setHost] = useState([]);
+function JobTemplateDetail({ token, jobTemplateId }) {
+  let [jobTemplate, setJobTemplate] = useState([]);
 
   useEffect(() => {
-    if (host.length === 0) {
-      getHostDetails(token, inventoryId, name).then((response) => setHost(response))
+    if (jobTemplate.length === 0) {
+      getJobTemplateDetails(token, jobTemplateId).then((response) => setJobTemplate(response))
     }
-  }, [host, setHost, token, inventoryId, name]);
+  }, [jobTemplate, setJobTemplate, token, jobTemplateId]);
 
   const useStyles = makeStyles({
     root:
@@ -35,7 +35,7 @@ function InventoryHostDetail({ token, inventoryId, name }) {
         </TableRow>
       </TableHead>
       <TableBody>
-        {Object.keys(host).map((key) => (
+        {Object.keys(jobTemplate).map((key) => (
           key === "detail" ? null :
           <TableRow key={key}>
             <TableCell component="th" scope="row">
@@ -43,10 +43,10 @@ function InventoryHostDetail({ token, inventoryId, name }) {
             </TableCell>
             <TableCell>
               {
-                typeof host[key] === "object" ?
-                  objectToTable(host[key])
+                typeof jobTemplate[key] === "object" ?
+                  objectToTable(jobTemplate[key])
                   :
-                  host[key]
+                  jobTemplate[key]
               }</TableCell>
           </TableRow>
         ))}
@@ -61,4 +61,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(InventoryHostDetail);
+export default connect(mapStateToProps)(JobTemplateDetail);

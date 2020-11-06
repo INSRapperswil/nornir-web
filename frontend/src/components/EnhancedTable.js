@@ -48,6 +48,14 @@ const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 750,
   },
+  row: {
+    '& > *': {
+      borderBottom: 'unset',
+    },
+  },
+  detail: {
+    backgroundColor: theme.palette.action.hover,
+  },
 }));
 export default function EnhancedTable({
   headCells,
@@ -99,6 +107,7 @@ export default function EnhancedTable({
   };
 
   const setOpen = (event, name) => {
+    event.stopPropagation();
     const newOpened = handleSelection(opened, name);
     setOpened(newOpened);
   }
@@ -126,12 +135,12 @@ export default function EnhancedTable({
             />
             <TableBody>
               {rows.map((row, index) => {
-                  const isItemSelected = isSelected(row[selectionKey]);
-                  const isItemOpen = isOpen(row[selectionKey]);
-                  const labelId = `enhanced-table-checkbox-${index}`;
+                const isItemSelected = isSelected(row[selectionKey]);
+                const isItemOpen = isOpen(row[selectionKey]);
+                const labelId = `enhanced-table-checkbox-${index}`;
 
-                  return (
-                    <React.Fragment key={row[selectionKey]}>
+                return (
+                  <React.Fragment key={row[selectionKey]}>
                     <TableRow
                       hover
                       onClick={(event) => handleCheckboxClick(event, row[selectionKey])}
@@ -139,6 +148,7 @@ export default function EnhancedTable({
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       selected={isItemSelected}
+                      className={classes.row}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
@@ -148,45 +158,45 @@ export default function EnhancedTable({
                       </TableCell>
                       {headCells.map((cell, index) => {
                         return (
-                          (index === 0) ? 
-                          <TableCell key={index} component="th" id={labelId} scope="row" padding="none">
-                            { cell.getValue ? cell.getValue(row[cell.id]) : row[cell.id] }
-                          </TableCell> :
-                          <TableCell key={index}>
-                            { cell.getValue ? cell.getValue(row[cell.id]) : row[cell.id] }
-                          </TableCell>
+                          (index === 0) ?
+                            <TableCell key={index} component="th" id={labelId} scope="row" padding="none">
+                              {cell.getValue ? cell.getValue(row[cell.id]) : row[cell.id]}
+                            </TableCell> :
+                            <TableCell key={index}>
+                              {cell.getValue ? cell.getValue(row[cell.id]) : row[cell.id]}
+                            </TableCell>
                         )
                       })}
-                      { detailComponentFunction ? 
-                      <TableCell>
-                        <IconButton
-                          aria-label="expand row"
-                          size="small"
-                          onClick={(event) => setOpen(event, row[selectionKey])}
-                        >
-                          {isItemOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                        </IconButton>
-                      </TableCell>
-                      : ''
+                      {detailComponentFunction ?
+                        <TableCell align="right">
+                          <IconButton
+                            aria-label="expand row"
+                            size="small"
+                            onClick={(event) => setOpen(event, row[selectionKey])}
+                          >
+                            {isItemOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                          </IconButton>
+                        </TableCell>
+                        : ''
                       }
                     </TableRow>
                     {
                       detailComponentFunction ?
-                      <TableRow>
-                        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={headCells.length+2}>
-                          <Collapse in={isItemOpen} timeout="auto" unmountOnExit>
-                            <Box margin={1}>
-                              <Typography variant="h6" gutterBottom component="div">Details</Typography>
-                              { detailComponentFunction(row[selectionKey]) }
-                            </Box>
-                          </Collapse>
-                        </TableCell>
-                      </TableRow>
-                      : ''
+                        <TableRow>
+                          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={headCells.length + 2} className={classes.detail}>
+                            <Collapse in={isItemOpen} timeout="auto" unmountOnExit>
+                              <Box margin={1}>
+                                <Typography variant="h6" gutterBottom component="div">Details</Typography>
+                                {detailComponentFunction(row[selectionKey])}
+                              </Box>
+                            </Collapse>
+                          </TableCell>
+                        </TableRow>
+                        : ''
                     }
-                    </React.Fragment>
-                  );
-                })}
+                  </React.Fragment>
+                );
+              })}
             </TableBody>
           </Table>
           <TablePagination
