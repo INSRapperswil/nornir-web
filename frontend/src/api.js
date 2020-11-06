@@ -4,8 +4,16 @@ export function getTasks(token, limit=25, offset=0) {
   return getAuthenticatedJson(`/api/tasks/?limit=${limit}&offset=${offset}`, token).then(parseJson);
 }
 
+export function getTaskDetails(token, taskId) {
+  return getAuthenticatedJson(`/api/tasks/${taskId}/`, token).then(parseJson);
+}
+
 export function getJobTemplates(token, limit=25, offset=0) {
   return getAuthenticatedJson(`/api/templates/?limit=${limit}&offset=${offset}`, token).then(parseJson);
+}
+
+export function getJobTemplateDetails(token, jobTemplateId) {
+  return getAuthenticatedJson(`/api/templates/${jobTemplateId}/`, token).then(parseJson);
 }
 
 export function getInventoryHosts(token, inventoryId, limit=25, offset=0) {
@@ -13,7 +21,7 @@ export function getInventoryHosts(token, inventoryId, limit=25, offset=0) {
 }
 
 export function getHostDetails(token, inventoryId, friendly_name) {
-  return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts/${friendly_name}`, token).then(parseJson);
+  return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts/${friendly_name}/`, token).then(parseJson);
 }
 
 export function getTask(token, id) {

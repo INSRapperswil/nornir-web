@@ -2,21 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { getTasks } from '../api';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  TablePagination,
-  Paper,
+  Box, Collapse, IconButton, Paper,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination,
 } from '@material-ui/core';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { getToken } from '../redux/reducers';
 import { connect } from 'react-redux';
-
-function beautifyDate(isoDate) {
-  let date = new Date(isoDate);
-  if (Date.parse(date) === 0) {
-    return null;
-  }
-  return date.toLocaleString('de-DE');
-
-}
+import TaskDetail from './TaskDetail';
+import { beautifyDate, statusIdToText } from '../helperFunctions';
 
 function TasksTable({ token }) {
   let [tasks, setTasks] = useState([]);
@@ -33,11 +27,20 @@ function TasksTable({ token }) {
     }
   }, [tasks, setTasks, token, rowsPerPage]);
 
-  const useStyles = makeStyles({
+  const useStyles = makeStyles(theme => ({
     table: {
       minWidth: 650,
     },
-  });
+    root: {
+      '& > *': {
+        borderBottom: 'unset',
+      },
+    },
+    detail: {
+      backgroundColor: theme.palette.action.hover,
+    },
+  }));
+
   const classes = useStyles();
 
   const handleChangePage = (event, requestedPage) => {
@@ -60,6 +63,43 @@ function TasksTable({ token }) {
     setPage(newPage);
     setRowsPerPage(newPageSize);
   };
+  
+  function Row(props) {
+    const { row } = props;
+    const [open, setOpen] = React.useState(false);
+    const classes = useStyles();
+
+    return (
+      <React.Fragment>
+        <TableRow className={classes.root}>
+          <TableCell component="th" scope="row">
+            {row.id}
+          </TableCell>
+          <TableCell>{row.name}</TableCell>
+          <TableCell>{statusIdToText(row.status)}</TableCell>
+          <TableCell>{beautifyDate(row.date_scheduled)}</TableCell>
+          <TableCell>{beautifyDate(row.date_started)}</TableCell>
+          <TableCell>{beautifyDate(row.date_finished)}</TableCell>
+          <TableCell>{row.created_by}</TableCell>
+          <TableCell>{row.template}</TableCell>
+          <TableCell align="right">
+            <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </TableCell>
+        </TableRow>
+        <TableRow className={classes.detail}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <Box margin={1}>
+                <TaskDetail taskId={row.id} />
+              </Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+      </React.Fragment>
+    );
+  }
 
   return (
     <TableContainer component={Paper}>
@@ -72,32 +112,14 @@ function TasksTable({ token }) {
             <TableCell>Scheduled</TableCell>
             <TableCell>Started</TableCell>
             <TableCell>Finished</TableCell>
-            <TableCell>Parameters</TableCell>
-            <TableCell>Filters</TableCell>
-            <TableCell>Input</TableCell>
-            <TableCell>Result</TableCell>
             <TableCell>Creator</TableCell>
             <TableCell>Template</TableCell>
+            <TableCell align="right">Details</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {tasks.map((value, index) => (
-            <TableRow key={index}>
-              <TableCell component="th" scope="row">
-                {value.id}
-              </TableCell>
-              <TableCell>{value.name}</TableCell>
-              <TableCell>{value.status}</TableCell>
-              <TableCell>{beautifyDate(value.date_scheduled)}</TableCell>
-              <TableCell>{beautifyDate(value.date_started)}</TableCell>
-              <TableCell>{beautifyDate(value.date_finished)}</TableCell>
-              <TableCell>{JSON.stringify(value.variables)}</TableCell>
-              <TableCell>{JSON.stringify(value.filters)}</TableCell>
-              <TableCell>{JSON.stringify(value.result_host_selection)}</TableCell>
-              <TableCell>{JSON.stringify(value.result)}</TableCell>
-              <TableCell>{value.created_by}</TableCell>
-              <TableCell>{value.template}</TableCell>
-            </TableRow>
+          {tasks.map((value) => (
+            <Row key={value.id} row={value} />
           ))}
         </TableBody>
       </Table>
@@ -108,7 +130,7 @@ function TasksTable({ token }) {
         count={count}
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleRowsPerPage}
-        component="div"/>
+        component="div" />
     </TableContainer>
   );
 }

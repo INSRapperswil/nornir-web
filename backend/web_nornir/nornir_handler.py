@@ -97,7 +97,7 @@ class NornirHandler:
                 'hostname': aggregated_result[host_results].host.hostname,
                 'name': aggregated_result[host_results].host.name,
                 'failed': aggregated_result[host_results].failed,
-                'result': f'{aggregated_result[host_results].result[0]}'
+                'result': aggregated_result[host_results].result[0].result
             }
             result['hosts'].append(host_dict)
 
