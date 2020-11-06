@@ -5,7 +5,7 @@ from web_nornir.job_discovery import JobDiscovery
 import web_nornir.tests.test_package
 
 
-class TestWebNornir:
+class TestJobDiscovery:
     jd = JobDiscovery(web_nornir.tests.test_package.__path__[0])
 
     def test_get_job_definitions(self):

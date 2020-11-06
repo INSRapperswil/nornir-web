@@ -22,6 +22,7 @@ device1.test:
   platform: ios
   groups:
     - testgroup
+    - othergroup
   data:
     ospf: 1
     asn: 65001

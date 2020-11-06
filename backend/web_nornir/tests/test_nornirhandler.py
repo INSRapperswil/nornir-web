@@ -33,9 +33,51 @@ class TestNornirHandler:
         host_file = 'web_nornir/nornir_config/test_config/hosts.yaml'
         group_file = 'web_nornir/nornir_config/test_config/groups.yaml'
         nh = NornirHandler(host_file, group_file)
-        assert nh.get_host_detail('device1.test') == {'name': 'device1.test', 'groups': ['testgroup'],
+        assert nh.get_host_detail('device1.test') == {'name': 'device1.test', 'groups': ['testgroup', 'othergroup'],
                                                       'hostname': '127.127.0.1', 'port': 2202, 'platform': 'ios',
                                                       'data': {'ospf': 1, 'asn': 65001, 'domain': 'test.testing'}}
+
+    def test_get_host_filter(self):
+        host_file = 'web_nornir/nornir_config/test_config/hosts.yaml'
+        group_file = 'web_nornir/nornir_config/test_config/groups.yaml'
+        default_file = 'web_nornir/nornir_config/test_config/defaults.yaml'
+        nh = NornirHandler(host_file, group_file, default_file)
+
+        assert nh.get_hosts({'group': ['testgroup', 'othergroup']}) == [
+            {'data': {'domain': 'test.testing'}, 'groups': ['testgroup'], 'hostname': '127.0.0.1', 'name': 'host1.test',
+             'platform': 'linux', 'port': 22},
+            {'data': {'domain': 'test.testing'}, 'groups': ['testgroup'], 'hostname': '127.0.2.1', 'name': 'host2.test',
+             'platform': 'linux', 'port': 22},
+            {'data': {'asn': 65001, 'domain': 'test.testing', 'ospf': 1}, 'groups': ['testgroup', 'othergroup'],
+             'hostname': '127.127.0.1', 'name': 'device1.test', 'platform': 'ios', 'port': 2202}, ]
+
+        assert nh.get_hosts({'group': ['othergroup']}) == [
+            {'name': 'device1.test', 'groups': ['testgroup', 'othergroup'],
+             'hostname': '127.127.0.1', 'port': 2202, 'platform': 'ios',
+             'data': {'ospf': 1, 'asn': 65001,
+                      'domain': 'test.testing'}}]
+
+    def test_get_host_invalid_filter(self):
+        host_file = 'web_nornir/nornir_config/test_config/hosts.yaml'
+        group_file = 'web_nornir/nornir_config/test_config/groups.yaml'
+        default_file = 'web_nornir/nornir_config/test_config/defaults.yaml'
+        nh = NornirHandler(host_file, group_file, default_file)
+
+        assert nh.get_hosts({'group': ['nonexisting']}) == []
+
+    def test_get_host_without_filter(self):
+        host_file = 'web_nornir/nornir_config/test_config/hosts.yaml'
+        group_file = 'web_nornir/nornir_config/test_config/groups.yaml'
+        default_file = 'web_nornir/nornir_config/test_config/defaults.yaml'
+        nh = NornirHandler(host_file, group_file, default_file)
+
+        assert nh.get_hosts() == [
+            {'data': {'domain': 'test.testing'}, 'groups': ['testgroup'], 'hostname': '127.0.0.1', 'name': 'host1.test',
+             'platform': 'linux', 'port': 22},
+            {'data': {'domain': 'test.testing'}, 'groups': ['testgroup'], 'hostname': '127.0.2.1', 'name': 'host2.test',
+             'platform': 'linux', 'port': 22},
+            {'data': {'asn': 65001, 'domain': 'test.testing', 'ospf': 1}, 'groups': ['testgroup', 'othergroup'],
+             'hostname': '127.127.0.1', 'name': 'device1.test', 'platform': 'ios', 'port': 2202}, ]
 
     def test_get_configuration(self):
         expected = {

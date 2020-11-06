@@ -38,12 +38,12 @@ class Inventory(models.Model):
     def __str__(self):
         return f'{self.id}: {self.name}'
 
-    def get_hosts(self):
+    def get_hosts(self, filter_arguments=None):
         nh = NornirHandler(self.hosts_file, self.groups_file, self.defaults_file)
-        return nh.get_hosts()
+        return nh.get_hosts(filter_arguments)
 
     def get_host_detail(self, name):
-        nh = NornirHandler(self.hosts_file, self.groups_file)
+        nh = NornirHandler(self.hosts_file, self.groups_file, self.defaults_file)
         return nh.get_host_detail(name)
 
     def get_groups(self):

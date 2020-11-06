@@ -1,3 +1,6 @@
 testgroup:
   data:
     domain: test.testing
+othergroup:
+  data:
+    domain: other.test
