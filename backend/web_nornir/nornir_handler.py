@@ -29,9 +29,13 @@ class NornirHandler:
                                             'defaults_file': default_file
                                         }}, )
 
-    def get_hosts(self) -> list:
+    def get_hosts(self, filter_arguments=None) -> list:
+        if filter_arguments is None:
+            filter_arguments = {}
+        filter_arguments_copy = filter_arguments.copy()
+        groups = filter_arguments_copy.pop('group', None)
         hosts = []
-        for name in self.nr.inventory.hosts:
+        for name in self.nr.inventory.filter(F(groups__any=groups)).hosts if groups else self.nr.inventory.hosts:
             hosts.append(self.get_host_detail(name))
         return hosts
 

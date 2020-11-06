@@ -9,6 +9,7 @@ from api.permissions import ConfigurationPermission
 from api.serializers import TaskSerializer, JobTemplateSerializer, InventorySerializer, UserSerializer
 from api.pagination import InventoryPagination
 
+
 class TaskViewSet(viewsets.ModelViewSet):
     """
     ViewSet which lists all tasks known to the system
@@ -52,7 +53,7 @@ class InventoryViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['GET'])
     def hosts(self, request, pk):
         inventory = self.get_object()
-        queryset = inventory.get_hosts()
+        queryset = inventory.get_hosts(request.query_params)
         paginator = self.pagination_class()
         data = paginator.paginate_queryset(queryset=queryset, request=request)
         return paginator.get_paginated_response(data)
