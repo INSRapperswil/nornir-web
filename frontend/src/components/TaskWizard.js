@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getWizardTask, getWizard, getToken } from '../redux/reducers';
 import { updateTaskWizard, postTaskWizard } from '../redux/actions';
 import { Stepper, Step, StepLabel, Button } from '@material-ui/core';
-import { runTask } from '../api';
+import { runTask, runTaskAsync } from '../api';
 
 function TaskWizard({ task, getSteps, postTaskWizard, wizard, token }) {
   const [activeStep, setActiveStep] = useState(0);
@@ -12,7 +12,11 @@ function TaskWizard({ task, getSteps, postTaskWizard, wizard, token }) {
 
   const handleFinish = (event) => {
     postTaskWizard().then(result => {
-      runTask(token, result);
+      if(result.date_scheduled) {
+        runTaskAsync(token, result.id)
+      } else {
+        runTask(token, result.id);
+      }
     })
     handleNext(event);
   };

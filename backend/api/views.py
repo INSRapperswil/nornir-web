@@ -13,7 +13,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     """
     ViewSet which lists all tasks known to the system
     """
-    queryset = Task.objects.all()
+    queryset = Task.objects.all().order_by('-id')
     serializer_class = TaskSerializer
     permission_classes = [permissions.DjangoModelPermissions]
 
