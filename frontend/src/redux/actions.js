@@ -36,7 +36,7 @@ export function postTaskWizard() {
     return api.postTask(getState().user.token, getState().taskWizard.task)
     .then((result) => {
       dispatch({ type: "POST_TASK_WIZARD_SUCCEEDED", lastCreatedTaskId: result.id })
-      return result.id;
+      return result;
     })
     .catch((error) => dispatch({ type: "POST_TASK_WIZARD_FAILED", error }));
   };

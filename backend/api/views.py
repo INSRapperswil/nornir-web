@@ -3,6 +3,8 @@ from django.http import Http404
 from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 from api.models import Task, JobTemplate, Inventory, Configuration
 from api.permissions import ConfigurationPermission
@@ -14,9 +16,14 @@ class TaskViewSet(viewsets.ModelViewSet):
     """
     ViewSet which lists all tasks known to the system
     """
-    queryset = Task.objects.all()
+    queryset = Task.objects.all().order_by('-id')
     serializer_class = TaskSerializer
     permission_classes = [permissions.DjangoModelPermissions]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
+    filterset_fields = ['status', 'template__name', 'inventory__name', 'created_by__username']
+    search_fields = ['name']
+    ordering_fields = ['name', 'status', 'date_scheduled', 'date_started', 'date_finished', 'inventory']
+
 
     @action(detail=True, methods=['POST'])
     def run(self, request, pk):
@@ -39,6 +46,10 @@ class JobTemplateViewSet(viewsets.ModelViewSet):
     queryset = JobTemplate.objects.all()
     serializer_class = JobTemplateSerializer
     permission_classes = [permissions.DjangoModelPermissions]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
+    filter_fields = ['name', 'file_name', 'function_name', 'package_path', 'created_by__username']
+    search_fields = ['name', 'function_name']
+    ordering_fields = ['name', 'package_path', 'file_name', 'function_name', 'created_by__username']
 
 
 class InventoryViewSet(viewsets.ModelViewSet):
