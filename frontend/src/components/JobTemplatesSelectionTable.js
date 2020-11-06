@@ -6,27 +6,52 @@ import { getJobTemplates } from '../api';
 import {
   RadioGroup, Radio,
   Table, TableHead, TableBody, TableContainer, TableRow, TableCell,
-  Paper,
-  FormControlLabel,
+  TablePagination,
+  Paper, FormControlLabel,
 } from '@material-ui/core';
 
 function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepValid }) {
   let [templates, setTemplates] = useState([]);
+  let [count, setCount] = useState(0);
+  let [page, setPage] = useState(0);
+  let [rowsPerPage, setRowsPerPage] = useState(25);
 
   useEffect(() => {
     if (templates.length === 0) {
-      getJobTemplates(token).then((response) => {
-        setTemplates(response);
+      getJobTemplates(token, rowsPerPage, 0).then((response) => {
+        setTemplates(response.results);
+        setCount(response.count);
         setStepValid(task.template.id !== 0);
       });
     }
-  }, [templates, setTemplates, setStepValid, task, token]);
+  }, [templates, setTemplates, setStepValid, task, token, rowsPerPage]);
 
   const handleSelectionChange = (params) => {
     const temp = templates.find(item => parseInt(params.target.value) === item.id);
     setStepValid(temp.id !== 0);
     updateTaskWizard({ template: temp });
   }
+
+  const handleChangePage = (event, requestedPage) => {
+    const offset = requestedPage * rowsPerPage;
+    getJobTemplates(token, rowsPerPage, offset).then((response) => {
+      setTemplates(response.results);
+      setCount(response.count);
+    })
+    setPage(requestedPage);
+  };
+
+  const handleRowsPerPage = (event) => {
+    const newPageSize = event.target.value;
+    const newPage = parseInt(rowsPerPage * page / newPageSize);
+    const offset = newPageSize * newPage;
+    getJobTemplates(token, newPageSize, offset).then((response) => {
+      setTemplates(response.results);
+      setCount(response.count);
+    })
+    setPage(newPage);
+    setRowsPerPage(newPageSize);
+  };
 
   return (
     <div id="job-templates-selection-table">
@@ -62,6 +87,14 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
               ))}
             </TableBody>
           </Table>
+          <TablePagination
+            rowsPerPageOptions={[2, 10, 25, 50]}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            count={count}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleRowsPerPage}
+            component="div"/>
         </RadioGroup>
       </TableContainer>
     </div>

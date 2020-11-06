@@ -18,7 +18,7 @@ class NornirHandler:
             host_file = 'web_nornir/nornir_config/example_config/hosts.yaml'
         if not Path(group_file).is_file():
             group_file = 'web_nornir/nornir_config/example_config/groups.yaml'
-        if not Path(default_file).is_file():
+        if default_file is None or not Path(default_file).is_file():
             default_file = DEFAULT_FILE
 
         self.nr = InitNornir(config_file='web_nornir/nornir_config/configuration.yaml',

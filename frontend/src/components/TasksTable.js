@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { getTasks } from '../api';
 import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
+import {
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  TablePagination,
+  Paper,
+} from '@material-ui/core';
 import { getToken } from '../redux/reducers';
 import { connect } from 'react-redux';
 
@@ -22,20 +20,46 @@ function beautifyDate(isoDate) {
 
 function TasksTable({ token }) {
   let [tasks, setTasks] = useState([]);
+  let [count, setCount] = useState(0);
+  let [page, setPage] = useState(0);
+  let [rowsPerPage, setRowsPerPage] = useState(25);
 
   useEffect(() => {
     if (tasks.length === 0) {
-      getTasks(token).then((response) => setTasks(response));
+      getTasks(token, rowsPerPage, 0).then((response) => {
+        setTasks(response.results);
+        setCount(response.count);
+      });
     }
-  }, [tasks, setTasks, token]);
+  }, [tasks, setTasks, token, rowsPerPage]);
 
   const useStyles = makeStyles({
     table: {
       minWidth: 650,
     },
   });
-
   const classes = useStyles();
+
+  const handleChangePage = (event, requestedPage) => {
+    const offset = requestedPage * rowsPerPage;
+    getTasks(token, rowsPerPage, offset).then((response) => {
+      setTasks(response.results);
+      setCount(response.count);
+    })
+    setPage(requestedPage);
+  }
+
+  const handleRowsPerPage = (event) => {
+    const newPageSize = event.target.value;
+    const newPage = parseInt(rowsPerPage * page / newPageSize);
+    const offset = newPageSize * newPage;
+    getTasks(token, newPageSize, offset).then((response) => {
+      setTasks(response.results);
+      setCount(response.count);
+    })
+    setPage(newPage);
+    setRowsPerPage(newPageSize);
+  };
 
   return (
     <TableContainer component={Paper}>
@@ -77,6 +101,14 @@ function TasksTable({ token }) {
           ))}
         </TableBody>
       </Table>
+      <TablePagination
+        rowsPerPageOptions={[2, 10, 25, 50]}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        count={count}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleRowsPerPage}
+        component="div"/>
     </TableContainer>
   );
 }

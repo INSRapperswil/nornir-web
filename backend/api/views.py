@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from api.models import Task, JobTemplate, Inventory, Configuration
 from api.permissions import ConfigurationPermission
 from api.serializers import TaskSerializer, JobTemplateSerializer, InventorySerializer, UserSerializer
-
+from api.pagination import InventoryPagination
 
 class TaskViewSet(viewsets.ModelViewSet):
     """
@@ -47,12 +47,15 @@ class InventoryViewSet(viewsets.ModelViewSet):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
     permission_classes = [permissions.DjangoModelPermissions]
+    pagination_class = InventoryPagination
 
     @action(detail=True, methods=['GET'])
     def hosts(self, request, pk):
         inventory = self.get_object()
-        hosts = inventory.get_hosts()
-        return Response(hosts)
+        queryset = inventory.get_hosts()
+        paginator = self.pagination_class()
+        data = paginator.paginate_queryset(queryset=queryset, request=request)
+        return paginator.get_paginated_response(data)
 
     # allows url pattern: /api/inventory/{inventory_id}/host/{name}
     @action(detail=True, methods=['GET'], name='hosts', url_path='hosts/(?P<name>[a-z0-9]+)')
