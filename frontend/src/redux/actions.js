@@ -48,6 +48,12 @@ export function updateTaskWizard(task) {
   };
 }
 
+export function updateInventorySelection(inventory) {
+  return (dispatch, getState) => {
+    dispatch({ type: "UPDATE_INVENTORY_SELECTION", ...getState().inventorySelection, ...inventory });
+  };
+}
+
 export function authenticate(username, password) {
   return (dispatch, getState) => {
     dispatch({ type: "FETCH_USER_STARTED" });

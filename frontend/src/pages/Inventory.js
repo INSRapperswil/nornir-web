@@ -5,6 +5,7 @@ import JobTemplatesSelectionTable from '../components/JobTemplatesSelectionTable
 import VariableSetter from '../components/VariableSetter';
 import FinishTask from '../components/FinishTask';
 import TaskWizard from '../components/TaskWizard';
+import InventorySelector from '../components/InventorySelector';
 
 function getSteps(setStepValid) {
   return [
@@ -37,6 +38,8 @@ function Inventory() {
   return (
     <div id="inventory">
       <h1>Inventory</h1>
+      <InventorySelector />
+      
       <Button onClick={handleRunOnSelection} disabled={!stepValid}>Run on Selection</Button>
       { runTaskWizard ? <TaskWizard getSteps={getSteps} /> :
       <InventorySelectionTable setStepValid={setStepValid}/> }

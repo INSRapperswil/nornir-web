@@ -16,6 +16,10 @@ export function getJobTemplateDetails(token, jobTemplateId) {
   return getAuthenticatedJson(`/api/templates/${jobTemplateId}/`, token).then(parseJson);
 }
 
+export function getInventoryList(token) {
+  return getAuthenticatedJson(`/api/inventories/`, token).then(parseJson);
+}
+
 export function getInventoryHosts(token, inventoryId, limit=25, offset=0) {
   return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts/?limit=${limit}&offset=${offset}`, token).then(parseJson);
 }
