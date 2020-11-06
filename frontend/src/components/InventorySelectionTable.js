@@ -21,6 +21,9 @@ function checkStepValidity(filters) {
 
 function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }) {
   let [inventory, setInventory] = useState([]);
+  let [count, setCount] = useState(0);
+  let [page, setPage] = useState(0);
+  let [rowsPerPage, setRowsPerPage] = useState(25);
 
   const detailComponentFunction = (name) => {
     return <InventoryHostDetail inventoryId={task.inventory} name={name} />
@@ -28,24 +31,48 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
 
   useEffect(() => {
     if (inventory.length === 0) {
-      getInventoryHosts(token, task.inventory).then((response) => {
-        response.forEach((item, id) => item.id = id);
-        setInventory(response);
+      getInventoryHosts(token, task.inventory, rowsPerPage, 0).then((response) => {
+        setInventory(response.results);
+        setCount(response.count);
         setStepValid(checkStepValidity(task.filters));
       });
     }
-  }, [inventory, setInventory, token, task, setStepValid]);
+  }, [inventory, setInventory, token, task, setStepValid, rowsPerPage]);
 
   const handleSelectionChange = (params) => {
     updateTaskWizard({ filters: { hosts: params } });
     const valid = checkStepValidity(params);
     setStepValid(valid);
   }
+  const handleChangePage = (event, requestedPage) => {
+    const offset = requestedPage * rowsPerPage;
+    getInventoryHosts(token, task.inventory, rowsPerPage, offset).then((response) => {
+      setInventory(response.results);
+      setCount(response.count);
+    })
+    setPage(requestedPage);
+  };
+
+  const handleRowsPerPage = (event) => {
+    const newPageSize = event.target.value;
+    const newPage = parseInt(rowsPerPage * page / newPageSize);
+    const offset = newPageSize * newPage;
+    getInventoryHosts(token, task.inventory, newPageSize, offset).then((response) => {
+      setInventory(response.results);
+      setCount(response.count);
+    })
+    setPage(newPage);
+    setRowsPerPage(newPageSize);
+  };
 
   return (
     <div id="inventory-selection-table">
       <EnhancedTable
         rows={inventory}
+        paginationDetails={{
+          count, page, rowsPerPage,
+          handleChangePage, handleRowsPerPage,
+        }}
         headCells={headCells}
         selectionKey="name"
         selected={task.filters.hosts}

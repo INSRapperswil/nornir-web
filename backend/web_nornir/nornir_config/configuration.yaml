@@ -5,5 +5,5 @@ logging:
   log_file: nornir.log
 runner:
   options:
-    num_workers: 100
+    num_workers: 200
   plugin: threaded

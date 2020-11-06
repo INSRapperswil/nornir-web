@@ -43,7 +43,7 @@ class TestNornirHandler:
                         'format': '%(asctime)s - %(name)12s - %(levelname)8s - %(funcName)10s() - %(message)s',
                         'level': 'INFO',
                         'log_file': 'nornir.log'},
-            'runner': {'options': {'num_workers': 100},
+            'runner': {'options': {'num_workers': 200},
                        'plugin': 'threaded'},
         }
 

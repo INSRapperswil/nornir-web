@@ -31,6 +31,6 @@ class TestTaskApi(APIViewTest, UsesGetMethod, Returns200, AsUser('user')):
     url = lambda_fixture(lambda: reverse('task-list'))
 
     def test_task_list(self, json):
-        print(json)
+
         actual = json
         assert expected_task_list == actual

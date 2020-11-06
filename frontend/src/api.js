@@ -1,15 +1,15 @@
 const backend = "http://localhost:8000";
 
-export function getTasks(token) {
-  return getAuthenticatedJson('/api/tasks/', token).then(parseJson);
+export function getTasks(token, limit=25, offset=0) {
+  return getAuthenticatedJson(`/api/tasks/?limit=${limit}&offset=${offset}`, token).then(parseJson);
 }
 
-export function getJobTemplates(token) {
-  return getAuthenticatedJson('/api/templates/', token).then(parseJson);
+export function getJobTemplates(token, limit=25, offset=0) {
+  return getAuthenticatedJson(`/api/templates/?limit=${limit}&offset=${offset}`, token).then(parseJson);
 }
 
-export function getInventoryHosts(token, inventoryId) {
-  return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts/`, token).then(parseJson);
+export function getInventoryHosts(token, inventoryId, limit=25, offset=0) {
+  return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts/?limit=${limit}&offset=${offset}`, token).then(parseJson);
 }
 
 export function getHostDetails(token, inventoryId, friendly_name) {

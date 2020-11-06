@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
+  TablePagination,
   Checkbox, Paper, Typography, Collapse, Box, IconButton,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -56,7 +57,12 @@ export default function EnhancedTable({
   selected,
   setSelected,
   detailComponentFunction,
+  paginationDetails,
 }) {
+  let {
+    count, page, rowsPerPage,
+    handleChangePage, handleRowsPerPage
+  } = paginationDetails;
   const classes = useStyles();
   let [opened, setOpened] = useState([]);
   const handleSelectAllClick = (event) => {
@@ -183,6 +189,14 @@ export default function EnhancedTable({
                 })}
             </TableBody>
           </Table>
+          <TablePagination
+            rowsPerPageOptions={[2, 10, 25, 50]}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            count={count}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleRowsPerPage}
+            component="div"/>
         </TableContainer>
       </Paper>
     </div>
