@@ -16,42 +16,49 @@ import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import Logout from './components/Logout';
 import TaskWizardPage from './pages/TaskWizardPage';
+import Configuration from './pages/Configuration';
 
 function App() {
   const paths = [
     {
       label: 'Inventory',
       value: '/inventory',
-      component: <Inventory/>,
+      component: <Inventory />,
       protected: true,
     },
     {
       label: 'Tasks Dashboard',
       value: '/task-dashboard',
-      component: <TaskDashboard/>,
+      component: <TaskDashboard />,
       protected: true,
     },
     {
       label: 'Job Templates',
       value: '/job-templates',
-      component: <JobTemplates/>,
+      component: <JobTemplates />,
       protected: true,
     },
     {
       label: 'Task Wizard',
       value: '/wizard',
-      component: <TaskWizardPage/>,
+      component: <TaskWizardPage />,
+      protected: true,
+    },
+    {
+      label: 'Configuration',
+      value: '/configuration',
+      component: <Configuration />,
       protected: true,
     },
     {
       label: 'Login',
       value: '/login',
-      component: <LoginPage/>,
+      component: <LoginPage />,
     },
     {
       label: 'Logout',
       value: '/logout',
-      component: <Logout/>,
+      component: <Logout />,
       protected: true,
     },
   ];
@@ -59,14 +66,14 @@ function App() {
     <div className="App">
       <Router>
         <AppBar position="static">
-          <h1 style={{marginLeft: 2 + 'rem'}}>nornir</h1>
+          <h1 style={{ marginLeft: 2 + 'rem' }}>nornir</h1>
           <NavTabs paths={paths} />
         </AppBar>
         <Container>
           <Switch>
             <Route exact path="/"><Redirect to={paths[0].value} /></Route>
             {paths.map((path) => {
-              if(path.protected) {
+              if (path.protected) {
                 return <ProtectedRoute key={path.value} path={path.value}>{path.component}</ProtectedRoute>;
               } else {
                 return <Route key={path.value} path={path.value}>{path.component}</Route>;

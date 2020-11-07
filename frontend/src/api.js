@@ -44,6 +44,10 @@ export function runTaskAsync(token, id) {
   return postAuthenticatedJson(`/api/tasks/${id}/run_async/`, token);
 }
 
+export function getConfiguration(token) {
+  return getAuthenticatedJson(`/api/configuration/`, token).then(parseJson);
+}
+
 export function authenticate(username, password) {
   return postJson('/api-token-auth/', { username, password }).then(parseJson);
 }
