@@ -27,9 +27,11 @@ export function fetchUser() {
 export function postTaskWizard() {
   return (dispatch, getState) => {
     dispatch({ type: "POST_TASK_WIZARD_STARTED" });
-
+    let inventoryId = getState().inventorySelection.inventory;
     let task = getState().taskWizard.task;
+    
     task.template = task.template.id;
+    task.inventory = inventoryId;
     if(!task.date_scheduled) {
       delete task.date_scheduled;
     }

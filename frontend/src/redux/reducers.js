@@ -59,7 +59,6 @@ const initialTaskWizardState = () => {
       variables: {},
       filters: { hosts: [] },
       template: { id: 0, },
-      inventory: 2,
     },
     lastCreatedTaskId: 0,
     isLoading: false,
@@ -98,10 +97,10 @@ function inventorySelection(state = initialInventory, action) {
 }
 
 const reducers = combineReducers({
-  tasks,
-  user,
-  taskWizard,
   inventorySelection,
+  tasks,
+  taskWizard,
+  user,
 });
 
 export default reducers;

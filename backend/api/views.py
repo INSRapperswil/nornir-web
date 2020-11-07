@@ -58,7 +58,7 @@ class InventoryViewSet(viewsets.ModelViewSet):
         return paginator.get_paginated_response(data)
 
     # allows url pattern: /api/inventory/{inventory_id}/host/{name}
-    @action(detail=True, methods=['GET'], name='hosts', url_path='hosts/(?P<name>[a-z0-9]+)')
+    @action(detail=True, methods=['GET'], name='hosts', url_path='hosts/(?P<name>[a-z0-9.-]+)')
     def host_detail(self, request, pk, name=None):
         inventory = self.get_object()
         try:
