@@ -47,7 +47,7 @@ class JobTemplateViewSet(viewsets.ModelViewSet):
     serializer_class = JobTemplateSerializer
     permission_classes = [permissions.DjangoModelPermissions]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
-    filter_fields = ['name', 'file_name', 'function_name', 'package_path', 'created_by__username']
+    filter_fields = ['file_name', 'function_name', 'package_path', 'created_by__username']
     search_fields = ['name', 'function_name']
     ordering_fields = ['name', 'package_path', 'file_name', 'function_name', 'created_by__username']
 

@@ -12,6 +12,7 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { makeStyles } from '@material-ui/core/styles';
 import JobTemplateDetail from './JobTemplateDetail';
+import FilterDialog from './FilterDialog';
 
 function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepValid }) {
   let [templates, setTemplates] = useState([]);
@@ -19,6 +20,12 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
   let [rowsPerPage, setRowsPerPage] = useState(25);
+  let [filters, setFilters] = useState([
+    { label: 'File Name', name: 'file_name', value: '' },
+    { label: 'Function Name', name: 'function_name', value: '' },
+    { label: 'Package Path', name: 'package_path', value: '' },
+    { label: 'Created By', name: 'created_by__username', value: '' },
+  ]);
 
   useEffect(() => {
     if (templates.length === 0) {
@@ -102,29 +109,38 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     )
   }
 
-  const handleChangePage = (event, requestedPage) => {
-    const offset = requestedPage * rowsPerPage;
-    getJobTemplates(token, rowsPerPage, offset).then((response) => {
+  const fetchAndSetTemplates = (page, pageSize, filters) => {
+    const offset = page * pageSize;
+    getJobTemplates(token, pageSize, offset, filters).then((response) => {
       setTemplates(response.results);
       setCount(response.count);
-    })
+    });
+  }
+
+  const handleChangePage = (event, requestedPage) => {
     setPage(requestedPage);
+    fetchAndSetTemplates(requestedPage, rowsPerPage, filters);
   };
 
   const handleRowsPerPage = (event) => {
     const newPageSize = event.target.value;
     const newPage = parseInt(rowsPerPage * page / newPageSize);
-    const offset = newPageSize * newPage;
-    getJobTemplates(token, newPageSize, offset).then((response) => {
-      setTemplates(response.results);
-      setCount(response.count);
-    })
     setPage(newPage);
     setRowsPerPage(newPageSize);
+    fetchAndSetTemplates(newPage, newPageSize, filters);
   };
+
+  const handleFilterChange = (filters) => {
+    setFilters(filters);
+    setPage(0)
+    fetchAndSetTemplates(page, rowsPerPage, filters);
+  }
 
   return (
     <div id="job-templates-selection-table">
+      <Box style={{ marginBottom: 20 }}>
+        <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
+      </Box>
       <TableContainer component={Paper}>
         <RadioGroup name="template-id" value={task.template.id} onChange={handleSelectionChange}>
           <Table aria-label="templates table">

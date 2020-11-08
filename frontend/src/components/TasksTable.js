@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
   Box, Collapse, IconButton, Paper,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField,
-  Button,
+  Button, Select, MenuItem, InputLabel, FormControl,
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -14,6 +14,18 @@ import TaskDetail from './TaskDetail';
 import { beautifyDate, statusIdToText } from '../helperFunctions';
 import FilterDialog from './FilterDialog';
 
+function SelectStatus() {
+  const selectList = [0, 1, 2, 3, 4, 5];
+  return (
+    <FormControl style={{ minWidth: '100%' }}>
+      <InputLabel htmlFor="status">Status</InputLabel>
+      <Select id="status" name="status" label="Status" defaultValue="">
+        <MenuItem value=""><em>None</em></MenuItem>
+        { selectList.map(item => <MenuItem value={item} key={item}>{ statusIdToText(item) }</MenuItem>) }
+      </Select>
+    </FormControl>
+  );
+}
 
 function TasksTable({ token }) {
   let [tasks, setTasks] = useState([]);
@@ -22,8 +34,10 @@ function TasksTable({ token }) {
   let [rowsPerPage, setRowsPerPage] = useState(25);
   let [search, setSearch] = useState('');
   let [filters, setFilters] = useState([
-    { label: 'Name', name: 'name', value: '' },
     { label: 'Template Name', name: 'template__name', value: '' },
+    { label: 'Inventory Name', name: 'inventory__name', value: '' },
+    { label: 'Created By', name: 'created_by__username', value: '' },
+    { label: 'Status', name: 'status', value: '', component: <SelectStatus/> },
   ]);
 
   useEffect(() => {
@@ -52,7 +66,7 @@ function TasksTable({ token }) {
 
   const fetchAndSetTasks = (page, pageSize, filters, search) => {
     const offset = page * pageSize;
-    getTasks(token, rowsPerPage, offset, filters, search).then((response) => {
+    getTasks(token, pageSize, offset, filters, search).then((response) => {
       setTasks(response.results);
       setCount(response.count);
     });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { getWizardTask, getToken } from '../redux/reducers';
+import { getWizardTask } from '../redux/reducers';
 import { connect } from 'react-redux';
 import { Table, TableRow, TableCell, Paper, TableBody } from '@material-ui/core';
 

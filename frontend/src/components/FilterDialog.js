@@ -25,13 +25,18 @@ function FilterDialog({ filters, onFilterChange }) {
           <DialogTitle>Filters</DialogTitle>
           <DialogContent>
               {filters.map((filter, index) => {
-                return <div key={index}>
-                  <TextField
-                    label={filter.label}
-                    name={filter.name}
-                    defaultValue={filter.value}
-                  />
-                </div>
+                return <React.Fragment key={index}>
+                  {
+                    filter.component ? filter.component :
+                    <div>
+                      <TextField
+                        label={filter.label}
+                        name={filter.name}
+                        defaultValue={filter.value}
+                      />
+                    </div>
+                  }
+                </React.Fragment>
               })}
           </DialogContent>
           <DialogActions>
