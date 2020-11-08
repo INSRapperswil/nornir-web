@@ -1,7 +1,16 @@
 const backend = "http://localhost:8000";
 
-export function getTasks(token, limit=25, offset=0, filters={}, search='') {
-  return getAuthenticatedJson(`/api/tasks/?limit=${limit}&offset=${offset}&search=${search}`, token).then(parseJson);
+function createFilterString(filters) {
+  let filterString = '';
+  for (let filter of filters) {
+    filterString += `&${filter.name}=${filter.value}`;
+  }
+  return filterString;
+}
+
+export function getTasks(token, limit=25, offset=0, filters=[], search='') {
+  return getAuthenticatedJson(`/api/tasks/?limit=${limit}&offset=${offset}&search=${search}${createFilterString(filters)}`, token)
+          .then(parseJson);
 }
 
 export function getTaskDetails(token, taskId) {

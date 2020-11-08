@@ -3,7 +3,8 @@ import { getTasks } from '../api';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Box, Collapse, IconButton, Paper,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField, Button,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField,
+  Button,
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -11,20 +12,8 @@ import { getToken } from '../redux/reducers';
 import { connect } from 'react-redux';
 import TaskDetail from './TaskDetail';
 import { beautifyDate, statusIdToText } from '../helperFunctions';
+import FilterDialog from './FilterDialog';
 
-
-function Filter({ filters }) {
-  return (
-    <form>
-      {filters.map((filter, index) => {
-        return <div key={index}>
-          <TextField label={filter.label} />
-        </div>
-      })}
-      <Button>Filter</Button>
-    </form>
-  );
-}
 
 function TasksTable({ token }) {
   let [tasks, setTasks] = useState([]);
@@ -32,7 +21,10 @@ function TasksTable({ token }) {
   let [page, setPage] = useState(0);
   let [rowsPerPage, setRowsPerPage] = useState(25);
   let [search, setSearch] = useState('');
-
+  let [filters, setFilters] = useState([
+    { label: 'Name', name: 'name', value: '' },
+    { label: 'Template Name', name: 'template__name', value: '' },
+  ]);
 
   useEffect(() => {
     if (tasks.length === 0) {
@@ -63,22 +55,27 @@ function TasksTable({ token }) {
     getTasks(token, rowsPerPage, offset, filters, search).then((response) => {
       setTasks(response.results);
       setCount(response.count);
-    })
+    });
     setPage(page);
   };
 
   const handleSearch = (event) => {
-    fetchAndSetTasks(0, rowsPerPage, {}, event.target.value);
+    fetchAndSetTasks(0, rowsPerPage, filters, event.target.value);
+  };
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+    fetchAndSetTasks(0, rowsPerPage, newFilters, search);
   };
 
   const handleChangePage = (event, requestedPage) => {
-    fetchAndSetTasks(requestedPage, rowsPerPage, {}, search);
+    fetchAndSetTasks(requestedPage, rowsPerPage, filters, search);
   }
 
   const handleRowsPerPage = (event) => {
     const newPageSize = event.target.value;
     const newPage = parseInt(rowsPerPage * page / newPageSize);
-    fetchAndSetTasks(newPage, newPageSize, {}, search)
+    fetchAndSetTasks(newPage, newPageSize, filters, search);
     setRowsPerPage(newPageSize);
   };
   
@@ -129,6 +126,7 @@ function TasksTable({ token }) {
           onChange={setSearch}
         />
         <Button onClick={handleSearch}>Search</Button>
+        <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
       </Box>
       <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="simple table">
