@@ -74,7 +74,7 @@ function TasksTable({ token }) {
   };
 
   const handleSearch = (event) => {
-    fetchAndSetTasks(0, rowsPerPage, filters, event.target.value);
+    fetchAndSetTasks(0, rowsPerPage, filters, search);
   };
 
   const handleFilterChange = (newFilters) => {
@@ -137,7 +137,7 @@ function TasksTable({ token }) {
           label="Search Field"
           variant="outlined"
           value={search}
-          onChange={setSearch}
+          onChange={(e) => setSearch(e.target.value)}
         />
         <Button onClick={handleSearch}>Search</Button>
         <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>

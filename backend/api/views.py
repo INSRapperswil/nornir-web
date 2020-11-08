@@ -48,7 +48,7 @@ class JobTemplateViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.DjangoModelPermissions]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
     filter_fields = ['file_name', 'function_name', 'package_path', 'created_by__username']
-    search_fields = ['name', 'function_name']
+    search_fields = ['name', 'function_name', 'file_name']
     ordering_fields = ['name', 'package_path', 'file_name', 'function_name', 'created_by__username']
 
 

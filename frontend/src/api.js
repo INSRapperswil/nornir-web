@@ -17,8 +17,8 @@ export function getTaskDetails(token, taskId) {
   return getAuthenticatedJson(`/api/tasks/${taskId}/`, token).then(parseJson);
 }
 
-export function getJobTemplates(token, limit=25, offset=0, filters=[]) {
-  return getAuthenticatedJson(`/api/templates/?limit=${limit}&offset=${offset}${createFilterString(filters)}`, token).then(parseJson);
+export function getJobTemplates(token, limit=25, offset=0, filters=[], search='') {
+  return getAuthenticatedJson(`/api/templates/?limit=${limit}&offset=${offset}&search=${search}${createFilterString(filters)}`, token).then(parseJson);
 }
 
 export function getJobTemplateDetails(token, jobTemplateId) {

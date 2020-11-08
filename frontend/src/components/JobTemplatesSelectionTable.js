@@ -6,7 +6,7 @@ import { getJobTemplates } from '../api';
 import {
   RadioGroup, Radio,
   Table, TableHead, TableBody, TableContainer, TableRow, TableCell, TablePagination,
-  Paper, Box, Typography, Collapse, IconButton, FormControlLabel,
+  Paper, Box, Typography, Collapse, IconButton, FormControlLabel, Button, TextField, 
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -20,6 +20,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
   let [rowsPerPage, setRowsPerPage] = useState(25);
+  let [search, setSearch] = useState('');
   let [filters, setFilters] = useState([
     { label: 'File Name', name: 'file_name', value: '' },
     { label: 'Function Name', name: 'function_name', value: '' },
@@ -109,9 +110,9 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     )
   }
 
-  const fetchAndSetTemplates = (page, pageSize, filters) => {
+  const fetchAndSetTemplates = (page, pageSize, filters, search) => {
     const offset = page * pageSize;
-    getJobTemplates(token, pageSize, offset, filters).then((response) => {
+    getJobTemplates(token, pageSize, offset, filters, search).then((response) => {
       setTemplates(response.results);
       setCount(response.count);
     });
@@ -119,7 +120,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
 
   const handleChangePage = (event, requestedPage) => {
     setPage(requestedPage);
-    fetchAndSetTemplates(requestedPage, rowsPerPage, filters);
+    fetchAndSetTemplates(requestedPage, rowsPerPage, filters, search);
   };
 
   const handleRowsPerPage = (event) => {
@@ -127,18 +128,29 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     const newPage = parseInt(rowsPerPage * page / newPageSize);
     setPage(newPage);
     setRowsPerPage(newPageSize);
-    fetchAndSetTemplates(newPage, newPageSize, filters);
+    fetchAndSetTemplates(newPage, newPageSize, filters, search);
   };
 
   const handleFilterChange = (filters) => {
     setFilters(filters);
     setPage(0)
-    fetchAndSetTemplates(page, rowsPerPage, filters);
+    fetchAndSetTemplates(page, rowsPerPage, filters, search);
+  }
+
+  const handleSearch = (event) => {
+    fetchAndSetTemplates(0, rowsPerPage, filters, search);
   }
 
   return (
     <div id="job-templates-selection-table">
       <Box style={{ marginBottom: 20 }}>
+        <TextField
+          label="Search Field"
+          variant="outlined"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <Button onClick={handleSearch}>Search</Button>
         <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
       </Box>
       <TableContainer component={Paper}>
