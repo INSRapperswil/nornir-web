@@ -16,7 +16,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     """
     ViewSet which lists all tasks known to the system
     """
-    queryset = Task.objects.all()
+    queryset = Task.objects.all().order_by('-id')
     serializer_class = TaskSerializer
     permission_classes = [permissions.DjangoModelPermissions]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
@@ -75,7 +75,7 @@ class InventoryViewSet(viewsets.ModelViewSet):
         return paginator.get_paginated_response(data)
 
     # allows url pattern: /api/inventory/{inventory_id}/host/{name}
-    @action(detail=True, methods=['GET'], name='hosts', url_path='hosts/(?P<name>[a-z0-9]+)')
+    @action(detail=True, methods=['GET'], name='hosts', url_path='hosts/(?P<name>[a-z0-9.-]+)')
     def host_detail(self, request, pk, name=None):
         inventory = self.get_object()
         try:

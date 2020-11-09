@@ -27,16 +27,18 @@ export function fetchUser() {
 export function postTaskWizard() {
   return (dispatch, getState) => {
     dispatch({ type: "POST_TASK_WIZARD_STARTED" });
-
+    let inventoryId = getState().inventorySelection.inventory;
     let task = getState().taskWizard.task;
+    
     task.template = task.template.id;
+    task.inventory = inventoryId;
     if(!task.date_scheduled) {
       delete task.date_scheduled;
     }
     return api.postTask(getState().user.token, getState().taskWizard.task)
     .then((result) => {
       dispatch({ type: "POST_TASK_WIZARD_SUCCEEDED", lastCreatedTaskId: result.id })
-      return result.id;
+      return result;
     })
     .catch((error) => dispatch({ type: "POST_TASK_WIZARD_FAILED", error }));
   };
@@ -45,6 +47,12 @@ export function postTaskWizard() {
 export function updateTaskWizard(task) {
   return (dispatch, getState) => {
     dispatch({ type: "UPDATE_TASK_WIZARD", task: { ...getState().taskWizard.task, ...task }});
+  };
+}
+
+export function updateInventorySelection(inventory) {
+  return (dispatch, getState) => {
+    dispatch({ type: "UPDATE_INVENTORY_SELECTION", ...getState().inventorySelection, ...inventory });
   };
 }
 

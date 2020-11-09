@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { getWizardTask, getToken } from '../redux/reducers';
+import { getWizardTask, getToken, getInventorySelectionId } from '../redux/reducers';
 import { updateTaskWizard } from '../redux/actions';
 import { connect } from 'react-redux';
 import { getInventoryHosts } from '../api';
 import { EnhancedTable } from './EnhancedTable';
 import InventoryHostDetail from './InventoryHostDetail';
+import InventorySelector from './InventorySelector';
 import FilterDialog from './FilterDialog';
 import { beautifyJson } from '../helperFunctions';
 import {
@@ -35,7 +36,7 @@ function checkStepValidity(filters) {
   return (filters !== undefined && filters.length > 0);
 }
 
-function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }) {
+function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, inventorySelectionId }) {
   let [inventory, setInventory] = useState([]);
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
@@ -51,12 +52,12 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
   const classes = useStyles();
 
   const detailComponentFunction = (name) => {
-    return <InventoryHostDetail inventoryId={task.inventory} name={name} />
+    return <InventoryHostDetail inventoryId={inventorySelectionId} name={name} />
   }
 
   useEffect(() => {
     if (inventory.length === 0) {
-      getInventoryHosts(token, task.inventory, rowsPerPage, 0, []).then((response) => {
+      getInventoryHosts(token, inventorySelectionId, rowsPerPage, 0, []).then((response) => {
         setInventory(response.results);
         setCount(response.count);
         setStepValid(checkStepValidity(task.filters));
@@ -68,7 +69,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
 
   const fetchAndSetHosts = (page, pageSize, _filters=filters, _search=search) => {
     const offset = pageSize * page;
-    getInventoryHosts(token, task.inventory, pageSize, offset, _filters, _search).then((response) => {
+    getInventoryHosts(token, inventorySelectionId, pageSize, offset, _filters, _search).then((response) => {
       setInventory(response.results);
       setCount(response.count);
     })
@@ -82,6 +83,14 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
   const handleChangePage = (event, requestedPage) => {
     setPage(requestedPage);
     fetchAndSetHosts(requestedPage, rowsPerPage);
+  };
+
+  const handleInventoryChange = (inventoryId) => {
+    getInventoryHosts(token, inventoryId, rowsPerPage, 0).then((response) => {
+      setInventory(response.results);
+      setCount(response.count);
+    });
+    setPage(0);
   };
 
   const handleRowsPerPage = (event) => {
@@ -114,6 +123,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
         <Button onClick={handleSearch} variant="outlined">Search</Button>
         <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
       </Box>
+      <InventorySelector onInventoryChange={handleInventoryChange} />
       <EnhancedTable
         rows={inventory}
         paginationDetails={{
@@ -124,13 +134,14 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
         selectionKey="name"
         selected={task.filters.hosts}
         setSelected={handleSelectionChange}
-        detailComponentFunction={detailComponentFunction}/>
+        detailComponentFunction={detailComponentFunction} />
     </div>
   );
 }
 
 const mapStateToProps = (state) => {
   return {
+    inventorySelectionId: getInventorySelectionId(state),
     task: getWizardTask(state),
     token: getToken(state),
   };

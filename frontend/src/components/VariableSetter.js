@@ -46,7 +46,7 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
     }
     if(!runNow) {
       const scheduledDate = new Date(target['scheduled-date'].value + 'T' + target['scheduled-time'].value);
-      taskAttr.date_scheduled = scheduledDate.toUTCString();
+      taskAttr.date_scheduled = scheduledDate.toISOString();
     }
     updateTaskWizard(taskAttr);
     setStepValid(taskAttr.name !== '');
@@ -59,7 +59,7 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
   }
   const getDefaultTime = () => {
     const now = new Date();
-    return now.toISOString().substring(11, 16);
+    return now.getHours() + ':' + now.getMinutes();
   }
 
   return (

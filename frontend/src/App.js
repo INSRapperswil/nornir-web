@@ -11,7 +11,6 @@ import NavTabs from './components/NavTabs';
 import Inventory from './pages/Inventory';
 import TaskDashboard from './pages/TaskDashboard';
 import JobTemplates from './pages/JobTemplates';
-import Prototype from './pages/Prototype';
 import Site404 from './pages/Site404';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -36,12 +35,6 @@ function App() {
       label: 'Job Templates',
       value: '/job-templates',
       component: <JobTemplates/>,
-      protected: true,
-    },
-    {
-      label: 'Prototype',
-      value: '/prototype',
-      component: <Prototype/>,
       protected: true,
     },
     {
