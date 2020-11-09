@@ -14,6 +14,32 @@ import { makeStyles } from '@material-ui/core/styles';
 import JobTemplateDetail from './JobTemplateDetail';
 import FilterDialog from './FilterDialog';
 
+const useStyles = makeStyles(theme => ({
+  table: {
+    minWidth: 650,
+  },
+  root: {
+    '& > *': {
+      borderBottom: 'unset',
+    },
+  },
+  radio: {
+    padding: '0 0 0 16px',
+    width: 48
+  },
+  detail: {
+    backgroundColor: theme.palette.action.hover,
+  },
+  box: {
+    marginBottom: 20,
+    display: 'flex',
+    alignItems: 'center',
+    '& > *': {
+      margin: 5,
+    }
+  },
+}));
+
 function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepValid }) {
   let [templates, setTemplates] = useState([]);
   let [openRow, setOpenRow] = useState(-1);
@@ -27,6 +53,8 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     { label: 'Package Path', name: 'package_path', value: '' },
     { label: 'Created By', name: 'created_by__username', value: '' },
   ]);
+
+  const classes = useStyles();
 
   useEffect(() => {
     if (templates.length === 0) {
@@ -47,28 +75,8 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     updateTaskWizard({ template: newSelected });
   }
 
-  const useStyles = makeStyles(theme => ({
-    table: {
-      minWidth: 650,
-    },
-    root: {
-      '& > *': {
-        borderBottom: 'unset',
-      },
-    },
-    radio: {
-      padding: '0 0 0 16px',
-      width: 48
-    },
-    detail: {
-      backgroundColor: theme.palette.action.hover,
-    },
-  }));
-
-
   function Row(props) {
     const { row, setOpen, isOpen } = props;
-    const classes = useStyles();
 
     const handleOpen = (event) => {
       event.stopPropagation();
@@ -145,14 +153,14 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
 
   return (
     <div id="job-templates-selection-table">
-      <Box style={{ marginBottom: 20 }}>
+      <Box className={classes.box}>
         <TextField
           label="Search Field"
           variant="outlined"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Button onClick={handleSearch}>Search</Button>
+        <Button onClick={handleSearch} variant="outlined">Search</Button>
         <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
       </Box>
       <TableContainer component={Paper}>

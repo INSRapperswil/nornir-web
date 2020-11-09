@@ -10,7 +10,18 @@ import { beautifyJson } from '../helperFunctions';
 import {
   Box, TextField, Button,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 
+const useStyles = makeStyles(theme => ({
+  box: {
+    marginBottom: 20,
+    display: 'flex',
+    alignItems: 'center',
+    '& > *': {
+      margin: 5,
+    }
+  },
+}));
 
 const headCells = [
   { id: 'name', numeric: false, label: 'Friendly Name', disablePadding: true },
@@ -36,6 +47,8 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
     { label: 'Groups', name: 'groups__contains', value: '' },
     { label: 'Platform', name: 'platform__contains', value: '' },
   ]);
+
+  const classes = useStyles();
 
   const detailComponentFunction = (name) => {
     return <InventoryHostDetail inventoryId={task.inventory} name={name} />
@@ -91,14 +104,14 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
 
   return (
     <div id="inventory-selection-table">
-      <Box style={{ marginBottom: 20 }}>
+      <Box className={classes.box}>
         <TextField
           label="Search Field"
           variant="outlined"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Button onClick={handleSearch}>Search</Button>
+        <Button onClick={handleSearch} variant="outlined">Search</Button>
         <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
       </Box>
       <EnhancedTable

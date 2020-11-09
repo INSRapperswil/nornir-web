@@ -14,6 +14,28 @@ import TaskDetail from './TaskDetail';
 import { beautifyDate, statusIdToText } from '../helperFunctions';
 import FilterDialog from './FilterDialog';
 
+const useStyles = makeStyles(theme => ({
+  table: {
+    minWidth: 650,
+  },
+  root: {
+    '& > *': {
+      borderBottom: 'unset',
+    },
+  },
+  detail: {
+    backgroundColor: theme.palette.action.hover,
+  },
+  box: {
+    marginBottom: 20,
+    display: 'flex',
+    alignItems: 'center',
+    '& > *': {
+      margin: 5,
+    }
+  },
+}));
+
 function SelectStatus() {
   const selectList = [0, 1, 2, 3, 4, 5];
   return (
@@ -51,19 +73,6 @@ function TasksTable({ token }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const useStyles = makeStyles(theme => ({
-    table: {
-      minWidth: 650,
-    },
-    root: {
-      '& > *': {
-        borderBottom: 'unset',
-      },
-    },
-    detail: {
-      backgroundColor: theme.palette.action.hover,
-    },
-  }));
   const classes = useStyles();
 
   const fetchAndSetTasks = (page, pageSize, filters, search) => {
@@ -134,14 +143,14 @@ function TasksTable({ token }) {
 
   return (
     <React.Fragment>
-      <Box style={{ marginBottom: 20 }}>
+      <Box className={classes.box}>
         <TextField
           label="Search Field"
           variant="outlined"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Button onClick={handleSearch}>Search</Button>
+        <Button onClick={handleSearch} variant="outlined">Search</Button>
         <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
       </Box>
       <TableContainer component={Paper}>
