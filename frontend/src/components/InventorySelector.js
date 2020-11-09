@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getInventoryList } from '../api';
-import { getInventorySelection, getToken } from '../redux/reducers';
+import { getInventorySelectionId, getToken } from '../redux/reducers';
 import { updateInventorySelection } from '../redux/actions';
 import { connect } from 'react-redux';
 import {
@@ -37,7 +37,7 @@ function InventorySelector({ token, inventory, onInventoryChange, updateInventor
         labelId="inventory-select-label"
         id="inventory-select"
         onChange={handleChange}
-        value={inventory.inventory}
+        value={inventory}
         label="Inventory"
       >
         {Object.keys(inventoryList).map((key) => (
@@ -50,7 +50,7 @@ function InventorySelector({ token, inventory, onInventoryChange, updateInventor
 
 const mapStateToProps = (state) => {
   return {
-    inventory: getInventorySelection(state),
+    inventory: getInventorySelectionId(state),
     token: getToken(state),
   };
 };

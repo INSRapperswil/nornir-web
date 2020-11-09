@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getWizardTask, getToken, getInventorySelection } from '../redux/reducers';
+import { getWizardTask, getToken, getInventorySelectionId } from '../redux/reducers';
 import { updateTaskWizard } from '../redux/actions';
 import { connect } from 'react-redux';
 import { getInventoryHosts } from '../api';
@@ -20,25 +20,25 @@ function checkStepValidity(filters) {
   return (filters !== undefined && filters.length > 0);
 }
 
-function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, inventorySelection }) {
+function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, inventorySelectionId }) {
   let [inventory, setInventory] = useState([]);
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
   let [rowsPerPage, setRowsPerPage] = useState(25);
 
   const detailComponentFunction = (name) => {
-    return <InventoryHostDetail inventoryId={inventorySelection.inventory} name={name} />
+    return <InventoryHostDetail inventoryId={inventorySelectionId} name={name} />
   }
 
   useEffect(() => {
     if (inventory.length === 0) {
-      getInventoryHosts(token, inventorySelection.inventory, rowsPerPage, 0).then((response) => {
+      getInventoryHosts(token, inventorySelectionId, rowsPerPage, 0).then((response) => {
         setInventory(response.results);
         setCount(response.count);
         setStepValid(checkStepValidity(task.filters));
       });
     }
-  }, [inventory, setInventory, token, task, setStepValid, rowsPerPage, inventorySelection]);
+  }, [inventory, setInventory, token, task, setStepValid, rowsPerPage, inventorySelectionId]);
 
   const handleSelectionChange = (params) => {
     updateTaskWizard({ filters: { hosts: params } });
@@ -47,7 +47,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
   }
   const handleChangePage = (event, requestedPage) => {
     const offset = requestedPage * rowsPerPage;
-    getInventoryHosts(token, inventorySelection.inventory, rowsPerPage, offset).then((response) => {
+    getInventoryHosts(token, inventorySelectionId, rowsPerPage, offset).then((response) => {
       setInventory(response.results);
       setCount(response.count);
     })
@@ -66,7 +66,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
     const newPageSize = event.target.value;
     const newPage = parseInt(rowsPerPage * page / newPageSize);
     const offset = newPageSize * newPage;
-    getInventoryHosts(token, inventorySelection.inventory, newPageSize, offset).then((response) => {
+    getInventoryHosts(token, inventorySelectionId, newPageSize, offset).then((response) => {
       setInventory(response.results);
       setCount(response.count);
     })
@@ -94,7 +94,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
 
 const mapStateToProps = (state) => {
   return {
-    inventorySelection: getInventorySelection(state),
+    inventorySelectionId: getInventorySelectionId(state),
     task: getWizardTask(state),
     token: getToken(state),
   };

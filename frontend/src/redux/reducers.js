@@ -117,8 +117,8 @@ export function getWizard(state) {
   return state.taskWizard;
 }
 
-export function getInventorySelection(state) {
-  return state.inventorySelection;
+export function getInventorySelectionId(state) {
+  return state.inventorySelection.inventory;
 }
 
 export function getToken(state) {
