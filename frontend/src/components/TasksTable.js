@@ -47,7 +47,9 @@ function TasksTable({ token }) {
         setCount(response.count);
       });
     }
-  }, [tasks, setTasks, token, rowsPerPage]);
+  // empty dependencies array, so it only runs on mount.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const useStyles = makeStyles(theme => ({
     table: {

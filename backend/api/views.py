@@ -67,7 +67,7 @@ class InventoryViewSet(viewsets.ModelViewSet):
         inventory = self.get_object()
         query_params = []
         for key, value in request.query_params.items():
-            query_params.append({key: value}) if key in self.filter_fields else None
+            query_params.append({key: value}) if key in self.filter_fields and value else None
         queryset = inventory.get_hosts(query_params)
         paginator = self.pagination_class()
         data = paginator.paginate_queryset(queryset=queryset, request=request)

@@ -36,7 +36,9 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
         setStepValid(task.template.id !== 0);
       });
     }
-  }, [templates, setTemplates, setStepValid, task, token, rowsPerPage]);
+  // empty dependencies array, so it only runs on mount.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
 
   const handleSelectionChange = (params) => {
@@ -110,9 +112,9 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     )
   }
 
-  const fetchAndSetTemplates = (page, pageSize, filters, search) => {
+  const fetchAndSetTemplates = (page, pageSize, _filters=filters, _search=search) => {
     const offset = page * pageSize;
-    getJobTemplates(token, pageSize, offset, filters, search).then((response) => {
+    getJobTemplates(token, pageSize, offset, _filters, _search).then((response) => {
       setTemplates(response.results);
       setCount(response.count);
     });
@@ -120,7 +122,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
 
   const handleChangePage = (event, requestedPage) => {
     setPage(requestedPage);
-    fetchAndSetTemplates(requestedPage, rowsPerPage, filters, search);
+    fetchAndSetTemplates(requestedPage, rowsPerPage);
   };
 
   const handleRowsPerPage = (event) => {
@@ -128,13 +130,13 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     const newPage = parseInt(rowsPerPage * page / newPageSize);
     setPage(newPage);
     setRowsPerPage(newPageSize);
-    fetchAndSetTemplates(newPage, newPageSize, filters, search);
+    fetchAndSetTemplates(newPage, newPageSize);
   };
 
   const handleFilterChange = (filters) => {
     setFilters(filters);
     setPage(0)
-    fetchAndSetTemplates(page, rowsPerPage, filters, search);
+    fetchAndSetTemplates(page, rowsPerPage, filters);
   }
 
   const handleSearch = (event) => {

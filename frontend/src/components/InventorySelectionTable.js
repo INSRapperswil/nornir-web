@@ -5,13 +5,15 @@ import { connect } from 'react-redux';
 import { getInventoryHosts } from '../api';
 import { EnhancedTable } from './EnhancedTable';
 import InventoryHostDetail from './InventoryHostDetail';
+import FilterDialog from './FilterDialog';
+import { beautifyJson } from '../helperFunctions';
 
 
 const headCells = [
   { id: 'name', numeric: false, label: 'Friendly Name', disablePadding: true },
   { id: 'hostname', numeric: false, label: 'Hostname' },
   { id: 'port', numeric: false, label: 'Port' },
-  { id: 'groups', numeric: false, label: 'Groups', getValue: (value) => JSON.stringify(value) },
+  { id: 'groups', numeric: false, label: 'Groups', getValue: (value) => beautifyJson(value) },
   { id: 'platform', numeric: false, label: 'Platform' },
 ];
 
@@ -24,6 +26,12 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
   let [rowsPerPage, setRowsPerPage] = useState(25);
+  let [filters, setFilters] = useState([
+    { label: 'Name', name: 'name__contains', value: '' },
+    { label: 'hostname', name: 'hostname__contains', value: '' },
+    { label: 'Groups', name: 'groups__contains', value: '' },
+    { label: 'Platform', name: 'platform__contains', value: '' },
+  ]);
 
   const detailComponentFunction = (name) => {
     return <InventoryHostDetail inventoryId={task.inventory} name={name} />
@@ -31,42 +39,51 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
 
   useEffect(() => {
     if (inventory.length === 0) {
-      getInventoryHosts(token, task.inventory, rowsPerPage, 0).then((response) => {
+      getInventoryHosts(token, task.inventory, rowsPerPage, 0, []).then((response) => {
         setInventory(response.results);
         setCount(response.count);
         setStepValid(checkStepValidity(task.filters));
       });
     }
-  }, [inventory, setInventory, token, task, setStepValid, rowsPerPage]);
+  // empty dependencies array, so it only runs on mount.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchAndSetHosts = (page, pageSize, _filters=filters) => {
+    const offset = pageSize * page;
+    getInventoryHosts(token, task.inventory, pageSize, offset, _filters).then((response) => {
+      setInventory(response.results);
+      setCount(response.count);
+    })
+  };
 
   const handleSelectionChange = (params) => {
     updateTaskWizard({ filters: { hosts: params } });
     const valid = checkStepValidity(params);
     setStepValid(valid);
-  }
+  };
   const handleChangePage = (event, requestedPage) => {
-    const offset = requestedPage * rowsPerPage;
-    getInventoryHosts(token, task.inventory, rowsPerPage, offset).then((response) => {
-      setInventory(response.results);
-      setCount(response.count);
-    })
     setPage(requestedPage);
+    fetchAndSetHosts(requestedPage, rowsPerPage);
   };
 
   const handleRowsPerPage = (event) => {
     const newPageSize = event.target.value;
     const newPage = parseInt(rowsPerPage * page / newPageSize);
-    const offset = newPageSize * newPage;
-    getInventoryHosts(token, task.inventory, newPageSize, offset).then((response) => {
-      setInventory(response.results);
-      setCount(response.count);
-    })
     setPage(newPage);
     setRowsPerPage(newPageSize);
+    fetchAndSetHosts(newPage, newPageSize);
+  };
+
+  const handleFilterChange = (filters) => {
+    setFilters(filters);
+    setPage(0);
+    fetchAndSetHosts(page, rowsPerPage, filters);
   };
 
   return (
     <div id="inventory-selection-table">
+      <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
       <EnhancedTable
         rows={inventory}
         paginationDetails={{

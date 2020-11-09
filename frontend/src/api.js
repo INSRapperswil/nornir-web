@@ -3,7 +3,9 @@ const backend = "http://localhost:8000";
 function createFilterString(filters) {
   let filterString = '';
   for (let filter of filters) {
-    filterString += `&${filter.name}=${filter.value}`;
+    if(filter.value) {
+      filterString += `&${filter.name}=${filter.value}`;
+    }
   }
   return filterString;
 }
@@ -25,8 +27,9 @@ export function getJobTemplateDetails(token, jobTemplateId) {
   return getAuthenticatedJson(`/api/templates/${jobTemplateId}/`, token).then(parseJson);
 }
 
-export function getInventoryHosts(token, inventoryId, limit=25, offset=0) {
-  return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts/?limit=${limit}&offset=${offset}`, token).then(parseJson);
+export function getInventoryHosts(token, inventoryId, limit=25, offset=0, filters=[]) {
+  const url = `/api/inventories/${inventoryId}/hosts/?limit=${limit}&offset=${offset}${createFilterString(filters)}`;
+  return getAuthenticatedJson(url, token).then(parseJson);
 }
 
 export function getHostDetails(token, inventoryId, friendly_name) {
