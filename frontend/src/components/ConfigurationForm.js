@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { getConfiguration } from '../api';
+import { getConfiguration, postConfiguration } from '../api';
 import { getToken } from '../redux/reducers';
 import { connect } from 'react-redux';
-import { Button, Checkbox, FormControl, InputLabel, Select, MenuItem, TextField } from '@material-ui/core';
+import { 
+  Button, Checkbox, FormControl, FormControlLabel, InputLabel, Select, MenuItem, TextField 
+} from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -25,18 +27,55 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ConfigurationForm({ token }) {
-  let [configuration, setConfiguration] = useState({ "notLoaded": true });
+  let [loadState, setLoadState] = useState({ "notLoaded": true });
+  let [loggingEnabled, setLoggingEnabled] = useState({});
+  let [loggingFormat, setLoggingFormat] = useState({});
+  let [loggingLevel, setLoggingLevel] = useState({});
+  let [loggingFile, setLoggingFile] = useState({});
+  let [runnerOptionsNumWorkers, setRunnerOptionsNumWorkers] = useState({});
+  let [runnerPlugin, setRunnerPlugin] = useState({});
 
   useEffect(() => {
-    if (configuration.notLoaded) {
-      getConfiguration(token).then((response) => setConfiguration(response));
+    if (loadState.notLoaded) {
+      getConfiguration(token).then((response) => {
+        setLoadState(loadState.notLoaded = false);
+        setLoggingEnabled(response.logging.enabled);
+        setLoggingFormat(response.logging.format);
+        setLoggingLevel(response.logging.level);
+        setLoggingFile(response.logging.log_file);
+        setRunnerOptionsNumWorkers(response.runner.options.num_workers);
+        setRunnerPlugin(response.runner.plugin);
+        console.log(response.logging.format);
+      });
     }
-  }, [configuration, setConfiguration, token]);
+  }, [
+    token,
+    loadState, setLoadState,
+    loggingEnabled, setLoggingEnabled,
+    loggingFormat, setLoggingFormat,
+    loggingLevel, setLoggingLevel,
+    loggingFile, setLoggingFile,
+    runnerOptionsNumWorkers, setRunnerOptionsNumWorkers,
+    runnerPlugin, setRunnerPlugin,
+  ]);
 
   const classes = useStyles();
 
-  const handleLevelSelection= (event) => {
+  const handleLoggingEnabledChange = (event) => {
+    console.log(event.target.checked);
+    loggingEnabled = event.target.checked;
+    setLoggingEnabled(loggingEnabled)
+  };
+
+  const handleLevelSelection = (event) => {
     console.log(event.target.value);
+    loggingLevel = event.target.value;
+    setLoggingLevel(loggingLevel);
+  };
+
+  const updateConfigurationHandler = () => {
+    let configuration = {}
+    postConfiguration(token, configuration);
   }
 
   try {
@@ -44,17 +83,19 @@ function ConfigurationForm({ token }) {
       <React.Fragment>
         <form noValidate className={classes.root} >
           <h2>Logging</h2>
-          <TextField id="outlined-basic" variant="outlined" className={classes.textField} label="loggingEnabled" value={configuration.logging.enabled} />
-          <TextField id="outlined-basic" variant="outlined" className={classes.textField} label="loggingFormat" value={configuration.logging.format} />
-          <TextField id="outlined-basic" variant="outlined" className={classes.textField} label="loggingLevel" value={configuration.logging.level} />
+          <FormControlLabel
+            control={<Checkbox checked={loggingEnabled} onChange={handleLoggingEnabledChange} name="loggingEnabled" />}
+            label="Logging Enabled"
+          />
+          <TextField id="outlined-basic" variant="outlined" className={classes.textField} label="Logging Format" defaultValue={loggingFormat} />
           <FormControl variant="outlined" className={classes.textField}>
-            <InputLabel id="demo-simple-select-outlined-label">loggingLevel</InputLabel>
+            <InputLabel id="logging-level-select-label">Logging Label</InputLabel>
             <Select
-              labelId="demo-simple-select-outlined-label"
-              id="demo-simple-select-outlined"
+              labelId="logging-level-select-label"
+              id="logging-level-select"
               onChange={handleLevelSelection}
-              value={configuration.logging.level}
-              label="loggingLevel"
+              defaultValue={loggingLevel}
+              label="Logging Level"
             >
               <MenuItem value="DEBUG">DEBUG</MenuItem>
               <MenuItem value="INFO">INFO</MenuItem>
@@ -62,17 +103,17 @@ function ConfigurationForm({ token }) {
               <MenuItem value="ERROR">CRITICAL</MenuItem>
             </Select>
           </FormControl>
-          <TextField id="outlined-basic" variant="outlined" className={classes.textField} label="logFile" value={configuration.logging.log_file} />
+          <TextField id="outlined-basic" variant="outlined" className={classes.textField} label="Log File" defaultValue={loggingFile} />
           <h2>Runner options</h2>
-          <TextField id="outlined-basic" variant="outlined" className={classes.textField} label="numWorkers" value={configuration.runner.options.num_workers} />
-          <TextField id="outlined-basic" variant="outlined" className={classes.textField} label="plugin" value={configuration.runner.plugin} />
+          <TextField id="outlined-basic" variant="outlined" className={classes.textField} label="Number of Workers" defaultValue={runnerOptionsNumWorkers} />
+          <TextField id="outlined-basic" variant="outlined" className={classes.textField} label="Runner Plugin" defaultValue={runnerPlugin} />
 
-          <Button variant="contained" type="submit">            Update Configuration        </Button>
+          <Button variant="contained" type="submit" onClick={updateConfigurationHandler}>Update Configuration</Button>
         </form>
       </React.Fragment>
     );
   } catch (error) {
-    return (<Alert severity="error" className={classes.alert}>Invalid Configuration file format!</Alert>);
+    return (<Alert severity="error" className={classes.alert}>Failed to load configuration or invalid file format! Check your backend.</Alert>);
   }
 
 }

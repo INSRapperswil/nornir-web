@@ -48,6 +48,10 @@ export function getConfiguration(token) {
   return getAuthenticatedJson(`/api/configuration/`, token).then(parseJson);
 }
 
+export function postConfiguration(token, configuration) {
+  return postAuthenticatedJson(`/api/configuration/`, token, configuration).then(parseJson);
+}
+
 export function authenticate(username, password) {
   return postJson('/api-token-auth/', { username, password }).then(parseJson);
 }
