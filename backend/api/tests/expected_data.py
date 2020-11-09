@@ -30,7 +30,7 @@ expected_jobtemplate_list = {
                 {'created_by': 'thomastest',
                  'description': 'Lists all CDP neighbors',
                  'detail': 'http://testserver/api/templates/2/',
-                 'file_name': 'get_cdp_neighbors.py',
+                 'file_name': 'get_cdp_neighbor.py',
                  'function_name': 'job_function',
                  'id': 2,
                  'name': 'Get CDP Neighbors',
