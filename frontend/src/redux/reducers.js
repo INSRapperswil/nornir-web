@@ -30,7 +30,7 @@ const initialUser = {
 
 function initialUserFunction(state = initialUser) {
   const token = sessionStorage.getItem("token")
-  if(token) {
+  if (token) {
     return { ...state, token: token };
   } else {
     return state;
@@ -59,7 +59,6 @@ const initialTaskWizardState = () => {
       variables: {},
       filters: { hosts: [] },
       template: { id: 0, },
-      inventory: 2,
     },
     lastCreatedTaskId: 0,
     isLoading: false,
@@ -82,10 +81,26 @@ function taskWizard(state = initialTaskWizardState(), action) {
   }
 }
 
+const initialInventory = {
+  inventory: 1,
+  isLoading: false,
+  error: null,
+}
+
+function inventorySelection(state = initialInventory, action) {
+  switch (action.type) {
+    case "UPDATE_INVENTORY_SELECTION":
+      return { ...state, isLoading: false, inventory: action.inventory };
+    default:
+      return state;
+  }
+}
+
 const reducers = combineReducers({
+  inventorySelection,
   tasks,
-  user,
   taskWizard,
+  user,
 });
 
 export default reducers;
@@ -100,6 +115,10 @@ export function getWizardTask(state) {
 
 export function getWizard(state) {
   return state.taskWizard;
+}
+
+export function getInventorySelectionId(state) {
+  return state.inventorySelection.inventory;
 }
 
 export function getToken(state) {
