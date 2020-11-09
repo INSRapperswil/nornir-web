@@ -29,7 +29,7 @@ class NornirHandler:
                                             'defaults_file': default_file
                                         }}, )
 
-    def get_hosts(self, filter_arguments=None, search_fields=None, search_argument='') -> list:
+    def get_hosts(self, filter_arguments=[], search_fields=None, search_argument='') -> list:
         filtered = self.nr.filter()
         filtered = self.filter_hosts(filtered, filter_arguments)
         if search_argument and search_fields:
@@ -42,6 +42,8 @@ class NornirHandler:
         return nornir
 
     def search_hosts(self, nornir, search_fields, search_argument):
+        if len(search_fields) == 0:
+            return nornir
         query = F(**{search_fields.pop(): search_argument})
         for field in search_fields:
             query = query | F(**{field: search_argument})
