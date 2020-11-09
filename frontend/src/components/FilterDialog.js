@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
-  Button, TextField,
+  Button, TextField, Badge,
 } from '@material-ui/core';
 
 function FilterDialog({ filters, onFilterChange }) {
@@ -17,9 +17,21 @@ function FilterDialog({ filters, onFilterChange }) {
     onFilterChange(filters);
   }
 
+  const getFiltersActive = () => {
+    let active = 0;
+    for (const filter of filters) {
+      if (filter.value) {
+        active++;
+      }
+    }
+    return active;
+  }
+
   return (
     <React.Fragment>
-      <Button variant="contained" onClick={(e) => setOpen(true)}>Filter</Button>
+      <Badge badgeContent={getFiltersActive()} color="primary">
+        <Button variant="contained" onClick={(e) => setOpen(true)}>Filter</Button>
+      </Badge>
       <Dialog open={open} onClose={(e) => setOpen(false)} aria-labelledby="filter-dialog">
         <form onSubmit={handleSubmit}>
           <DialogTitle>Filters</DialogTitle>
@@ -27,7 +39,7 @@ function FilterDialog({ filters, onFilterChange }) {
               {filters.map((filter, index) => {
                 return <React.Fragment key={index}>
                   {
-                    filter.component ? filter.component :
+                    filter.component ? filter.component(filter.value) :
                     <div>
                       <TextField
                         label={filter.label}
@@ -40,7 +52,8 @@ function FilterDialog({ filters, onFilterChange }) {
               })}
           </DialogContent>
           <DialogActions>
-            <Button type="submit">Filter</Button>
+            <Button type="reset">Clear Filter</Button>
+            <Button type="submit">Apply Filter</Button>
           </DialogActions>
         </form>
       </Dialog>

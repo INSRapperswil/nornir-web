@@ -36,12 +36,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function SelectStatus() {
+function SelectStatus({ defaultValue }) {
   const selectList = [0, 1, 2, 3, 4, 5];
   return (
     <FormControl style={{ minWidth: '100%' }}>
       <InputLabel htmlFor="status">Status</InputLabel>
-      <Select id="status" name="status" label="Status" defaultValue="">
+      <Select id="status" name="status" label="Status" defaultValue={defaultValue}>
         <MenuItem value=""><em>None</em></MenuItem>
         { selectList.map(item => <MenuItem value={item} key={item}>{ statusIdToText(item) }</MenuItem>) }
       </Select>
@@ -59,7 +59,7 @@ function TasksTable({ token }) {
     { label: 'Template Name', name: 'template__name', value: '' },
     { label: 'Inventory Name', name: 'inventory__name', value: '' },
     { label: 'Created By', name: 'created_by__username', value: '' },
-    { label: 'Status', name: 'status', value: '', component: <SelectStatus/> },
+    { label: 'Status', name: 'status', value: '', component: (defaultValue) => <SelectStatus defaultValue={defaultValue}/> },
   ]);
 
   useEffect(() => {
