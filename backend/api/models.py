@@ -38,9 +38,9 @@ class Inventory(models.Model):
     def __str__(self):
         return f'{self.id}: {self.name}'
 
-    def get_hosts(self, filter_arguments=None):
+    def get_hosts(self, filter_arguments=None, search_fields=None, search_argument=''):
         nh = NornirHandler(self.hosts_file, self.groups_file, self.defaults_file)
-        return nh.get_hosts(filter_arguments)
+        return nh.get_hosts(filter_arguments, search_fields, search_argument)
 
     def get_host_detail(self, name):
         nh = NornirHandler(self.hosts_file, self.groups_file, self.defaults_file)

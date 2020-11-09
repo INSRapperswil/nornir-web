@@ -27,8 +27,8 @@ export function getJobTemplateDetails(token, jobTemplateId) {
   return getAuthenticatedJson(`/api/templates/${jobTemplateId}/`, token).then(parseJson);
 }
 
-export function getInventoryHosts(token, inventoryId, limit=25, offset=0, filters=[]) {
-  const url = `/api/inventories/${inventoryId}/hosts/?limit=${limit}&offset=${offset}${createFilterString(filters)}`;
+export function getInventoryHosts(token, inventoryId, limit=25, offset=0, filters=[], search='') {
+  const url = `/api/inventories/${inventoryId}/hosts/?limit=${limit}&offset=${offset}&search=${search}${createFilterString(filters)}`;
   return getAuthenticatedJson(url, token).then(parseJson);
 }
 

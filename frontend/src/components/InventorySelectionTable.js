@@ -7,6 +7,9 @@ import { EnhancedTable } from './EnhancedTable';
 import InventoryHostDetail from './InventoryHostDetail';
 import FilterDialog from './FilterDialog';
 import { beautifyJson } from '../helperFunctions';
+import {
+  Box, TextField, Button,
+} from '@material-ui/core';
 
 
 const headCells = [
@@ -26,6 +29,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
   let [rowsPerPage, setRowsPerPage] = useState(25);
+  let [search, setSearch] = useState('');
   let [filters, setFilters] = useState([
     { label: 'Name', name: 'name__contains', value: '' },
     { label: 'hostname', name: 'hostname__contains', value: '' },
@@ -49,9 +53,9 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchAndSetHosts = (page, pageSize, _filters=filters) => {
+  const fetchAndSetHosts = (page, pageSize, _filters=filters, _search=search) => {
     const offset = pageSize * page;
-    getInventoryHosts(token, task.inventory, pageSize, offset, _filters).then((response) => {
+    getInventoryHosts(token, task.inventory, pageSize, offset, _filters, _search).then((response) => {
       setInventory(response.results);
       setCount(response.count);
     })
@@ -81,9 +85,22 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid }
     fetchAndSetHosts(page, rowsPerPage, filters);
   };
 
+  const handleSearch = (event) => {
+    fetchAndSetHosts(0, rowsPerPage, filters, search);
+  };
+
   return (
     <div id="inventory-selection-table">
-      <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
+      <Box style={{ marginBottom: 20 }}>
+        <TextField
+          label="Search Field"
+          variant="outlined"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <Button onClick={handleSearch}>Search</Button>
+        <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
+      </Box>
       <EnhancedTable
         rows={inventory}
         paginationDetails={{

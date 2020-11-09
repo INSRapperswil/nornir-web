@@ -64,11 +64,12 @@ class InventoryViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['GET'])
     def hosts(self, request, pk):
+        self.search_fields = ['name__contains', 'hostname__contains']
         inventory = self.get_object()
         query_params = []
         for key, value in request.query_params.items():
             query_params.append({key: value}) if key in self.filter_fields and value else None
-        queryset = inventory.get_hosts(query_params)
+        queryset = inventory.get_hosts(query_params, self.search_fields, request.query_params['search'])
         paginator = self.pagination_class()
         data = paginator.paginate_queryset(queryset=queryset, request=request)
         return paginator.get_paginated_response(data)
