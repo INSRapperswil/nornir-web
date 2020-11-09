@@ -47,8 +47,8 @@ class JobTemplateViewSet(viewsets.ModelViewSet):
     serializer_class = JobTemplateSerializer
     permission_classes = [permissions.DjangoModelPermissions]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
-    filter_fields = ['name', 'file_name', 'function_name', 'package_path', 'created_by__username']
-    search_fields = ['name', 'function_name']
+    filter_fields = ['file_name', 'function_name', 'package_path', 'created_by__username']
+    search_fields = ['name', 'function_name', 'file_name']
     ordering_fields = ['name', 'package_path', 'file_name', 'function_name', 'created_by__username']
 
 
@@ -60,11 +60,16 @@ class InventoryViewSet(viewsets.ModelViewSet):
     serializer_class = InventorySerializer
     permission_classes = [permissions.DjangoModelPermissions]
     pagination_class = InventoryPagination
+    filter_fields = ['groups__contains', 'platform__contains', 'name__contains', 'hostname__contains']
 
     @action(detail=True, methods=['GET'])
     def hosts(self, request, pk):
+        self.search_fields = ['name__contains', 'hostname__contains']
         inventory = self.get_object()
-        queryset = inventory.get_hosts(request.query_params)
+        query_params = []
+        for key, value in request.query_params.items():
+            query_params.append({key: value}) if key in self.filter_fields and value else None
+        queryset = inventory.get_hosts(query_params, self.search_fields, request.query_params['search'])
         paginator = self.pagination_class()
         data = paginator.paginate_queryset(queryset=queryset, request=request)
         return paginator.get_paginated_response(data)

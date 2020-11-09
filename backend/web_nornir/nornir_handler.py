@@ -29,15 +29,25 @@ class NornirHandler:
                                             'defaults_file': default_file
                                         }}, )
 
-    def get_hosts(self, filter_arguments=None) -> list:
-        if filter_arguments is None:
-            filter_arguments = {}
-        filter_arguments_copy = filter_arguments.copy()
-        groups = filter_arguments_copy.pop('group', None)
-        hosts = []
-        for name in self.nr.inventory.filter(F(groups__any=groups)).hosts if groups else self.nr.inventory.hosts:
-            hosts.append(self.get_host_detail(name))
-        return hosts
+    def get_hosts(self, filter_arguments=[], search_fields=None, search_argument='') -> list:
+        filtered = self.nr.filter()
+        filtered = self.filter_hosts(filtered, filter_arguments)
+        if search_argument and search_fields:
+            filtered = self.search_hosts(filtered, search_fields, search_argument)
+        return list(map(lambda host: self.get_host_detail(host), filtered.inventory.hosts))
+
+    def filter_hosts(self, nornir, filter_arguments: list):
+        for filter in filter_arguments:
+            nornir = nornir.filter(F(**filter))
+        return nornir
+
+    def search_hosts(self, nornir, search_fields, search_argument):
+        if len(search_fields) == 0:
+            return nornir
+        query = F(**{search_fields.pop(): search_argument})
+        for field in search_fields:
+            query = query | F(**{field: search_argument})
+        return nornir.filter(query)
 
     def get_host_detail(self, name: str) -> dict:
         try:

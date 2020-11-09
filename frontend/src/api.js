@@ -1,15 +1,26 @@
 const backend = "http://localhost:8000";
 
-export function getTasks(token, limit=25, offset=0) {
-  return getAuthenticatedJson(`/api/tasks/?limit=${limit}&offset=${offset}`, token).then(parseJson);
+function createFilterString(filters) {
+  let filterString = '';
+  for (let filter of filters) {
+    if(filter.value) {
+      filterString += `&${filter.name}=${filter.value}`;
+    }
+  }
+  return filterString;
+}
+
+export function getTasks(token, limit=25, offset=0, filters=[], search='') {
+  return getAuthenticatedJson(`/api/tasks/?limit=${limit}&offset=${offset}&search=${search}${createFilterString(filters)}`, token)
+          .then(parseJson);
 }
 
 export function getTaskDetails(token, taskId) {
   return getAuthenticatedJson(`/api/tasks/${taskId}/`, token).then(parseJson);
 }
 
-export function getJobTemplates(token, limit=25, offset=0) {
-  return getAuthenticatedJson(`/api/templates/?limit=${limit}&offset=${offset}`, token).then(parseJson);
+export function getJobTemplates(token, limit=25, offset=0, filters=[], search='') {
+  return getAuthenticatedJson(`/api/templates/?limit=${limit}&offset=${offset}&search=${search}${createFilterString(filters)}`, token).then(parseJson);
 }
 
 export function getJobTemplateDetails(token, jobTemplateId) {
@@ -20,8 +31,9 @@ export function getInventoryList(token) {
   return getAuthenticatedJson(`/api/inventories/`, token).then(parseJson);
 }
 
-export function getInventoryHosts(token, inventoryId, limit=25, offset=0) {
-  return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts/?limit=${limit}&offset=${offset}`, token).then(parseJson);
+export function getInventoryHosts(token, inventoryId, limit=25, offset=0, filters=[], search='') {
+  const url = `/api/inventories/${inventoryId}/hosts/?limit=${limit}&offset=${offset}&search=${search}${createFilterString(filters)}`;
+  return getAuthenticatedJson(url, token).then(parseJson);
 }
 
 export function getHostDetails(token, inventoryId, friendly_name) {
