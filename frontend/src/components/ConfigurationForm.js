@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getConfiguration, postConfiguration } from '../api';
 import { getToken } from '../redux/reducers';
 import { connect } from 'react-redux';
-import { 
-  Button, Checkbox, FormControl, FormControlLabel, InputLabel, Select, MenuItem, TextField 
+import {
+  Button, Checkbox, FormControl, FormControlLabel, InputLabel, Select, MenuItem, TextField
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
@@ -20,7 +20,10 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
     width: '50ch',
   },
-  alert: {
+  loggingFormat: {
+    width: '80ch',
+  },
+  info: {
     marginTop: theme.spacing(1),
     width: '50ch',
   },
@@ -28,24 +31,23 @@ const useStyles = makeStyles((theme) => ({
 
 function ConfigurationForm({ token }) {
   let [loadState, setLoadState] = useState({ "notLoaded": true });
-  let [loggingEnabled, setLoggingEnabled] = useState({});
-  let [loggingFormat, setLoggingFormat] = useState({});
-  let [loggingLevel, setLoggingLevel] = useState({});
-  let [loggingFile, setLoggingFile] = useState({});
-  let [runnerOptionsNumWorkers, setRunnerOptionsNumWorkers] = useState({});
-  let [runnerPlugin, setRunnerPlugin] = useState({});
+  let [loggingEnabled, setLoggingEnabled] = useState(false);
+  let [loggingFormat, setLoggingFormat] = useState('');
+  let [loggingLevel, setLoggingLevel] = useState('');
+  let [loggingFile, setLoggingFile] = useState('');
+  let [runnerOptionsNumWorkers, setRunnerOptionsNumWorkers] = useState('');
+  let [runnerPlugin, setRunnerPlugin] = useState('');
 
   useEffect(() => {
     if (loadState.notLoaded) {
       getConfiguration(token).then((response) => {
-        setLoadState(loadState.notLoaded = false);
         setLoggingEnabled(response.logging.enabled);
         setLoggingFormat(response.logging.format);
         setLoggingLevel(response.logging.level);
         setLoggingFile(response.logging.log_file);
         setRunnerOptionsNumWorkers(response.runner.options.num_workers);
         setRunnerPlugin(response.runner.plugin);
-        console.log(response.logging.format);
+        setLoadState(loadState.notLoaded = false);
       });
     }
   }, [
@@ -61,61 +63,53 @@ function ConfigurationForm({ token }) {
 
   const classes = useStyles();
 
-  const handleLoggingEnabledChange = (event) => {
-    console.log(event.target.checked);
-    loggingEnabled = event.target.checked;
-    setLoggingEnabled(loggingEnabled)
-  };
-
-  const handleLevelSelection = (event) => {
-    console.log(event.target.value);
-    loggingLevel = event.target.value;
-    setLoggingLevel(loggingLevel);
-  };
-
-  const updateConfigurationHandler = () => {
-    let configuration = {}
+  const updateConfigurationHandler = (event) => {
+    event.preventDefault();
+    let configuration = {
+      "logging": {
+        "enabled": loggingEnabled,
+        "format": loggingFormat,
+        "level": loggingLevel,
+        "log_file": loggingFile,
+      },
+      "runner": {
+        "options": {
+          "num_workers": parseInt(runnerOptionsNumWorkers),
+        },
+        "plugin": runnerPlugin,
+      },
+    };
     postConfiguration(token, configuration);
   }
 
-  try {
-    return (
-      <React.Fragment>
-        <form noValidate className={classes.root} >
-          <h2>Logging</h2>
-          <FormControlLabel
-            control={<Checkbox checked={loggingEnabled} onChange={handleLoggingEnabledChange} name="loggingEnabled" />}
-            label="Logging Enabled"
-          />
-          <TextField id="outlined-basic" variant="outlined" className={classes.textField} label="Logging Format" defaultValue={loggingFormat} />
-          <FormControl variant="outlined" className={classes.textField}>
-            <InputLabel id="logging-level-select-label">Logging Label</InputLabel>
-            <Select
-              labelId="logging-level-select-label"
-              id="logging-level-select"
-              onChange={handleLevelSelection}
-              defaultValue={loggingLevel}
-              label="Logging Level"
-            >
-              <MenuItem value="DEBUG">DEBUG</MenuItem>
-              <MenuItem value="INFO">INFO</MenuItem>
-              <MenuItem value="WARNING">WARNING</MenuItem>
-              <MenuItem value="ERROR">CRITICAL</MenuItem>
-            </Select>
-          </FormControl>
-          <TextField id="outlined-basic" variant="outlined" className={classes.textField} label="Log File" defaultValue={loggingFile} />
-          <h2>Runner options</h2>
-          <TextField id="outlined-basic" variant="outlined" className={classes.textField} label="Number of Workers" defaultValue={runnerOptionsNumWorkers} />
-          <TextField id="outlined-basic" variant="outlined" className={classes.textField} label="Runner Plugin" defaultValue={runnerPlugin} />
+  return (loadState.notLoaded === true ?
+    <Alert severity="info" className={classes.info}>Fetching configuration...</Alert>
+    :
+    <React.Fragment>
+      <form noValidate className={classes.root} onSubmit={updateConfigurationHandler}>
+        <h2>Logging</h2>
+        <FormControlLabel control={<Checkbox checked={loggingEnabled} onChange={(e) => setLoggingEnabled(e.target.checked)} name="loggingEnabled" />} label="Logging Enabled" />
+        <TextField id="loggingFormat" variant="outlined" className={[classes.textField, classes.loggingFormat].join(' ')} label="Logging Format" value={loggingFormat} onChange={(e) => setLoggingFormat(e.target.value)} />
+        <FormControl variant="outlined" className={classes.textField}>
+          <InputLabel id="loggingLevel-label">Logging Label</InputLabel>
+          <Select labelId="loggingLevel-label" id="loggingLevel" onChange={(e) => setLoggingLevel(e.target.value)} value={loggingLevel} label="Logging Level">
+            <MenuItem value="DEBUG">DEBUG</MenuItem>
+            <MenuItem value="INFO">INFO</MenuItem>
+            <MenuItem value="WARNING">WARNING</MenuItem>
+            <MenuItem value="ERROR">ERROR</MenuItem>
+            <MenuItem value="CRITICAL">CRITICAL</MenuItem>
+          </Select>
+        </FormControl>
+        <TextField id="loggingFile" variant="outlined" className={classes.textField} label="Log File" value={loggingFile} onChange={(e) => setLoggingFile(e.target.value)} />
 
-          <Button variant="contained" type="submit" onClick={updateConfigurationHandler}>Update Configuration</Button>
-        </form>
-      </React.Fragment>
-    );
-  } catch (error) {
-    return (<Alert severity="error" className={classes.alert}>Failed to load configuration or invalid file format! Check your backend.</Alert>);
-  }
+        <h2>Runner options</h2>
+        <TextField id="runnerOptionsNumWorkers" variant="outlined" className={classes.textField} label="Number of Workers" value={runnerOptionsNumWorkers} onChange={(e) => setRunnerOptionsNumWorkers(e.target.value)} />
+        <TextField id="runnerPlugin" variant="outlined" className={classes.textField} label="Runner Plugin" value={runnerPlugin} onChange={(e) => setRunnerPlugin(e.target.value)} />
 
+        <Button variant="contained" type="submit">Update Configuration</Button>
+      </form>
+    </React.Fragment>
+  );
 }
 
 const mapStateToProps = (state) => {
