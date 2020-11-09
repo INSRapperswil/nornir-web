@@ -52,7 +52,6 @@ function FilterDialog({ filters, onFilterChange }) {
               })}
           </DialogContent>
           <DialogActions>
-            <Button type="reset">Clear Filter</Button>
             <Button type="submit">Apply Filter</Button>
           </DialogActions>
         </form>
