@@ -2,35 +2,36 @@
 
 ## Setup
 
-Create venv and install requirements.
+Create venv and install requirements. Before running the migrate command, make sure you have created a PostgreSQL database named "nornir" and the connection string in `settings.py` is correct. 
 
 ```
 python -m venv venv
-venv/bin/pip install -r requirements.txt
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py create_groups
+python manage.py collectstatic
 ```
 
-Create Database in PostgreSQL, see `manage.py` for connection details.
+During development you can use the `python manage.py create_testdb` command to put some sample data into your database.
 
 ## Running
 
-Run the following commands:
-
+The backend requires a nginx server, redis server and celery worker running. nginx configuration is provided in this repository. For detailed configuration consult the SA documentation.
 ```
-venv/bin/python manage.py migrate
-venv/bin/python manage.py createsuperuser
-venv/bin/python manage.py create_groups
-venv/bin/python manage.py runserver
 docker run --name redis -p 6379:6379 -d redis
 celery -A backend worker
+daphne backend.asgi:application -b 0.0.0.0
 ```
-In development you can use the `venv/bin/python manage.py create_testdb` command to put some sample data into your database.
+
 
 Server is accessible at http://127.0.0.1:8000/api
 
-To have a look at the api definition go to http://127.0.0.1:8000/swagger-ui to see the swagger definition.
+For api definition check out http://127.0.0.1:8000/swagger-ui.
 You can also have a look at the openapi yaml at http://127.0.0.1:8000/openapi
 
-## API Authentication
+## API Authentication # TODO: reimplement using JWT token
 *Reference: https://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication*
 
 To obtain an Authentication Token, use the following parameters:
@@ -54,13 +55,13 @@ To authenticate regular requests, use the following HTTP-Header:
 `Authorization: Token 28aa707e466e9c21db8b5587f318fd70a48f6adc`
 
 ## Register new Job Templates
-To register a new Job Template, to to the web_nornir/job_templates folder and place you Template in it.
-Then Go to the admin dashboard and create a new Job Template in the database. The name you give it in the database
+To register a new Job Template, to to the web_nornir/job_templates folder and place you template in it.
+Then go to the admin dashboard and create a new Job Template in the database. The name you enter in the database
 must be equal to the filename without the file extension (If for example the file is called `hello_world.py`, the name is `hello_world`)
 
 ### What should the Template look like?
-Each template needs to contain the `job_function` function.
-Here is an example Template:
+Each template needs to contain the `job_function` function. If the function name is different, you must change it in the database accordingly.
+Here is an example template:
 ```python
 from nornir.core.task import Task, Result
 
