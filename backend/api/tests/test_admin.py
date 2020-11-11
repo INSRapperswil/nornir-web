@@ -1,17 +1,16 @@
 import pytest
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from pytest_lambda import lambda_fixture
 
 pytestmark = pytest.mark.django_db
 
-superuser = lambda_fixture(lambda: User.objects.get(username='thomastest'))
-
 
 # TODO: Get self.client.login to work, this ain't working...
 class TestAdminPermissions(TestCase):
     def test_superuser_permissions(self):
-        self.user = superuser
+        self.user = User.objects.get(username='thomastest')
         client = Client()
         client.force_login(user=self.user)
         admin_pages = [
