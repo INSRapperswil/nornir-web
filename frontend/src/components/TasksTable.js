@@ -11,7 +11,9 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { getToken } from '../redux/reducers';
 import { connect } from 'react-redux';
 import TaskDetail from './TaskDetail';
-import { beautifyDate, statusIdToText } from '../helperFunctions';
+import {
+  beautifyDate, statusIdToText, newOrderName, SortableTableHead,
+} from '../helperFunctions';
 import FilterDialog from './FilterDialog';
 
 const useStyles = makeStyles(theme => ({
@@ -55,6 +57,7 @@ function TasksTable({ token }) {
   let [page, setPage] = useState(0);
   let [rowsPerPage, setRowsPerPage] = useState(25);
   let [search, setSearch] = useState('');
+  let [orderBy, setOrderBy] = useState('');
   let [filters, setFilters] = useState([
     { label: 'Template Name', name: 'template__name', value: '' },
     { label: 'Inventory Name', name: 'inventory__name', value: '' },
@@ -75,9 +78,9 @@ function TasksTable({ token }) {
 
   const classes = useStyles();
 
-  const fetchAndSetTasks = (page, pageSize, filters, search) => {
+  const fetchAndSetTasks = (page, pageSize, filters, search, order) => {
     const offset = page * pageSize;
-    getTasks(token, pageSize, offset, filters, search).then((response) => {
+    getTasks(token, pageSize, offset, filters, search, order).then((response) => {
       setTasks(response.results);
       setCount(response.count);
     });
@@ -141,6 +144,24 @@ function TasksTable({ token }) {
     );
   }
 
+  const headCells = [
+    { label: '#', name: 'id', orderable: true },
+    { label: 'Name', name: 'name', orderable: true },
+    { label: 'Status', name: 'status', orderable: true },
+    { label: 'Scheduled', name: 'date_scheduled', orderable: true },
+    { label: 'Started', name: 'date_started', orderable: true },
+    { label: 'Finished', name: 'date_finished', orderable: true },
+    { label: 'Creator', name: 'creator' },
+    { label: 'Template', name: 'template' },
+    { label: '', name: '' },
+  ];
+
+  const handleSortChange = (event, name) => {
+    const newName = newOrderName(orderBy, name);
+    fetchAndSetTasks(page, rowsPerPage, filters, search, newName);
+    setOrderBy(newName);
+  };
+
   return (
     <React.Fragment>
       <Box className={classes.box}>
@@ -157,15 +178,9 @@ function TasksTable({ token }) {
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>#</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Scheduled</TableCell>
-              <TableCell>Started</TableCell>
-              <TableCell>Finished</TableCell>
-              <TableCell>Creator</TableCell>
-              <TableCell>Template</TableCell>
-              <TableCell align="right">Details</TableCell>
+              { headCells.map((cell, index) => {
+                return <SortableTableHead key={index} cell={cell} orderBy={orderBy} onSortChange={handleSortChange}/>
+              })}
             </TableRow>
           </TableHead>
           <TableBody>

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
+import {
+  Table, TableHead, TableRow, TableCell, TableBody, TableSortLabel
+} from '@material-ui/core';
 
 export function beautifyDate(isoDate) {
   let date = new Date(isoDate);
@@ -60,4 +62,50 @@ export function statusIdToText(statusId) {
     default:
       break;
   }
+}
+
+export function isOrderActive (active, testOrder) {
+  return testOrder === active || ('-' + testOrder) === active;
+};
+
+export function orderDirection (orderBy, name) {
+  if (orderBy[0] === '-' && isOrderActive(orderBy, name)) {
+    return 'desc';
+  } else {
+    return 'asc';
+  }
+};
+
+export function  newOrderName (orderBy, name) {
+  let newName = '';
+  if(isOrderActive(orderBy, name)) {
+    const direction = orderDirection(orderBy, name);
+    if(direction === 'asc') {
+      newName = '-' + name;
+    } else if (direction === 'desc') {
+      newName = name.substring(0);
+    } else {
+      newName = name;
+    }
+  } else {
+    newName = name;
+  }
+  return newName;
+};
+
+//accepts cell of format { label: '', name: '', orderable: true }
+export function SortableTableHead({ cell, orderBy, onSortChange }) {
+  return (
+    cell.orderable ?
+    <TableCell
+      key={cell.name}
+      sortDirection={orderDirection(orderBy, cell.name)}
+      onClick={(e) => onSortChange(e, cell.name)}>
+      <TableSortLabel active={isOrderActive(orderBy, cell.name)} direction={orderDirection(orderBy, cell.name)}>
+        { cell.label }
+      </TableSortLabel>
+    </TableCell>
+    :
+    <TableCell key={cell.name}>{ cell.label }</TableCell>
+  );
 }
