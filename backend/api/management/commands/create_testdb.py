@@ -41,7 +41,7 @@ class Command(BaseCommand):
         models.JobTemplate.objects.create(name='hello_world', description='This prints a hello world',
                                           file_name='hello_world.py', created_by_id=1)
         models.JobTemplate.objects.create(name='Get CDP Neighbors', description='Lists all CDP neighbors',
-                                          file_name='get_cdp_neighbor.py', created_by_id=1)
+                                          file_name='get_cdp_neighbors.py', created_by_id=1)
         models.JobTemplate.objects.create(name='Get Interfaces',
                                           description='Gets brief information about all interfaces, sh ip int br',
                                           file_name='get_interfaces.py', created_by_id=1)

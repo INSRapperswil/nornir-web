@@ -7,7 +7,7 @@ import { EnhancedTable } from './EnhancedTable';
 import InventoryHostDetail from './InventoryHostDetail';
 import InventorySelector from './InventorySelector';
 import FilterDialog from './FilterDialog';
-import { beautifyJson } from '../helperFunctions';
+import { beautifyJson, newOrderName } from '../helperFunctions';
 import {
   Box, TextField, Button,
 } from '@material-ui/core';
@@ -25,11 +25,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const headCells = [
-  { id: 'name', numeric: false, label: 'Friendly Name', disablePadding: true },
-  { id: 'hostname', numeric: false, label: 'Hostname' },
+  { id: 'name', numeric: false, label: 'Friendly Name', disablePadding: true, orderable: true },
+  { id: 'hostname', numeric: false, label: 'Hostname', orderable: true },
   { id: 'port', numeric: false, label: 'Port' },
   { id: 'groups', numeric: false, label: 'Groups', getValue: (value) => beautifyJson(value) },
-  { id: 'platform', numeric: false, label: 'Platform' },
+  { id: 'platform', numeric: false, label: 'Platform', orderable: true },
 ];
 
 function checkStepValidity(filters) {
@@ -42,6 +42,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
   let [page, setPage] = useState(0);
   let [rowsPerPage, setRowsPerPage] = useState(25);
   let [search, setSearch] = useState('');
+  let [orderBy, setOrderBy] = useState('');
   let [filters, setFilters] = useState([
     { label: 'Name', name: 'name__contains', value: '' },
     { label: 'hostname', name: 'hostname__contains', value: '' },
@@ -67,9 +68,9 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchAndSetHosts = (page, pageSize, _filters=filters, _search=search) => {
+  const fetchAndSetHosts = (page, pageSize, _filters=filters, _search=search, _orderBy=orderBy) => {
     const offset = pageSize * page;
-    getInventoryHosts(token, inventorySelectionId, pageSize, offset, _filters, _search).then((response) => {
+    getInventoryHosts(token, inventorySelectionId, pageSize, offset, _filters, _search, _orderBy).then((response) => {
       setInventory(response.results);
       setCount(response.count);
     })
@@ -111,6 +112,12 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
     fetchAndSetHosts(0, rowsPerPage, filters, search);
   };
 
+  const handleOrderChange = (event, name) => {
+    const newName = newOrderName(orderBy, name);
+    fetchAndSetHosts(page, rowsPerPage, filters, search, newName);
+    setOrderBy(newName);
+  }
+
   return (
     <div id="inventory-selection-table">
       <Box className={classes.box}>
@@ -130,6 +137,8 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
           count, page, rowsPerPage,
           handleChangePage, handleRowsPerPage,
         }}
+        orderBy={orderBy}
+        onSortChange={handleOrderChange}
         headCells={headCells}
         selectionKey="name"
         selected={task.filters.hosts}
