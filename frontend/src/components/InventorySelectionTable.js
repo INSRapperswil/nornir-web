@@ -64,7 +64,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
       getInventoryHosts(token, inventorySelectionId, rowsPerPage, 0, []).then((response) => {
         setInventory(response.results);
         setCount(response.count);
-        setStepValid(checkStepValidity(task.filters));
+        setStepValid(checkStepValidity(task.filters.hosts));
       });
     }
   // empty dependencies array, so it only runs on mount.
