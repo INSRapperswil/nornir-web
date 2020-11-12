@@ -62,6 +62,7 @@ function TasksTable({ token }) {
   let [rowsPerPage, setRowsPerPage] = useState(25);
   let [search, setSearch] = useState('');
   let [orderBy, setOrderBy] = useState('');
+  let [isLoading, setIsLoading] = useState(true);
   let [filters, setFilters] = useState([
     { label: 'Template Name', name: 'template__name', value: '' },
     { label: 'Inventory Name', name: 'inventory__name', value: '' },
@@ -74,6 +75,7 @@ function TasksTable({ token }) {
       getTasks(token, rowsPerPage, 0).then((response) => {
         setTasks(response.results);
         setCount(response.count);
+        setIsLoading(false);
       });
     }
   // empty dependencies array, so it only runs on mount.
@@ -84,9 +86,11 @@ function TasksTable({ token }) {
 
   const fetchAndSetTasks = (page, pageSize, filters, search, order) => {
     const offset = page * pageSize;
+    setIsLoading(true)
     getTasks(token, pageSize, offset, filters, search, order).then((response) => {
       setTasks(response.results);
       setCount(response.count);
+      setIsLoading(false);
     });
     setPage(page);
   };
@@ -181,7 +185,7 @@ function TasksTable({ token }) {
         />
         <Button onClick={handleSearch} variant="outlined">Search</Button>
         <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
-        <Button variant="contained" color="primary" onClick={onRefresh}>
+        <Button variant="contained" color="primary" onClick={onRefresh} disabled={ isLoading }>
           <RefreshIcon/><span style={{ marginLeft: 3 }}>Refresh</span>
         </Button>
       </Box>

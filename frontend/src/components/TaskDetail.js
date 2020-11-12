@@ -30,17 +30,25 @@ const useStyles = makeStyles({
 
 function TaskDetail({ token, taskId }) {
   let [task, setTask] = useState([]);
+  let [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (task.length === 0) {
-      getTaskDetails(token, taskId).then((response) => setTask(response))
+      getTaskDetails(token, taskId).then((response) => {
+        setTask(response);
+        setIsLoading(false);
+      });
     }
   }, [task, setTask, token, taskId]);
 
   const classes = useStyles();
 
   const onRefresh = () => {
-    getTaskDetails(token, taskId).then((response) => setTask(response))
+    setIsLoading(true);
+    getTaskDetails(token, taskId).then((response) => {
+      setTask(response);
+      setIsLoading(false);
+    });
   };
 
   function Result(props) {
@@ -78,7 +86,7 @@ function TaskDetail({ token, taskId }) {
     <React.Fragment>
       <Typography variant="h5" gutterBottom component="div">
         Details
-        <Button variant="contained" color="primary" onClick={onRefresh} size="small" style={{ marginLeft: 20 }}>
+        <Button variant="contained" color="primary" onClick={onRefresh} size="small" style={{ marginLeft: 20 }} disabled={ isLoading }>
           <RefreshIcon/><span style={{ marginLeft: 3 }}>Refresh</span>
         </Button>
       </Typography>
