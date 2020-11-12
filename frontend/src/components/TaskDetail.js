@@ -4,10 +4,29 @@ import { getToken } from '../redux/reducers';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import {
-  Table, TableBody, TableCell, TableHead, TableRow, Typography
+  Table, TableBody, TableCell, TableHead, TableRow, Typography, Button,
 } from '@material-ui/core';
 import { beautifyJson, objectToTable } from '../helperFunctions';
+import RefreshIcon from '@material-ui/icons/Refresh';
 
+const useStyles = makeStyles({
+  root:
+  {
+    maxWidth: 800,
+  },
+  code:
+  {
+    display: "block",
+    backgroundColor: "black",
+    color: "white",
+    padding: 16,
+  },
+  codeLine:
+  {
+    display: "inline-block",
+    width: "100%",
+  },
+});
 
 function TaskDetail({ token, taskId }) {
   let [task, setTask] = useState([]);
@@ -18,26 +37,11 @@ function TaskDetail({ token, taskId }) {
     }
   }, [task, setTask, token, taskId]);
 
-  const useStyles = makeStyles({
-    root:
-    {
-      maxWidth: 800,
-    },
-    code:
-    {
-      display: "block",
-      backgroundColor: "black",
-      color: "white",
-      padding: 16,
-    },
-    codeLine:
-    {
-      display: "inline-block",
-      width: "100%",
-    },
-  });
-
   const classes = useStyles();
+
+  const onRefresh = () => {
+    getTaskDetails(token, taskId).then((response) => setTask(response))
+  };
 
   function Result(props) {
     const { result } = props;
@@ -72,7 +76,12 @@ function TaskDetail({ token, taskId }) {
 
   return (
     <React.Fragment>
-      <Typography variant="h5" gutterBottom component="div">Details</Typography>
+      <Typography variant="h5" gutterBottom component="div">
+        Details
+        <Button variant="contained" color="primary" onClick={onRefresh} size="small" style={{ marginLeft: 20 }}>
+          <RefreshIcon/><span style={{ marginLeft: 3 }}>Refresh</span>
+        </Button>
+      </Typography>
       <Table size="small" aria-label="data" className={classes.root}>
         <TableHead>
           <TableRow>

@@ -36,7 +36,10 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     '& > *': {
-      margin: 5,
+      marginBottom: 5,
+      marginRight: 10,
+      marginTop: 5,
+      marginLeft: 0,
     }
   },
 }));
@@ -110,7 +113,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
         </TableRow>
         <TableRow>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9} className={classes.detail}>
-            <Collapse in={isOpen} timeout="auto" unmountOnExit>
+            <Collapse in={isOpen} timeout="auto" unmountOnExit style={{ paddingTop: 15, paddingBottom: 30 }}>
               <Box margin={1}>
                 <Typography variant="h6" gutterBottom component="div">Details</Typography>
                 <JobTemplateDetail jobTemplateId={row.id} />
@@ -169,7 +172,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
   };
 
   return (
-    <div id="job-templates-selection-table">
+    <div id="job-templates-selection-table" style={{ marginBottom: 20,  marginTop: 10 }}>
       <Box className={classes.box}>
         <TextField
           label="Search Field"

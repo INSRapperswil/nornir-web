@@ -8,6 +8,7 @@ import {
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import { getToken } from '../redux/reducers';
 import { connect } from 'react-redux';
 import TaskDetail from './TaskDetail';
@@ -33,8 +34,11 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     '& > *': {
-      margin: 5,
-    }
+      marginBottom: 5,
+      marginRight: 10,
+      marginTop: 5,
+      marginLeft: 0,
+    },
   },
 }));
 
@@ -88,24 +92,28 @@ function TasksTable({ token }) {
   };
 
   const handleSearch = (event) => {
-    fetchAndSetTasks(0, rowsPerPage, filters, search);
+    fetchAndSetTasks(0, rowsPerPage, filters, search, orderBy);
   };
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
-    fetchAndSetTasks(0, rowsPerPage, newFilters, search);
+    fetchAndSetTasks(0, rowsPerPage, newFilters, search, orderBy);
   };
 
   const handleChangePage = (event, requestedPage) => {
-    fetchAndSetTasks(requestedPage, rowsPerPage, filters, search);
+    fetchAndSetTasks(requestedPage, rowsPerPage, filters, search, orderBy);
   }
 
   const handleRowsPerPage = (event) => {
     const newPageSize = event.target.value;
     const newPage = parseInt(rowsPerPage * page / newPageSize);
-    fetchAndSetTasks(newPage, newPageSize, filters, search);
+    fetchAndSetTasks(newPage, newPageSize, filters, search, orderBy);
     setRowsPerPage(newPageSize);
   };
+
+  const onRefresh = (e) => {
+    fetchAndSetTasks(page, rowsPerPage, filters, search, orderBy);
+  }
   
   function Row(props) {
     const { row } = props;
@@ -133,7 +141,7 @@ function TasksTable({ token }) {
         </TableRow>
         <TableRow className={classes.detail}>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
-            <Collapse in={open} timeout="auto" unmountOnExit>
+            <Collapse in={open} timeout="auto" unmountOnExit style={{ paddingTop: 15, paddingBottom: 30 }}>
               <Box margin={1}>
                 <TaskDetail taskId={row.id} />
               </Box>
@@ -163,7 +171,7 @@ function TasksTable({ token }) {
   };
 
   return (
-    <React.Fragment>
+    <div style={{ marginBottom: 20 }}>
       <Box className={classes.box}>
         <TextField
           label="Search Field"
@@ -173,6 +181,9 @@ function TasksTable({ token }) {
         />
         <Button onClick={handleSearch} variant="outlined">Search</Button>
         <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
+        <Button variant="contained" color="primary" onClick={onRefresh}>
+          <RefreshIcon/><span style={{ marginLeft: 3 }}>Refresh</span>
+        </Button>
       </Box>
       <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="simple table">
@@ -198,7 +209,7 @@ function TasksTable({ token }) {
           onChangeRowsPerPage={handleRowsPerPage}
           component="div" />
       </TableContainer>
-    </React.Fragment>
+    </div>
   );
 }
 

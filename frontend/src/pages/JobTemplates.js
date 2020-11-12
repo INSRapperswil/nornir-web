@@ -37,9 +37,15 @@ function JobTemplates() {
   return (
     <div id="job-templates">
       <h1>Job Templates</h1>
-      <Button onClick={handleRunOnSelection} disabled={!stepValid}>Run on Selection</Button>
+      <Button
+        onClick={handleRunOnSelection}
+        disabled={!stepValid}
+        variant="contained"
+        color="primary">
+          Run on Selection
+      </Button>
       { runTaskWizard ? <TaskWizard getSteps={getSteps} /> :
-      <JobTemplatesSelectionTable setStepValid={setStepValid}/> }
+      <JobTemplatesSelectionTable style={{ marginTop: 10 }} setStepValid={setStepValid}/> }
     </div>
   );
 }
