@@ -38,7 +38,13 @@ function Inventory() {
     <div id="inventory">
       <h1>Inventory</h1>
       
-      <Button onClick={handleRunOnSelection} disabled={!stepValid}>Run on Selection</Button>
+      <Button
+        onClick={handleRunOnSelection}
+        disabled={!stepValid}
+        variant="contained"
+        color="primary">
+          Run on Selection
+      </Button>
       { runTaskWizard ? <TaskWizard getSteps={getSteps} /> :
       <InventorySelectionTable setStepValid={setStepValid}/> }
     </div>

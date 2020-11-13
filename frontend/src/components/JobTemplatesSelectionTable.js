@@ -13,6 +13,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { makeStyles } from '@material-ui/core/styles';
 import JobTemplateDetail from './JobTemplateDetail';
 import FilterDialog from './FilterDialog';
+import { SortableTableHead, newOrderName } from '../helperFunctions';
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -35,7 +36,10 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     '& > *': {
-      margin: 5,
+      marginBottom: 5,
+      marginRight: 10,
+      marginTop: 5,
+      marginLeft: 0,
     }
   },
 }));
@@ -47,6 +51,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
   let [page, setPage] = useState(0);
   let [rowsPerPage, setRowsPerPage] = useState(25);
   let [search, setSearch] = useState('');
+  let [orderBy, setOrderBy] = useState('');
   let [filters, setFilters] = useState([
     { label: 'File Name', name: 'file_name', value: '' },
     { label: 'Function Name', name: 'function_name', value: '' },
@@ -108,7 +113,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
         </TableRow>
         <TableRow>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9} className={classes.detail}>
-            <Collapse in={isOpen} timeout="auto" unmountOnExit>
+            <Collapse in={isOpen} timeout="auto" unmountOnExit style={{ paddingTop: 15, paddingBottom: 30 }}>
               <Box margin={1}>
                 <Typography variant="h6" gutterBottom component="div">Details</Typography>
                 <JobTemplateDetail jobTemplateId={row.id} />
@@ -120,9 +125,9 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     )
   }
 
-  const fetchAndSetTemplates = (page, pageSize, _filters=filters, _search=search) => {
+  const fetchAndSetTemplates = (page, pageSize, _filters=filters, _search=search, _orderBy=orderBy) => {
     const offset = page * pageSize;
-    getJobTemplates(token, pageSize, offset, _filters, _search).then((response) => {
+    getJobTemplates(token, pageSize, offset, _filters, _search, _orderBy).then((response) => {
       setTemplates(response.results);
       setCount(response.count);
     });
@@ -151,8 +156,23 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     fetchAndSetTemplates(0, rowsPerPage, filters, search);
   }
 
+  const headCells = [
+    { label: '', name: '' },
+    { label: '#', name: 'id', orderable: true },
+    { label: 'Name', name: 'name', orderable: true },
+    { label: 'Description', name: 'description', orderable: false },
+    { label: 'Created By', name: 'created_by__username', orderable: true },
+    { label: '', name: '' },
+  ];
+
+  const handleSortChange = (event, name) => {
+    const newName = newOrderName(orderBy, name);
+    fetchAndSetTemplates(page, rowsPerPage, filters, search, newName);
+    setOrderBy(newName);
+  };
+
   return (
-    <div id="job-templates-selection-table">
+    <div id="job-templates-selection-table" style={{ marginBottom: 20,  marginTop: 10 }}>
       <Box className={classes.box}>
         <TextField
           label="Search Field"
@@ -168,12 +188,9 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
           <Table aria-label="templates table">
             <TableHead>
               <TableRow>
-                <TableCell />
-                <TableCell>#</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Created By</TableCell>
-                <TableCell align="right">Details</TableCell>
+                { headCells.map((cell, index) => {
+                  return <SortableTableHead cell={cell} key={index} orderBy={orderBy} onSortChange={handleSortChange}/>
+                })}
               </TableRow>
             </TableHead>
             <TableBody>

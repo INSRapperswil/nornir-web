@@ -7,7 +7,7 @@ import { EnhancedTable } from './EnhancedTable';
 import InventoryHostDetail from './InventoryHostDetail';
 import InventorySelector from './InventorySelector';
 import FilterDialog from './FilterDialog';
-import { beautifyJson } from '../helperFunctions';
+import { beautifyJson, newOrderName } from '../helperFunctions';
 import {
   Box, TextField, Button,
 } from '@material-ui/core';
@@ -15,21 +15,24 @@ import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles(theme => ({
   box: {
-    marginBottom: 20,
+    marginBottom: 10,
     display: 'flex',
     alignItems: 'center',
     '& > *': {
-      margin: 5,
+      marginBottom: 5,
+      marginRight: 10,
+      marginTop: 5,
+      marginLeft: 0,
     }
   },
 }));
 
 const headCells = [
-  { id: 'name', numeric: false, label: 'Friendly Name', disablePadding: true },
-  { id: 'hostname', numeric: false, label: 'Hostname' },
+  { id: 'name', numeric: false, label: 'Friendly Name', disablePadding: true, orderable: true },
+  { id: 'hostname', numeric: false, label: 'Hostname', orderable: true },
   { id: 'port', numeric: false, label: 'Port' },
   { id: 'groups', numeric: false, label: 'Groups', getValue: (value) => beautifyJson(value) },
-  { id: 'platform', numeric: false, label: 'Platform' },
+  { id: 'platform', numeric: false, label: 'Platform', orderable: true },
 ];
 
 function checkStepValidity(filters) {
@@ -42,6 +45,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
   let [page, setPage] = useState(0);
   let [rowsPerPage, setRowsPerPage] = useState(25);
   let [search, setSearch] = useState('');
+  let [orderBy, setOrderBy] = useState('');
   let [filters, setFilters] = useState([
     { label: 'Name', name: 'name__contains', value: '' },
     { label: 'hostname', name: 'hostname__contains', value: '' },
@@ -60,16 +64,16 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
       getInventoryHosts(token, inventorySelectionId, rowsPerPage, 0, []).then((response) => {
         setInventory(response.results);
         setCount(response.count);
-        setStepValid(checkStepValidity(task.filters));
+        setStepValid(checkStepValidity(task.filters.hosts));
       });
     }
   // empty dependencies array, so it only runs on mount.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchAndSetHosts = (page, pageSize, _filters=filters, _search=search) => {
+  const fetchAndSetHosts = (page, pageSize, _filters=filters, _search=search, _orderBy=orderBy) => {
     const offset = pageSize * page;
-    getInventoryHosts(token, inventorySelectionId, pageSize, offset, _filters, _search).then((response) => {
+    getInventoryHosts(token, inventorySelectionId, pageSize, offset, _filters, _search, _orderBy).then((response) => {
       setInventory(response.results);
       setCount(response.count);
     })
@@ -111,9 +115,16 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
     fetchAndSetHosts(0, rowsPerPage, filters, search);
   };
 
+  const handleOrderChange = (event, name) => {
+    const newName = newOrderName(orderBy, name);
+    fetchAndSetHosts(page, rowsPerPage, filters, search, newName);
+    setOrderBy(newName);
+  }
+
   return (
-    <div id="inventory-selection-table">
+    <div id="inventory-selection-table" style={{ marginBottom: 20, marginTop: 10, }}>
       <Box className={classes.box}>
+        <InventorySelector onInventoryChange={handleInventoryChange} />
         <TextField
           label="Search Field"
           variant="outlined"
@@ -123,13 +134,14 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
         <Button onClick={handleSearch} variant="outlined">Search</Button>
         <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
       </Box>
-      <InventorySelector onInventoryChange={handleInventoryChange} />
       <EnhancedTable
         rows={inventory}
         paginationDetails={{
           count, page, rowsPerPage,
           handleChangePage, handleRowsPerPage,
         }}
+        orderBy={orderBy}
+        onSortChange={handleOrderChange}
         headCells={headCells}
         selectionKey="name"
         selected={task.filters.hosts}

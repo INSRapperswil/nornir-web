@@ -9,7 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from api.models import Task, JobTemplate, Inventory, Configuration
 from api.permissions import ConfigurationPermission
 from api.serializers import TaskSerializer, JobTemplateSerializer, InventorySerializer, UserSerializer
-from api.pagination import InventoryPagination
+from api.inventory_helpers import InventoryPagination, InventoryOrdering
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -22,7 +22,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
     filterset_fields = ['status', 'template__name', 'inventory__name', 'created_by__username']
     search_fields = ['name']
-    ordering_fields = ['name', 'status', 'date_scheduled', 'date_started', 'date_finished', 'inventory']
+    ordering_fields = ['id', 'name', 'status', 'date_scheduled', 'date_started', 'date_finished', 'inventory']
 
 
     @action(detail=True, methods=['POST'])
@@ -49,7 +49,7 @@ class JobTemplateViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
     filterset_fields = ['file_name', 'function_name', 'package_path', 'created_by__username']
     search_fields = ['name', 'function_name', 'file_name']
-    ordering_fields = ['name', 'package_path', 'file_name', 'function_name', 'created_by__username']
+    ordering_fields = ['id', 'name', 'package_path', 'file_name', 'function_name', 'created_by__username']
 
 
 class InventoryViewSet(viewsets.ModelViewSet):
@@ -61,6 +61,7 @@ class InventoryViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.DjangoModelPermissions]
     pagination_class = InventoryPagination
     filterset_fields = ['groups__contains', 'platform__contains', 'name__contains', 'hostname__contains']
+    ordering_fields = ['name', 'hostname', 'platform']
 
     @action(detail=True, methods=['GET'])
     def hosts(self, request, pk):
@@ -68,8 +69,10 @@ class InventoryViewSet(viewsets.ModelViewSet):
         inventory = self.get_object()
         query_params = []
         for key, value in request.query_params.items():
-            query_params.append({key: value}) if key in self.filterset_fields and value else None
-        queryset = inventory.get_hosts(query_params, self.search_fields, request.query_params['search'])
+            query_params.append({key: value}) if key in self.filter_fields and value else None
+        search = request.query_params['search'] if 'search' in request.query_params else ''
+        queryset = inventory.get_hosts(query_params, self.search_fields, search)
+        queryset = InventoryOrdering().filter_queryset(request, queryset, self)
         paginator = self.pagination_class()
         data = paginator.paginate_queryset(queryset=queryset, request=request)
         return paginator.get_paginated_response(data)

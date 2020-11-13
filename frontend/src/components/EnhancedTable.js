@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
 import {
   Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
-  TablePagination,
+  TablePagination, TableSortLabel,
   Checkbox, Paper, Typography, Collapse, Box, IconButton,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import { orderDirection, isOrderActive } from '../helperFunctions';
 
-function EnhancedTableHead(props) {
-  const { headCells, onSelectAllClick, numSelected, rowCount } = props;
-
+function EnhancedTableHead({
+  headCells,
+  onSelectAllClick,
+  numSelected,
+  rowCount,
+  orderBy,
+  onSortChange
+}) {
   return (
     <TableHead>
       <TableRow>
@@ -23,6 +29,19 @@ function EnhancedTableHead(props) {
           />
         </TableCell>
         {headCells.map((headCell) => (
+          headCell.orderable ?
+          <TableCell
+            key={headCell.id}
+            align={headCell.numeric ? 'right' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'default'}
+            sortDirection={orderDirection(orderBy, headCell.id)}
+            onClick={(e) => onSortChange(e, headCell.id)}
+          >
+            <TableSortLabel active={isOrderActive(orderBy, headCell.id)} direction={orderDirection(orderBy, headCell.id)}>
+              {headCell.label}
+            </TableSortLabel>
+          </TableCell>
+          :
           <TableCell
             key={headCell.id}
             align={headCell.numeric ? 'right' : 'left'}
@@ -66,6 +85,8 @@ export default function EnhancedTable({
   setSelected,
   detailComponentFunction,
   paginationDetails,
+  onSortChange,
+  orderBy,
 }) {
   let {
     count, page, rowsPerPage,
@@ -118,7 +139,6 @@ export default function EnhancedTable({
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
         <TableContainer>
           <Table
             className={classes.table}
@@ -127,6 +147,8 @@ export default function EnhancedTable({
             aria-label="enhanced table"
           >
             <EnhancedTableHead
+              onSortChange={onSortChange}
+              orderBy={orderBy}
               classes={classes}
               headCells={headCells}
               numSelected={selected.length}
@@ -184,7 +206,7 @@ export default function EnhancedTable({
                       detailComponentFunction ?
                         <TableRow>
                           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={headCells.length + 2} className={classes.detail}>
-                            <Collapse in={isItemOpen} timeout="auto" unmountOnExit>
+                            <Collapse in={isItemOpen} timeout="auto" unmountOnExit style={{ paddingTop: 15, paddingBottom: 30 }}>
                               <Box margin={1}>
                                 <Typography variant="h6" gutterBottom component="div">Details</Typography>
                                 {detailComponentFunction(row[selectionKey])}

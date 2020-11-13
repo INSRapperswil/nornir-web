@@ -8,10 +8,13 @@ import {
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import { getToken } from '../redux/reducers';
 import { connect } from 'react-redux';
 import TaskDetail from './TaskDetail';
-import { beautifyDate, statusIdToText } from '../helperFunctions';
+import {
+  beautifyDate, statusIdToText, newOrderName, SortableTableHead,
+} from '../helperFunctions';
 import FilterDialog from './FilterDialog';
 
 const useStyles = makeStyles(theme => ({
@@ -31,8 +34,11 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     '& > *': {
-      margin: 5,
-    }
+      marginBottom: 5,
+      marginRight: 10,
+      marginTop: 5,
+      marginLeft: 0,
+    },
   },
 }));
 
@@ -55,6 +61,8 @@ function TasksTable({ token }) {
   let [page, setPage] = useState(0);
   let [rowsPerPage, setRowsPerPage] = useState(25);
   let [search, setSearch] = useState('');
+  let [orderBy, setOrderBy] = useState('');
+  let [isLoading, setIsLoading] = useState(true);
   let [filters, setFilters] = useState([
     { label: 'Template Name', name: 'template__name', value: '' },
     { label: 'Inventory Name', name: 'inventory__name', value: '' },
@@ -67,6 +75,7 @@ function TasksTable({ token }) {
       getTasks(token, rowsPerPage, 0).then((response) => {
         setTasks(response.results);
         setCount(response.count);
+        setIsLoading(false);
       });
     }
   // empty dependencies array, so it only runs on mount.
@@ -75,34 +84,40 @@ function TasksTable({ token }) {
 
   const classes = useStyles();
 
-  const fetchAndSetTasks = (page, pageSize, filters, search) => {
+  const fetchAndSetTasks = (page, pageSize, filters, search, order) => {
     const offset = page * pageSize;
-    getTasks(token, pageSize, offset, filters, search).then((response) => {
+    setIsLoading(true)
+    getTasks(token, pageSize, offset, filters, search, order).then((response) => {
       setTasks(response.results);
       setCount(response.count);
+      setIsLoading(false);
     });
     setPage(page);
   };
 
   const handleSearch = (event) => {
-    fetchAndSetTasks(0, rowsPerPage, filters, search);
+    fetchAndSetTasks(0, rowsPerPage, filters, search, orderBy);
   };
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
-    fetchAndSetTasks(0, rowsPerPage, newFilters, search);
+    fetchAndSetTasks(0, rowsPerPage, newFilters, search, orderBy);
   };
 
   const handleChangePage = (event, requestedPage) => {
-    fetchAndSetTasks(requestedPage, rowsPerPage, filters, search);
+    fetchAndSetTasks(requestedPage, rowsPerPage, filters, search, orderBy);
   }
 
   const handleRowsPerPage = (event) => {
     const newPageSize = event.target.value;
     const newPage = parseInt(rowsPerPage * page / newPageSize);
-    fetchAndSetTasks(newPage, newPageSize, filters, search);
+    fetchAndSetTasks(newPage, newPageSize, filters, search, orderBy);
     setRowsPerPage(newPageSize);
   };
+
+  const onRefresh = (e) => {
+    fetchAndSetTasks(page, rowsPerPage, filters, search, orderBy);
+  }
   
   function Row(props) {
     const { row } = props;
@@ -130,7 +145,7 @@ function TasksTable({ token }) {
         </TableRow>
         <TableRow className={classes.detail}>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
-            <Collapse in={open} timeout="auto" unmountOnExit>
+            <Collapse in={open} timeout="auto" unmountOnExit style={{ paddingTop: 15, paddingBottom: 30 }}>
               <Box margin={1}>
                 <TaskDetail taskId={row.id} />
               </Box>
@@ -141,8 +156,26 @@ function TasksTable({ token }) {
     );
   }
 
+  const headCells = [
+    { label: '#', name: 'id', orderable: true },
+    { label: 'Name', name: 'name', orderable: true },
+    { label: 'Status', name: 'status', orderable: true },
+    { label: 'Scheduled', name: 'date_scheduled', orderable: true },
+    { label: 'Started', name: 'date_started', orderable: true },
+    { label: 'Finished', name: 'date_finished', orderable: true },
+    { label: 'Creator', name: 'creator' },
+    { label: 'Template', name: 'template' },
+    { label: '', name: '' },
+  ];
+
+  const handleSortChange = (event, name) => {
+    const newName = newOrderName(orderBy, name);
+    fetchAndSetTasks(page, rowsPerPage, filters, search, newName);
+    setOrderBy(newName);
+  };
+
   return (
-    <React.Fragment>
+    <div style={{ marginBottom: 20 }}>
       <Box className={classes.box}>
         <TextField
           label="Search Field"
@@ -152,20 +185,17 @@ function TasksTable({ token }) {
         />
         <Button onClick={handleSearch} variant="outlined">Search</Button>
         <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
+        <Button variant="contained" color="primary" onClick={onRefresh} disabled={ isLoading }>
+          <RefreshIcon/><span style={{ marginLeft: 3 }}>Refresh</span>
+        </Button>
       </Box>
       <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>#</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Scheduled</TableCell>
-              <TableCell>Started</TableCell>
-              <TableCell>Finished</TableCell>
-              <TableCell>Creator</TableCell>
-              <TableCell>Template</TableCell>
-              <TableCell align="right">Details</TableCell>
+              { headCells.map((cell, index) => {
+                return <SortableTableHead key={index} cell={cell} orderBy={orderBy} onSortChange={handleSortChange}/>
+              })}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -183,7 +213,7 @@ function TasksTable({ token }) {
           onChangeRowsPerPage={handleRowsPerPage}
           component="div" />
       </TableContainer>
-    </React.Fragment>
+    </div>
   );
 }
 
