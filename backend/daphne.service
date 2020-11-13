@@ -3,10 +3,10 @@ Description=daphne server for nornir webapp
 After=network.target
 
 [Service]
-User=ins
-Group=ins
 WorkingDirectory=/home/ins/web-app-nornir/backend
-ExecStart="source /home/ins/web-app-nornir/backend/venv/bin/activate && daphne backend.asgi:application -b 0.0.0.0"
+Environment="VIRTUAL_ENV=/home/ins/web-app-nornir/backend/venv"
+Environment="PATH=$VIRTUAL_ENV/bin"
+ExecStart=/home/ins/web-app-nornir/backend/venv/bin/daphne backend.asgi:application -b 0.0.0.0
 Restart=always
 
 [Install]

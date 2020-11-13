@@ -1,0 +1,11 @@
+[Unit]
+Description=Frontend server for nornir webapp
+After=network.target
+
+[Service]
+WorkingDirectory=/home/ins/web-app-nornir/frontend
+ExecStart=yarn serve -s build -l 3000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
