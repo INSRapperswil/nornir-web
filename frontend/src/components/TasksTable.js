@@ -66,7 +66,7 @@ function TasksTable({ token }) {
   let [filters, setFilters] = useState([
     { label: 'Template Name', name: 'template__name', value: '' },
     { label: 'Inventory Name', name: 'inventory__name', value: '' },
-    { label: 'Created By', name: 'created_by__username', value: '' },
+    { label: 'Creator', name: 'created_by__username', value: '' },
     { label: 'Status', name: 'status', value: '', component: (defaultValue) => <SelectStatus defaultValue={defaultValue}/> },
   ]);
 
@@ -135,8 +135,8 @@ function TasksTable({ token }) {
           <TableCell>{beautifyDate(row.date_scheduled)}</TableCell>
           <TableCell>{beautifyDate(row.date_started)}</TableCell>
           <TableCell>{beautifyDate(row.date_finished)}</TableCell>
-          <TableCell>{row.created_by}</TableCell>
-          <TableCell>{row.template}</TableCell>
+          <TableCell>{row.created_name}</TableCell>
+          <TableCell>{row.template_name}</TableCell>
           <TableCell align="right">
             <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
               {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}

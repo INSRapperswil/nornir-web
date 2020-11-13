@@ -4,8 +4,10 @@ from api.models import Task, JobTemplate, Inventory
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    created_by = serializers.ReadOnlyField(source='created_by.username')
+    created_name = serializers.ReadOnlyField(source='created_by.username')
     detail = serializers.HyperlinkedIdentityField(view_name='task-detail', read_only=True)
+    template_name = serializers.ReadOnlyField(source='template.name')
+    inventory_name = serializers.ReadOnlyField(source='inventory.name')
 
     class Meta:
         model = Task
@@ -22,13 +24,16 @@ class TaskSerializer(serializers.ModelSerializer):
             'filters',
             'result',
             'created_by',
+            'created_name',
             'template',
+            'template_name',
             'inventory',
+            'inventory_name'
         ]
 
 
 class JobTemplateSerializer(serializers.ModelSerializer):
-    created_by = serializers.ReadOnlyField(source='created_by.username')
+    created_name = serializers.ReadOnlyField(source='created_by.username')
     detail = serializers.HyperlinkedIdentityField(view_name='jobtemplate-detail', read_only=True)
 
     class Meta:
@@ -42,7 +47,8 @@ class JobTemplateSerializer(serializers.ModelSerializer):
             'file_name',
             'package_path',
             'function_name',
-            'created_by'
+            'created_by',
+            'created_name'
         ]
 
 
