@@ -30,7 +30,7 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
   const classes = useStyles();
 
   useEffect(() => {
-    setStepValid(task.name !== '');
+    setStepValid(task.name !== '' && typeof task.variables === 'object' && !(task.variables instanceof Array) );
   }, [task, setStepValid]);
 
   const handleSubmit = (event) => {
