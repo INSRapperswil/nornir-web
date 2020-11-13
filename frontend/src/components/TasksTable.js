@@ -2,20 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { getTasks } from '../api';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  Box, Collapse, IconButton, Paper,
+  Box, Collapse, IconButton, Paper, Tooltip,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField,
   Button, Select, MenuItem, InputLabel, FormControl,
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import RepeatIcon from '@material-ui/icons/Repeat';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { getToken } from '../redux/reducers';
+import { updateTaskWizard } from '../redux/actions';
 import { connect } from 'react-redux';
 import TaskDetail from './TaskDetail';
 import {
   beautifyDate, statusIdToText, newOrderName, SortableTableHead,
 } from '../helperFunctions';
 import FilterDialog from './FilterDialog';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -55,7 +58,7 @@ function SelectStatus({ defaultValue }) {
   );
 }
 
-function TasksTable({ token }) {
+function TasksTable({ token, updateTaskWizard }) {
   let [tasks, setTasks] = useState([]);
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
@@ -69,6 +72,7 @@ function TasksTable({ token }) {
     { label: 'Created By', name: 'created_by__username', value: '' },
     { label: 'Status', name: 'status', value: '', component: (defaultValue) => <SelectStatus defaultValue={defaultValue}/> },
   ]);
+  const history = useHistory();
 
   useEffect(() => {
     if (tasks.length === 0) {
@@ -118,7 +122,19 @@ function TasksTable({ token }) {
   const onRefresh = (e) => {
     fetchAndSetTasks(page, rowsPerPage, filters, search, orderBy);
   }
-  
+
+  const handleReRun = (e, task) => {
+    const newTask = {
+      name: task.name,
+      date_scheduled: '',
+      variables: task.variables,
+      filters: task.filters,
+      template: { id: task.template },
+    };
+    updateTaskWizard(newTask);
+    history.push('/wizard?step=2')
+  };
+
   function Row(props) {
     const { row } = props;
     const [open, setOpen] = React.useState(false);
@@ -137,6 +153,13 @@ function TasksTable({ token }) {
           <TableCell>{beautifyDate(row.date_finished)}</TableCell>
           <TableCell>{row.created_by}</TableCell>
           <TableCell>{row.template}</TableCell>
+          <TableCell>
+            <Tooltip title="Re-Run Task">
+              <IconButton onClick={(e) => handleReRun(e, row)}>
+                <RepeatIcon/>
+              </IconButton>
+            </Tooltip>
+          </TableCell>
           <TableCell align="right">
             <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
               {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -144,7 +167,7 @@ function TasksTable({ token }) {
           </TableCell>
         </TableRow>
         <TableRow className={classes.detail}>
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
             <Collapse in={open} timeout="auto" unmountOnExit style={{ paddingTop: 15, paddingBottom: 30 }}>
               <Box margin={1}>
                 <TaskDetail taskId={row.id} />
@@ -165,6 +188,7 @@ function TasksTable({ token }) {
     { label: 'Finished', name: 'date_finished', orderable: true },
     { label: 'Creator', name: 'creator' },
     { label: 'Template', name: 'template' },
+    { label: '', name: '' },
     { label: '', name: '' },
   ];
 
@@ -223,4 +247,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(TasksTable);
+const mapDispatchToProps = {
+  updateTaskWizard,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TasksTable);

@@ -4,6 +4,7 @@ import JobTemplatesSelectionTable from '../components/JobTemplatesSelectionTable
 import VariableSetter from '../components/VariableSetter';
 import FinishTask from '../components/FinishTask';
 import TaskWizard from '../components/TaskWizard';
+import { useLocation } from 'react-router-dom';
 
 function getSteps(setStepValid) {
   return [
@@ -30,10 +31,16 @@ function getSteps(setStepValid) {
   ];
 }
 
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
 function TaskWizardPage() {
+  let query = useQuery();
+
   return (
     <div>
-      <TaskWizard getSteps={getSteps}/>
+      <TaskWizard getSteps={getSteps} entryStep={query.get('step')}/>
     </div>
   );
 }
