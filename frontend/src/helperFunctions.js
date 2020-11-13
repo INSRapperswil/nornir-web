@@ -3,6 +3,34 @@ import {
   Table, TableHead, TableRow, TableCell, TableBody, TableSortLabel
 } from '@material-ui/core';
 
+const beautifulKeys = {
+  "created_name": "Created By",
+  "data": "Data",
+  "date_finished": "Date Finished",
+  "date_scheduled": "Date Scheduled",
+  "date_started": "Date Started",
+  "defaults_file": "Defaults File",
+  "description": "Description",
+  "file_name": "File Name",
+  "filters": "Filters",
+  "function_name": "Function Name",
+  "groups_file": "Groups File",
+  "groups": "Groups",
+  "hostname": "Hostname",
+  "hosts_file": "Hosts File",
+  "id": "ID",
+  "inventory_name": "Inventory",
+  "name": "Name",
+  "package_path": "Package Path",
+  "platform": "Platform",
+  "port": "Port",
+  "result_host_selection": "Result Host Selection",
+  "status": "Status",
+  "template_name": "Template",
+  "type": "Type",
+  "variables": "Variables",
+}
+
 export function beautifyDate(isoDate) {
   let date = new Date(isoDate);
   if (Date.parse(date) === 0) {
@@ -23,25 +51,35 @@ export function beautifyJson(jsonString) {
   return string;
 }
 
+export function beautifyKey(key) {
+  if (key in beautifulKeys) {
+    return beautifulKeys[key];
+  }
+  return key;
+}
+
 export function objectToTable(data) {
   return (
     data === null || Object.keys(data).length === 0 ? null :
-      <Table size="small" aria-label="data">
-        <TableHead>
-          <TableRow>
-            <TableCell>Attribute</TableCell>
-            <TableCell>Value</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {Object.keys(data).map((key) => (
-            <TableRow key={key}>
-              <TableCell>{key}</TableCell>
-              <TableCell>{beautifyJson(data[key])}</TableCell>
+      Array.isArray(data) ?
+        beautifyJson(data)
+        :
+        <Table size="small" aria-label="data">
+          <TableHead>
+            <TableRow>
+              <TableCell>Attribute</TableCell>
+              <TableCell>Value</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {Object.keys(data).map((key) => (
+              <TableRow key={key}>
+                <TableCell>{key}</TableCell>
+                <TableCell>{beautifyJson(data[key])}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
   );
 }
 
@@ -64,11 +102,11 @@ export function statusIdToText(statusId) {
   }
 }
 
-export function isOrderActive (active, testOrder) {
+export function isOrderActive(active, testOrder) {
   return testOrder === active || ('-' + testOrder) === active;
 };
 
-export function orderDirection (orderBy, name) {
+export function orderDirection(orderBy, name) {
   if (orderBy[0] === '-' && isOrderActive(orderBy, name)) {
     return 'desc';
   } else {
@@ -76,11 +114,11 @@ export function orderDirection (orderBy, name) {
   }
 };
 
-export function  newOrderName (orderBy, name) {
+export function newOrderName(orderBy, name) {
   let newName = '';
-  if(isOrderActive(orderBy, name)) {
+  if (isOrderActive(orderBy, name)) {
     const direction = orderDirection(orderBy, name);
-    if(direction === 'asc') {
+    if (direction === 'asc') {
       newName = '-' + name;
     } else if (direction === 'desc') {
       newName = name.substring(0);
@@ -97,15 +135,15 @@ export function  newOrderName (orderBy, name) {
 export function SortableTableHead({ cell, orderBy, onSortChange }) {
   return (
     cell.orderable ?
-    <TableCell
-      key={cell.name}
-      sortDirection={orderDirection(orderBy, cell.name)}
-      onClick={(e) => onSortChange(e, cell.name)}>
-      <TableSortLabel active={isOrderActive(orderBy, cell.name)} direction={orderDirection(orderBy, cell.name)}>
-        { cell.label }
-      </TableSortLabel>
-    </TableCell>
-    :
-    <TableCell key={cell.name}>{ cell.label }</TableCell>
+      <TableCell
+        key={cell.name}
+        sortDirection={orderDirection(orderBy, cell.name)}
+        onClick={(e) => onSortChange(e, cell.name)}>
+        <TableSortLabel active={isOrderActive(orderBy, cell.name)} direction={orderDirection(orderBy, cell.name)}>
+          {cell.label}
+        </TableSortLabel>
+      </TableCell>
+      :
+      <TableCell key={cell.name}>{cell.label}</TableCell>
   );
 }

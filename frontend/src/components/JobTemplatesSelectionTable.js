@@ -56,7 +56,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     { label: 'File Name', name: 'file_name', value: '' },
     { label: 'Function Name', name: 'function_name', value: '' },
     { label: 'Package Path', name: 'package_path', value: '' },
-    { label: 'Created By', name: 'created_by__username', value: '' },
+    { label: 'Creator', name: 'created_by__username', value: '' },
   ]);
 
   const classes = useStyles();
@@ -104,7 +104,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
           </TableCell>
           <TableCell>{row.name}</TableCell>
           <TableCell>{row.description}</TableCell>
-          <TableCell>{row.created_by}</TableCell>
+          <TableCell>{row.created_name}</TableCell>
           <TableCell align="right">
             <IconButton aria-label="expand row" size="small" onClick={handleOpen}>
               {isOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -161,7 +161,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     { label: '#', name: 'id', orderable: true },
     { label: 'Name', name: 'name', orderable: true },
     { label: 'Description', name: 'description', orderable: false },
-    { label: 'Created By', name: 'created_by__username', orderable: true },
+    { label: 'Creator', name: 'created_by__username', orderable: true },
     { label: '', name: '' },
   ];
 

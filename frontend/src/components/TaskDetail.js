@@ -3,17 +3,12 @@ import { getTaskDetails } from '../api';
 import { getToken } from '../redux/reducers';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
-import {
-  Table, TableBody, TableCell, TableHead, TableRow, Typography, Button,
-} from '@material-ui/core';
-import { beautifyJson, objectToTable } from '../helperFunctions';
+import { Button, Typography } from '@material-ui/core';
+import { beautifyJson } from '../helperFunctions';
+import DetailTable from './DetailTable';
 import RefreshIcon from '@material-ui/icons/Refresh';
 
 const useStyles = makeStyles({
-  root:
-  {
-    maxWidth: 800,
-  },
   code:
   {
     display: "block",
@@ -90,31 +85,7 @@ function TaskDetail({ token, taskId }) {
           <RefreshIcon/><span style={{ marginLeft: 3 }}>Refresh</span>
         </Button>
       </Typography>
-      <Table size="small" aria-label="data" className={classes.root}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Attribute</TableCell>
-            <TableCell>Value</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {Object.keys(task).map((key) => (
-            key === "result" || key === "detail" ? null :
-              <TableRow key={key}>
-                <TableCell component="th" scope="row">
-                  {key}
-                </TableCell>
-                <TableCell>
-                  {
-                    typeof task[key] === "object" ?
-                      objectToTable(task[key])
-                      :
-                      task[key]
-                  }</TableCell>
-              </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <DetailTable detailObject={task} />
       <Result result={task["result"]} />
     </React.Fragment>
   );
