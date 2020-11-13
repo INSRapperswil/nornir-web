@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import InventorySelectionTable from '../components/InventorySelectionTable';
-import { Button } from '@material-ui/core';
+import { Button, Badge } from '@material-ui/core';
 import JobTemplatesSelectionTable from '../components/JobTemplatesSelectionTable';
 import VariableSetter from '../components/VariableSetter';
 import FinishTask from '../components/FinishTask';
 import TaskWizard from '../components/TaskWizard';
+import { getWizardTask } from '../redux/reducers';
+import { connect } from 'react-redux';
 
 function getSteps(setStepValid) {
   return [
@@ -26,7 +28,7 @@ function getSteps(setStepValid) {
   ];
 }
 
-function Inventory() {
+function Inventory({ task }) {
   let [stepValid, setStepValid] = useState(false);
   let [runTaskWizard, setRunTaskWizard] = useState(false);
 
@@ -37,18 +39,25 @@ function Inventory() {
   return (
     <div id="inventory">
       <h1>Inventory</h1>
-      
-      <Button
-        onClick={handleRunOnSelection}
-        disabled={!stepValid}
-        variant="contained"
-        color="primary">
-          Run on Selection
-      </Button>
+      <Badge badgeContent={task.filters.hosts.length} color="secondary">
+        <Button
+          onClick={handleRunOnSelection}
+          disabled={!stepValid}
+          variant="contained"
+          color="primary">
+            Run on Selection
+        </Button>
+      </Badge>
       { runTaskWizard ? <TaskWizard getSteps={getSteps} /> :
       <InventorySelectionTable setStepValid={setStepValid}/> }
     </div>
   );
 }
 
-export default Inventory;
+const mapStateToProps = (state) => {
+  return {
+    task: getWizardTask(state),
+  };
+}
+
+export default connect(mapStateToProps)(Inventory);
