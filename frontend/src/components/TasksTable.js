@@ -123,13 +123,24 @@ function TasksTable({ token, updateTaskWizard }) {
     fetchAndSetTasks(page, rowsPerPage, filters, search, orderBy);
   }
 
+  const getRerunName = (name) => {
+    const num = parseInt(name.replace(/(^\d+)(.+$)/i,'$1'));
+    if (num) {
+      return name.replace(/(^\d+)/i, (num+1));
+    }
+    return '1. Rerun: ' + name;
+  }
+
   const handleReRun = (e, task) => {
+    let variables = task.variables;
+    delete variables.name;
+    variables = Object.entries(variables).map((entry) => { return { [entry[0]]: entry[1] }; });
     const newTask = {
-      name: task.name,
+      name: getRerunName(task.name),
       date_scheduled: '',
-      variables: task.variables,
+      variables: variables,
       filters: task.filters,
-      template: { id: task.template },
+      template: { id: task.template, name: task.template_name, variables: variables },
     };
     updateTaskWizard(newTask);
     history.push('/wizard?step=2')
