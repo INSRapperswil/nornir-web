@@ -24,7 +24,6 @@ class TaskViewSet(viewsets.ModelViewSet):
     search_fields = ['name']
     ordering_fields = ['id', 'name', 'status', 'date_scheduled', 'date_started', 'date_finished', 'inventory']
 
-
     @action(detail=True, methods=['POST'])
     def run(self, request, pk):
         task = self.get_object()
@@ -69,7 +68,7 @@ class InventoryViewSet(viewsets.ModelViewSet):
         inventory = self.get_object()
         query_params = []
         for key, value in request.query_params.items():
-            query_params.append({key: value}) if key in self.filter_fields and value else None
+            query_params.append({key: value}) if key in self.filterset_fields and value else None
         search = request.query_params['search'] if 'search' in request.query_params else ''
         queryset = inventory.get_hosts(query_params, self.search_fields, search)
         queryset = InventoryOrdering().filter_queryset(request, queryset, self)
