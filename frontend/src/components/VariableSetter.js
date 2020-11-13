@@ -59,7 +59,7 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
   }
   const getDefaultTime = () => {
     const now = new Date();
-    return now.getHours() + ':' + now.getMinutes();
+    return now.toLocaleTimeString().substring(0, 5);
   }
 
   return (
