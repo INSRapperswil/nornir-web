@@ -15,11 +15,14 @@ import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles(theme => ({
   box: {
-    marginBottom: 20,
+    marginBottom: 10,
     display: 'flex',
     alignItems: 'center',
     '& > *': {
-      margin: 5,
+      marginBottom: 5,
+      marginRight: 10,
+      marginTop: 5,
+      marginLeft: 0,
     }
   },
 }));
@@ -61,7 +64,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
       getInventoryHosts(token, inventorySelectionId, rowsPerPage, 0, []).then((response) => {
         setInventory(response.results);
         setCount(response.count);
-        setStepValid(checkStepValidity(task.filters));
+        setStepValid(checkStepValidity(task.filters.hosts));
       });
     }
   // empty dependencies array, so it only runs on mount.
@@ -119,8 +122,9 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
   }
 
   return (
-    <div id="inventory-selection-table">
+    <div id="inventory-selection-table" style={{ marginBottom: 20, marginTop: 10, }}>
       <Box className={classes.box}>
+        <InventorySelector onInventoryChange={handleInventoryChange} />
         <TextField
           label="Search Field"
           variant="outlined"
@@ -130,7 +134,6 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
         <Button onClick={handleSearch} variant="outlined">Search</Button>
         <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
       </Box>
-      <InventorySelector onInventoryChange={handleInventoryChange} />
       <EnhancedTable
         rows={inventory}
         paginationDetails={{
