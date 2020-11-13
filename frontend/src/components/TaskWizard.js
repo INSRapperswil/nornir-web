@@ -6,8 +6,8 @@ import { Stepper, Step, StepLabel, Button } from '@material-ui/core';
 import { runTask, runTaskAsync } from '../api';
 import TaskDetail from './TaskDetail';
 
-function TaskWizard({ task, getSteps, postTaskWizard, wizard, token }) {
-  const [activeStep, setActiveStep] = useState(0);
+function TaskWizard({ task, getSteps, postTaskWizard, wizard, token, entryStep }) {
+  const [activeStep, setActiveStep] = useState(entryStep ? parseInt(entryStep) : 0);
   const [stepValid, setStepValid] = useState(false);
   const [createdTaskId, setCreatedTaskId] = useState(0);
   const steps = getSteps(setStepValid);
