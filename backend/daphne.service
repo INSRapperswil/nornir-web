@@ -3,6 +3,8 @@ Description=daphne server for nornir webapp
 After=network.target
 
 [Service]
+User=ins
+Group=ins
 WorkingDirectory=/home/ins/web-app-nornir/backend
 Environment="VIRTUAL_ENV=/home/ins/web-app-nornir/backend/venv"
 Environment="PATH=$VIRTUAL_ENV/bin"
