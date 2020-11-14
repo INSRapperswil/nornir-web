@@ -1,0 +1,11 @@
+[Unit]
+Description=Channels Worker for async tasks
+After=network.target
+
+[Service]
+WorkingDirectory=/home/ins/web-app-nornir/backend
+ExecStart=/home/ins/web-app-nornir/backend/venv/bin/celery -A backend worker
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

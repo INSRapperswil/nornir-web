@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
     'api',
 ]
 
@@ -56,7 +57,8 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "http://sr-000105.network.garden"
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -65,7 +67,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 25,
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
 TEMPLATES = [
@@ -102,7 +107,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # }
 
 DB_CONNECTION_STRING = os.environ.get('DB_CONNECTION_STRING',
-                                      'postgresql://postgres:v3rys3cur1ty@localhost:5432/nornir')
+                                      'postgresql://postgres:postgres@localhost:5432/nornir')
 DATABASES = {'default': dj_database_url.parse(DB_CONNECTION_STRING)}
 
 # Password validation
@@ -138,7 +143,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-
+STATIC_ROOT = BASE_DIR.__str__() + '/static/'
 STATIC_URL = '/static/'
 
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')

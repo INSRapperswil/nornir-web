@@ -1,0 +1,13 @@
+[Unit]
+Description=daphne server for nornir webapp
+After=network.target
+
+[Service]
+WorkingDirectory=/home/ins/web-app-nornir/backend
+Environment="VIRTUAL_ENV=/home/ins/web-app-nornir/backend/venv"
+Environment="PATH=$VIRTUAL_ENV/bin"
+ExecStart=/home/ins/web-app-nornir/backend/venv/bin/daphne backend.asgi:application -b 0.0.0.0
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

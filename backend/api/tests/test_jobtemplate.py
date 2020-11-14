@@ -20,7 +20,7 @@ user = lambda_fixture(
 class TestJobtemplateModel(TestCase):
     def test_add_jobtemplate(self):
         mixer.blend(JobTemplate, name='Update Cisco', description='Updates Firmware on Cisco devices',
-                          file_path='update.py', created_by=User.objects.first())
+                    file_name='update.py', created_by=User.objects.first())
         job = JobTemplate.objects.last()
         assert job.name == 'Update Cisco'
         assert job.description == 'Updates Firmware on Cisco devices'

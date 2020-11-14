@@ -1,18 +1,48 @@
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+    - $CI_PROJECT_DIR/backend/venv/
+    - $CI_PROJECT_DIR/frontend/node_modules/
+    - $CI_PROJECT_DIR/frontend/build/
+    - $CI_PROJECT_DIR/frontend/.yarn
+
 stages:
-  - triggers
+  - test
 
-trigger_frontend:
-  stage: triggers
-  trigger:
-    include: frontend/.gitlab-ci.yml
+# Backend CI/CD
+test_backend:
+  image: python:latest
+  stage: test
+  variables:
+    DB_CONNECTION_STRING: "sqlite:///db.sqlite3"
+  before_script:
+    - cd backend
+    - python -m venv venv
+    - source venv/bin/activate
+    - pip install -r requirements.txt
+  script:
+    - python manage.py migrate
+    - python manage.py create_groups
+    - python manage.py create_testdb
+    - coverage run -m pytest -vv
+    - coverage report
   rules:
     - changes:
-      - frontend/*
+        - backend/*
 
-trigger_backend:
-  stage: triggers
-  trigger:
-    include: backend/.gitlab-ci.yml
+# Frontend CI/CD
+test_frontend:
+  image: node:lts
+  stage: test
+  before_script:
+    - cd frontend
+    - yarn install
+  script:
+    - yarn lint
+    - yarn test
   rules:
     - changes:
-      - backend/*
+        - frontend/*

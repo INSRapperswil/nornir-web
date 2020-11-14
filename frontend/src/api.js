@@ -1,19 +1,51 @@
 const backend = "http://localhost:8000";
 
-export function getTasks(token) {
-  return getAuthenticatedJson('/api/tasks/', token).then(parseJson);
+function createFilterString(filters) {
+  let filterString = '';
+  for (let filter of filters) {
+    if(filter.value) {
+      filterString += `&${filter.name}=${filter.value}`;
+    }
+  }
+  return filterString;
 }
 
-export function getJobTemplates(token) {
-  return getAuthenticatedJson('/api/templates/', token).then(parseJson);
+export function getTasks(token, limit=25, offset=0, filters=[], search='', ordering='') {
+  return getAuthenticatedJson(`/api/tasks/?limit=${limit}&offset=${offset}&ordering=${ordering}&search=${search}${createFilterString(filters)}`, token)
+          .then(parseJson);
 }
 
-export function getInventoryHosts(token, inventoryId) {
-  return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts/`, token).then(parseJson);
+export function getTaskDetails(token, taskId) {
+  return getAuthenticatedJson(`/api/tasks/${taskId}/`, token).then(parseJson);
+}
+
+export function getJobTemplates(token, limit=25, offset=0, filters=[], search='', ordering='') {
+  return getAuthenticatedJson(`/api/templates/?limit=${limit}&offset=${offset}&ordering=${ordering}&search=${search}${createFilterString(filters)}`, token).then(parseJson);
+}
+
+export function getJobTemplateDetails(token, jobTemplateId) {
+  return getAuthenticatedJson(`/api/templates/${jobTemplateId}/`, token).then(parseJson);
+}
+
+export function getInventoryList(token) {
+  return getAuthenticatedJson(`/api/inventories/`, token).then(parseJson);
+}
+
+export function getInventoryHosts(token, inventoryId, limit=25, offset=0, filters=[], search='', ordering='') {
+  const url = `/api/inventories/${inventoryId}/hosts/?limit=${limit}&offset=${offset}&ordering=${ordering}&search=${search}${createFilterString(filters)}`;
+  return getAuthenticatedJson(url, token).then(parseJson);
+}
+
+export function getHostDetails(token, inventoryId, friendly_name) {
+  return getAuthenticatedJson(`/api/inventories/${inventoryId}/hosts/${friendly_name}/`, token).then(parseJson);
 }
 
 export function getTask(token, id) {
   return getAuthenticatedJson(`/api/tasks/${id}/`, token).then(parseJson);
+}
+
+export function postTask(token, task) {
+  return postAuthenticatedJson('/api/tasks/', token, task).then(parseJson);
 }
 
 export function createTask(token, params) {
@@ -28,8 +60,20 @@ export function runTaskAsync(token, id) {
   return postAuthenticatedJson(`/api/tasks/${id}/run_async/`, token);
 }
 
+export function getConfiguration(token) {
+  return getAuthenticatedJson(`/api/configuration/`, token).then(parseJson);
+}
+
+export function postConfiguration(token, configuration) {
+  return postAuthenticatedJson(`/api/configuration/`, token, configuration).then(parseJson);
+}
+
 export function authenticate(username, password) {
-  return postJson('/api-token-auth/', { username, password }).then(parseJson)
+  return postJson('/api-token-auth/', { username, password }).then(parseJson);
+}
+
+export function getUser(id, token) {
+  return getAuthenticatedJson(`/api/users/${id}/`, token).then(parseJson);
 }
 
 function getAuthenticatedJson(endpoint, token) {
@@ -39,13 +83,6 @@ function getAuthenticatedJson(endpoint, token) {
       Authorization: `Token ${token}`,
       Accept: "application/json"
     }
-  }).then(checkStatus);
-}
-
-function getJson(endpoint) {
-  return fetch(`${backend}${endpoint}`, {
-    method: "GET",
-    Accept: "application/json"
   }).then(checkStatus);
 }
 
