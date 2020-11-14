@@ -50,6 +50,31 @@ export function updateTaskWizard(task) {
   };
 }
 
+function getRerunName(name) {
+  const num = parseInt(name.replace(/(^\d+)(.+$)/i, '$1'));
+  if (num) {
+    return name.replace(/(^\d+)/i, (num + 1));
+  }
+  return '1. Rerun: ' + name;
+}
+
+export function setRerunTask(task) {
+  return (dispatch, getState) => {
+    dispatch({ type: "SET_RERUN_TASK" });
+    let variables = task.variables;
+    delete variables.name;
+    variables = Object.entries(variables).map((entry) => { return { [entry[0]]: entry[1] }; });
+    const newTask = {
+      name: getRerunName(task.name),
+      date_scheduled: '',
+      variables: variables,
+      filters: task.filters,
+      template: { id: task.template, name: task.template_name, variables: variables },
+    };
+    dispatch(updateTaskWizard(newTask));
+  }
+}
+
 export function updateInventorySelection(inventory) {
   return (dispatch, getState) => {
     dispatch({ type: "UPDATE_INVENTORY_SELECTION", ...getState().inventorySelection, ...inventory });

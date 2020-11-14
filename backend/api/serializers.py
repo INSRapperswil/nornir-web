@@ -28,7 +28,8 @@ class TaskSerializer(serializers.ModelSerializer):
             'template',
             'template_name',
             'inventory',
-            'inventory_name'
+            'inventory_name',
+            'is_template'
         ]
 
 

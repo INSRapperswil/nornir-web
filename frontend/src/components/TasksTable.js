@@ -11,7 +11,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import RepeatIcon from '@material-ui/icons/Repeat';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { getToken } from '../redux/reducers';
-import { updateTaskWizard } from '../redux/actions';
+import { setRerunTask } from '../redux/actions';
 import { connect } from 'react-redux';
 import TaskDetail from './TaskDetail';
 import {
@@ -58,7 +58,7 @@ function SelectStatus({ defaultValue }) {
   );
 }
 
-function TasksTable({ token, updateTaskWizard }) {
+function TasksTable({ token, setRerunTask, onlyTemplates }) {
   let [tasks, setTasks] = useState([]);
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
@@ -71,6 +71,7 @@ function TasksTable({ token, updateTaskWizard }) {
     { label: 'Inventory Name', name: 'inventory__name', value: '' },
     { label: 'Creator', name: 'created_by__username', value: '' },
     { label: 'Status', name: 'status', value: '', component: (defaultValue) => <SelectStatus defaultValue={defaultValue}/> },
+    { name: 'is_template', hidden: true, value: true },
   ]);
   const history = useHistory();
 
@@ -123,26 +124,8 @@ function TasksTable({ token, updateTaskWizard }) {
     fetchAndSetTasks(page, rowsPerPage, filters, search, orderBy);
   }
 
-  const getRerunName = (name) => {
-    const num = parseInt(name.replace(/(^\d+)(.+$)/i,'$1'));
-    if (num) {
-      return name.replace(/(^\d+)/i, (num+1));
-    }
-    return '1. Rerun: ' + name;
-  }
-
   const handleReRun = (e, task) => {
-    let variables = task.variables;
-    delete variables.name;
-    variables = Object.entries(variables).map((entry) => { return { [entry[0]]: entry[1] }; });
-    const newTask = {
-      name: getRerunName(task.name),
-      date_scheduled: '',
-      variables: variables,
-      filters: task.filters,
-      template: { id: task.template, name: task.template_name, variables: variables },
-    };
-    updateTaskWizard(newTask);
+    setRerunTask(task);
     history.push('/wizard?step=2')
   };
 
@@ -259,7 +242,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  updateTaskWizard,
+  setRerunTask,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TasksTable);

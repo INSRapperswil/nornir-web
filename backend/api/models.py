@@ -73,6 +73,7 @@ class Task(models.Model):
     template = models.ForeignKey(JobTemplate, on_delete=models.SET_NULL, null=True)
     inventory = models.ForeignKey(Inventory, on_delete=models.SET_NULL, null=True)
     celery_task_id = models.CharField(blank=True, max_length=40)
+    is_template = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.id}: {self.name}'

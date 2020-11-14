@@ -17,6 +17,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Logout from './components/Logout';
 import TaskWizardPage from './pages/TaskWizardPage';
 import Configuration from './pages/Configuration';
+import TaskTemplates from './pages/TaskTemplates';
 
 function App() {
   const paths = [
@@ -30,6 +31,12 @@ function App() {
       label: 'Tasks Dashboard',
       value: '/task-dashboard',
       component: <TaskDashboard />,
+      protected: true,
+    },
+    {
+      label: 'Task Templates',
+      value: '/task-templates',
+      component: <TaskTemplates/>,
       protected: true,
     },
     {
