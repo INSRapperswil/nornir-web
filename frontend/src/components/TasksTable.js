@@ -10,6 +10,7 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import RepeatIcon from '@material-ui/icons/Repeat';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import { getToken } from '../redux/reducers';
 import { setRerunTask } from '../redux/actions';
 import { connect } from 'react-redux';
@@ -71,13 +72,18 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
     { label: 'Inventory Name', name: 'inventory__name', value: '' },
     { label: 'Creator', name: 'created_by__username', value: '' },
     { label: 'Status', name: 'status', value: '', component: (defaultValue) => <SelectStatus defaultValue={defaultValue}/> },
-    { name: 'is_template', hidden: true, value: true },
   ]);
   const history = useHistory();
 
+  const aggregateFilters = () => {
+    let f = Object.assign([], filters);
+    f.push({ name: 'is_template', value: (onlyTemplates ? 'true' : 'false') });
+    return f;
+  };
+
   useEffect(() => {
     if (tasks.length === 0) {
-      getTasks(token, rowsPerPage, 0).then((response) => {
+      getTasks(token, rowsPerPage, 0, aggregateFilters()).then((response) => {
         setTasks(response.results);
         setCount(response.count);
         setIsLoading(false);
@@ -91,8 +97,8 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
 
   const fetchAndSetTasks = (page, pageSize, filters, search, order) => {
     const offset = page * pageSize;
-    setIsLoading(true)
-    getTasks(token, pageSize, offset, filters, search, order).then((response) => {
+    setIsLoading(true);
+    getTasks(token, pageSize, offset, aggregateFilters(), search, order).then((response) => {
       setTasks(response.results);
       setCount(response.count);
       setIsLoading(false);
@@ -142,17 +148,31 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
           </TableCell>
           <TableCell>{row.name}</TableCell>
           <TableCell>{statusIdToText(row.status)}</TableCell>
-          <TableCell>{beautifyDate(row.date_scheduled)}</TableCell>
-          <TableCell>{beautifyDate(row.date_started)}</TableCell>
-          <TableCell>{beautifyDate(row.date_finished)}</TableCell>
+          {
+            onlyTemplates ? null :
+            <React.Fragment>
+              <TableCell>{beautifyDate(row.date_scheduled)}</TableCell>
+              <TableCell>{beautifyDate(row.date_started)}</TableCell>
+              <TableCell>{beautifyDate(row.date_finished)}</TableCell>
+            </React.Fragment>
+          }
           <TableCell>{row.created_name}</TableCell>
           <TableCell>{row.template_name}</TableCell>
           <TableCell>
-            <Tooltip title="Re-Run Task">
-              <IconButton onClick={(e) => handleReRun(e, row)}>
-                <RepeatIcon/>
-              </IconButton>
-            </Tooltip>
+            {
+              onlyTemplates ?
+              <Tooltip title="Run Task">
+                <IconButton onClick={(e) => handleReRun(e, row)}>
+                  <PlayCircleOutlineIcon color="primary"/>
+                </IconButton>
+              </Tooltip>
+              :
+              <Tooltip title="Re-Run Task">
+                <IconButton onClick={(e) => handleReRun(e, row)}>
+                  <RepeatIcon/>
+                </IconButton>
+              </Tooltip>
+            }
           </TableCell>
           <TableCell align="right">
             <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
@@ -177,9 +197,9 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
     { label: '#', name: 'id', orderable: true },
     { label: 'Name', name: 'name', orderable: true },
     { label: 'Status', name: 'status', orderable: true },
-    { label: 'Scheduled', name: 'date_scheduled', orderable: true },
-    { label: 'Started', name: 'date_started', orderable: true },
-    { label: 'Finished', name: 'date_finished', orderable: true },
+    { label: 'Scheduled', name: 'date_scheduled', orderable: true, hiddenForTaskTemplates: true },
+    { label: 'Started', name: 'date_started', orderable: true, hiddenForTaskTemplates: true },
+    { label: 'Finished', name: 'date_finished', orderable: true, hiddenForTaskTemplates: true },
     { label: 'Creator', name: 'creator' },
     { label: 'Template', name: 'template' },
     { label: '', name: '' },
@@ -212,7 +232,11 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
           <TableHead>
             <TableRow>
               { headCells.map((cell, index) => {
-                return <SortableTableHead key={index} cell={cell} orderBy={orderBy} onSortChange={handleSortChange}/>
+                if(onlyTemplates && cell.hiddenForTaskTemplates) {
+                  return null;
+                } else {
+                  return <SortableTableHead key={index} cell={cell} orderBy={orderBy} onSortChange={handleSortChange}/>
+                }
               })}
             </TableRow>
           </TableHead>

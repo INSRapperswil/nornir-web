@@ -65,7 +65,7 @@ export function setRerunTask(task) {
     delete variables.name;
     variables = Object.entries(variables).map((entry) => { return { [entry[0]]: entry[1] }; });
     const newTask = {
-      name: getRerunName(task.name),
+      name: (task.is_template ? task.name : getRerunName(task.name)),
       date_scheduled: '',
       variables: variables,
       filters: task.filters,

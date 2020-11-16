@@ -5,20 +5,26 @@ import { updateTaskWizard, postTaskWizard } from '../redux/actions';
 import { Stepper, Step, StepLabel, Button } from '@material-ui/core';
 import { runTask, runTaskAsync } from '../api';
 import TaskDetail from './TaskDetail';
+import { useHistory } from 'react-router-dom';
 
 function TaskWizard({ task, getSteps, postTaskWizard, wizard, token, entryStep }) {
   const [activeStep, setActiveStep] = useState(entryStep ? parseInt(entryStep) : 0);
   const [stepValid, setStepValid] = useState(false);
   const [createdTaskId, setCreatedTaskId] = useState(0);
+  const history = useHistory();
   const steps = getSteps(setStepValid);
 
   const handleFinish = (event) => {
     postTaskWizard().then(result => {
-      setCreatedTaskId(result.id)
-      if(result.date_scheduled) {
-        runTaskAsync(token, result.id)
+      setCreatedTaskId(result.id);
+      if(result.is_template) {
+        history.push('/task-templates');
       } else {
-        runTask(token, result.id);
+        if(result.date_scheduled) {
+          runTaskAsync(token, result.id)
+        } else {
+          runTask(token, result.id);
+        }
       }
     })
     handleNext(event);
