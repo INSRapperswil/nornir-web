@@ -29,7 +29,9 @@ class NornirHandler:
                                             'defaults_file': default_file
                                         }}, )
 
-    def get_hosts(self, filter_arguments=[], search_fields=None, search_argument='') -> list:
+    def get_hosts(self, filter_arguments=None, search_fields=None, search_argument='') -> list:
+        if filter_arguments is None:
+            filter_arguments = []
         filtered = self.nr.filter()
         filtered = self.filter_hosts(filtered, filter_arguments)
         if search_argument and search_fields:
