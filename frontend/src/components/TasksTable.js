@@ -72,7 +72,6 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
     { label: 'Inventory Name', name: 'inventory__name', value: '' },
     { label: 'Creator', name: 'created_by__username', value: '' },
     { label: 'Status', name: 'status', value: '', component: (defaultValue) => <SelectStatus defaultValue={defaultValue}/> },
-    { name: 'is_template', hidden: true, value: true },
   ]);
   const history = useHistory();
 
