@@ -19,6 +19,9 @@ from django.urls.conf import include
 from django.views.generic import TemplateView
 from rest_framework.authtoken import views
 from rest_framework.schemas import get_schema_view
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+from api.views import EnhancedTokenObtainPairView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,6 +32,12 @@ urlpatterns = [
 urlpatterns += [
     path('api-auth/', include('rest_framework.urls')),
     path('api-token-auth/', views.obtain_auth_token),
+]
+
+# Authentication URLs using JWT
+urlpatterns += [
+    path('api/token/', EnhancedTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
 
 # URLs for API Documentation

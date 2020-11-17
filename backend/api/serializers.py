@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from api.models import Task, JobTemplate, Inventory
 
 
@@ -69,9 +71,16 @@ class InventorySerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # Linking from User to all templates he created, not working right now.
-    # templates = serializers.HyperlinkedRelatedField(many=True, view_name='template-detail', read_only=True)
-
     class Meta:
         model = User
-        fields = ['id', 'username', 'groups']  # , 'templates']
+        fields = ['id', 'username', 'groups']
+
+
+class EnhancedTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        token['username'] = user.username
+        token['group'] = list(user.groups.values_list('name', flat=True))
+        return token
