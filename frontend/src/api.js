@@ -3,23 +3,23 @@ const backend = "http://localhost:8000";
 function createFilterString(filters) {
   let filterString = '';
   for (let filter of filters) {
-    if(filter.value) {
+    if (filter.value) {
       filterString += `&${filter.name}=${filter.value}`;
     }
   }
   return filterString;
 }
 
-export function getTasks(token, limit=25, offset=0, filters=[], search='', ordering='') {
+export function getTasks(token, limit = 25, offset = 0, filters = [], search = '', ordering = '') {
   return getAuthenticatedJson(`/api/tasks/?limit=${limit}&offset=${offset}&ordering=${ordering}&search=${search}${createFilterString(filters)}`, token)
-          .then(parseJson);
+    .then(parseJson);
 }
 
 export function getTaskDetails(token, taskId) {
   return getAuthenticatedJson(`/api/tasks/${taskId}/`, token).then(parseJson);
 }
 
-export function getJobTemplates(token, limit=25, offset=0, filters=[], search='', ordering='') {
+export function getJobTemplates(token, limit = 25, offset = 0, filters = [], search = '', ordering = '') {
   return getAuthenticatedJson(`/api/templates/?limit=${limit}&offset=${offset}&ordering=${ordering}&search=${search}${createFilterString(filters)}`, token).then(parseJson);
 }
 
@@ -31,7 +31,7 @@ export function getInventoryList(token) {
   return getAuthenticatedJson(`/api/inventories/`, token).then(parseJson);
 }
 
-export function getInventoryHosts(token, inventoryId, limit=25, offset=0, filters=[], search='', ordering='') {
+export function getInventoryHosts(token, inventoryId, limit = 25, offset = 0, filters = [], search = '', ordering = '') {
   const url = `/api/inventories/${inventoryId}/hosts/?limit=${limit}&offset=${offset}&ordering=${ordering}&search=${search}${createFilterString(filters)}`;
   return getAuthenticatedJson(url, token).then(parseJson);
 }
@@ -68,16 +68,19 @@ export function postConfiguration(token, configuration) {
   return postAuthenticatedJson(`/api/configuration/`, token, configuration).then(parseJson);
 }
 
-export function authenticate(username, password) {
-  return postJson('/api/token/', { username, password }).then(parseJson);
-}
-
 export function getUser(id, token) {
   return getAuthenticatedJson(`/api/users/${id}/`, token).then(parseJson);
 }
 
+export function authenticate(username, password) {
+  return postJson('/api/token/', { username, password }).then(parseJson);
+}
+
+export function renewAccessToken(refreshToken) {
+  return postJson('/api/token/refresh/', { 'refresh': refreshToken }).then(parseJson);
+}
+
 function getAuthenticatedJson(endpoint, token) {
-  console.log(token);
   return fetch(`${backend}${endpoint}`, {
     method: "GET",
     headers: {

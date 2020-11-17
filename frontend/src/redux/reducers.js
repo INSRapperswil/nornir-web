@@ -1,4 +1,5 @@
 import { combineReducers } from "redux";
+import { renewAccessToken } from "./actions";
 
 const initialTasksState = {
   tasks: null,
@@ -22,7 +23,9 @@ function tasks(state = initialTasksState, action) {
 const initialUser = {
   user_id: 0,
   refresh_token: '',
+  refresh_expiry: '',
   access_token: '',
+  access_expiry: '',
   username: '',
   groups: [],
   isLoading: false,
@@ -31,12 +34,14 @@ const initialUser = {
 
 function initialUserFunction(state = initialUser) {
   const refresh_token = sessionStorage.getItem("refresh_token")
-  if (refresh_token) {
-    return { ...state, refresh_token: refresh_token };
+  const access_token = sessionStorage.getItem("access_token");
+  if (refresh_token && access_token) {
+    return { ...state, refresh_token: refresh_token, access_token: access_token };
   } else {
     return state;
   }
 }
+
 function user(state = initialUserFunction(), action) {
   switch (action.type) {
     case "FETCH_USER_STARTED":
@@ -124,6 +129,11 @@ export function getInventorySelectionId(state) {
 }
 
 export function getToken(state) {
+  if (Date.now() > state.user.access_expiry) {
+    console.log("old token: " + state.user.access_token);
+    console.log(state.user.access_expiry);
+    renewAccessToken(state.user.access_expiry);
+  }
   return state.user.access_token;
 }
 

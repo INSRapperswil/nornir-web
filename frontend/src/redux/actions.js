@@ -6,10 +6,10 @@ export function fetchTasks() {
     dispatch({ type: "FETCH_TASKS_STARTED" });
 
     return api.getTasks()
-    .then(({ result: tasks }) => {
-      dispatch({ type: "FETCH_TASKS_SUCCEEDED", tasks })
-    })
-    .catch((error) => dispatch({ type: "FETCH_TASKS_FAILED", error }));
+      .then(({ result: tasks }) => {
+        dispatch({ type: "FETCH_TASKS_SUCCEEDED", tasks })
+      })
+      .catch((error) => dispatch({ type: "FETCH_TASKS_FAILED", error }));
   };
 }
 
@@ -18,24 +18,24 @@ export function postTaskWizard() {
     dispatch({ type: "POST_TASK_WIZARD_STARTED" });
     let inventoryId = getState().inventorySelection.inventory;
     let task = getState().taskWizard.task;
-    
+
     task.template = task.template.id;
     task.inventory = inventoryId;
-    if(!task.date_scheduled) {
+    if (!task.date_scheduled) {
       delete task.date_scheduled;
     }
-    return api.postTask(getState().user.token, getState().taskWizard.task)
-    .then((result) => {
-      dispatch({ type: "POST_TASK_WIZARD_SUCCEEDED", lastCreatedTaskId: result.id })
-      return result;
-    })
-    .catch((error) => dispatch({ type: "POST_TASK_WIZARD_FAILED", error }));
+    return api.postTask(getState().user.access_token, getState().taskWizard.task)
+      .then((result) => {
+        dispatch({ type: "POST_TASK_WIZARD_SUCCEEDED", lastCreatedTaskId: result.id })
+        return result;
+      })
+      .catch((error) => dispatch({ type: "POST_TASK_WIZARD_FAILED", error }));
   };
 }
 
 export function updateTaskWizard(task) {
   return (dispatch, getState) => {
-    dispatch({ type: "UPDATE_TASK_WIZARD", task: { ...getState().taskWizard.task, ...task }});
+    dispatch({ type: "UPDATE_TASK_WIZARD", task: { ...getState().taskWizard.task, ...task } });
   };
 }
 
@@ -73,28 +73,47 @@ export function updateInventorySelection(inventory) {
 export function authenticate(username, password) {
   return (dispatch, getState) => {
     dispatch({ type: "FETCH_USER_STARTED" });
-    //TODO: access_token lost after page reload (maybe write to session storage)
-    //TODO: Autoupdate access_token (lifetime of 5 minutes)
     return api.authenticate(username, password)
-    .then((result) => {
-      sessionStorage.setItem('refresh_token', result.refresh);
-      let decoded = jwt_decode(result.refresh);
-      let user = {
-        'user_id': decoded.user_id,
-        'refresh_token': result.refresh,
-        'access_token': result.access,
-        'username': decoded.username,
-        'groups': decoded.groups,
-      }
-      dispatch({ type: "FETCH_USER_SUCCEEDED", user: { ...getState().user, ...user } });
-    })
-    .catch((error) => dispatch({ type: "FETCH_USER_FAILED", error }));
+      .then((result) => {
+        sessionStorage.setItem('refresh_token', result.refresh);
+        sessionStorage.setItem('access_token', result.access);
+        let decodedRefreshToken = jwt_decode(result.refresh);
+        let decodedAccessToken = jwt_decode(result.access);
+        let user = {
+          'user_id': decodedRefreshToken.user_id,
+          'refresh_token': result.refresh,
+          'refresh_expiry': decodedRefreshToken.exp,
+          'access_token': result.access,
+          'access_expiry': decodedAccessToken.exp,
+          'username': decodedRefreshToken.username,
+          'groups': decodedRefreshToken.groups,
+        }
+        dispatch({ type: "FETCH_USER_SUCCEEDED", user: { ...getState().user, ...user } });
+      })
+      .catch((error) => dispatch({ type: "FETCH_USER_FAILED", error }));
   };
+}
+
+//TODO: Autoupdate access_token (lifetime of 5 minutes)
+export function renewAccessToken(blah) {
+  console.log("token expiry: " + blah);
+  return (dispatch, getState) => {
+    console.log("dini fetti mueter");
+    dispatch({ type: "REFRESH_TOKEN_STARTED" });
+    let refreshToken = getState().user.refresh_token;
+    return api.renewAccessToken(refreshToken)
+      .then((result) => {
+        let new_access_token = result.access_token;
+        sessionStorage.setItem('access_token', new_access_token);
+        dispatch({ type: "REFRESH_TOKEN_SUCCEEDED", user: { ...getState().user.access_token, new_access_token } });
+      })
+  }
 }
 
 export function logout() {
   return (dispatch, getState) => {
     dispatch({ type: "LOGOUT" });
     sessionStorage.removeItem('refresh_token');
+    sessionStorage.removeItem('access_token');
   };
 }
