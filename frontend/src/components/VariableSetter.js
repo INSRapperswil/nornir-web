@@ -26,11 +26,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
-  const [runNow, setRunNow] = useState(true);
+  let [runNow, setRunNow] = useState(true);
+  let [isTemplate, setIsTemplate] = useState(false);
   const classes = useStyles();
 
   useEffect(() => {
-    setStepValid(task.name !== '');
+    setStepValid(task.name !== '' && typeof task.variables === 'object' && !(task.variables instanceof Array) );
   }, [task, setStepValid]);
 
   const handleSubmit = (event) => {
@@ -40,6 +41,7 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
       name: target['name'].value,
       date_scheduled: '',
       variables: {},
+      is_template: isTemplate,
     };
     for (let variable of task.template.variables) {
       taskAttr.variables[variable] = target[variable].value;
@@ -62,6 +64,10 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
     return now.toLocaleTimeString().substring(0, 5);
   }
 
+  const handleIsTemplateChange = (event) => {
+    setIsTemplate(event.target.checked);
+  };
+
   return (
     <div id="variable-setter">
       <h2>Set Variables</h2>
@@ -74,14 +80,18 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
           className={classes.textField}
           variant="outlined"/>
         <FormControlLabel
+          control={<Checkbox name="is-template" id="is-template" checked={isTemplate} onChange={handleIsTemplateChange}/>}
+          label="Save Task as Template"/>
+        <FormControlLabel
           control={<Checkbox name="run-now" id="run-now" checked={runNow} onChange={handleCheckedChange}/>}
+          disabled={isTemplate}
           label="Run Task Now"/>
         <TextField
           id="scheduled-date"
           type="date"
           className={classes.textField}
           defaultValue={getDefaultDate()}
-          disabled={runNow}
+          disabled={runNow || isTemplate}
           variant="outlined"
           label="Date Scheduled"/>
         <TextField
@@ -89,7 +99,7 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
           type="time"
           className={classes.textField}
           defaultValue={getDefaultTime()}
-          disabled={runNow}
+          disabled={runNow || isTemplate}
           variant="outlined"
           label="Time Scheduled"/>
         {

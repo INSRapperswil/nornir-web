@@ -71,6 +71,7 @@ expected_task_list = {
                  'status': 0,
                  'template': 3,
                  'template_name': 'Get Interfaces',
+                 'is_template': False,
                  'variables': {}},
                 {'created_by': 2,
                  'created_name': 'norbert',
@@ -88,6 +89,7 @@ expected_task_list = {
                  'status': 0,
                  'template': 2,
                  'template_name': 'Get CDP Neighbors',
+                 'is_template': False,
                  'variables': {}},
                 {'created_by': 1,
                  'created_name': 'thomastest',
@@ -105,6 +107,7 @@ expected_task_list = {
                  'status': 0,
                  'template': 1,
                  'template_name': 'hello_world',
+                 'is_template': False,
                  'variables': {}}
                 ],
 }
