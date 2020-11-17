@@ -20,8 +20,9 @@ function tasks(state = initialTasksState, action) {
 }
 
 const initialUser = {
-  id: 0,
-  token: '',
+  user_id: 0,
+  refresh_token: '',
+  access_token: '',
   username: '',
   groups: [],
   isLoading: false,
@@ -29,9 +30,9 @@ const initialUser = {
 };
 
 function initialUserFunction(state = initialUser) {
-  const token = sessionStorage.getItem("token")
-  if (token) {
-    return { ...state, token: token };
+  const refresh_token = sessionStorage.getItem("refresh_token")
+  if (refresh_token) {
+    return { ...state, refresh_token: refresh_token };
   } else {
     return state;
   }
@@ -45,7 +46,7 @@ function user(state = initialUserFunction(), action) {
     case "FETCH_USER_FAILED":
       return { ...state, isLoading: false, error: action.error };
     case "LOGOUT":
-      return { ...state, token: '' };
+      return { ...state, refresh_token: '' };
     default:
       return state;
   }
@@ -123,11 +124,11 @@ export function getInventorySelectionId(state) {
 }
 
 export function getToken(state) {
-  return state.user.token;
+  return state.user.access_token;
 }
 
 export function getIsAuthenticated(state) {
-  return state.user.token !== '';
+  return state.user.refresh_token !== '';
 }
 
 export function getUser(state) {

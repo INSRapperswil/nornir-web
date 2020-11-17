@@ -1,4 +1,5 @@
 import * as api from "../api";
+import jwt_decode from "jwt-decode";
 
 export function fetchTasks() {
   return (dispatch, getState) => {
@@ -9,18 +10,6 @@ export function fetchTasks() {
       dispatch({ type: "FETCH_TASKS_SUCCEEDED", tasks })
     })
     .catch((error) => dispatch({ type: "FETCH_TASKS_FAILED", error }));
-  };
-}
-
-export function fetchUser() {
-  return (dispatch, getState) => {
-    dispatch({ type: "FETCH_USER_STARTED" });
-
-    return api.getUser()
-    .then(({ result: user }) => {
-      dispatch({ type: "FETCH_USER_SUCCEEDED", user })
-    })
-    .catch((error) => dispatch({ type: "FETCH_USER_FAILED", error }));
   };
 }
 
@@ -84,11 +73,20 @@ export function updateInventorySelection(inventory) {
 export function authenticate(username, password) {
   return (dispatch, getState) => {
     dispatch({ type: "FETCH_USER_STARTED" });
-
+    //TODO: access_token lost after page reload (maybe write to session storage)
+    //TODO: Autoupdate access_token (lifetime of 5 minutes)
     return api.authenticate(username, password)
     .then((result) => {
-      sessionStorage.setItem('token', result.token);
-      dispatch({ type: "FETCH_USER_SUCCEEDED", user: { ...getState().user, token: result.token } });
+      sessionStorage.setItem('refresh_token', result.refresh);
+      let decoded = jwt_decode(result.refresh);
+      let user = {
+        'user_id': decoded.user_id,
+        'refresh_token': result.refresh,
+        'access_token': result.access,
+        'username': decoded.username,
+        'groups': decoded.groups,
+      }
+      dispatch({ type: "FETCH_USER_SUCCEEDED", user: { ...getState().user, ...user } });
     })
     .catch((error) => dispatch({ type: "FETCH_USER_FAILED", error }));
   };
@@ -97,6 +95,6 @@ export function authenticate(username, password) {
 export function logout() {
   return (dispatch, getState) => {
     dispatch({ type: "LOGOUT" });
-    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('refresh_token');
   };
 }

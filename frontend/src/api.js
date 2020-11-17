@@ -69,7 +69,7 @@ export function postConfiguration(token, configuration) {
 }
 
 export function authenticate(username, password) {
-  return postJson('/api-token-auth/', { username, password }).then(parseJson);
+  return postJson('/api/token/', { username, password }).then(parseJson);
 }
 
 export function getUser(id, token) {
@@ -77,10 +77,11 @@ export function getUser(id, token) {
 }
 
 function getAuthenticatedJson(endpoint, token) {
+  console.log(token);
   return fetch(`${backend}${endpoint}`, {
     method: "GET",
     headers: {
-      Authorization: `Token ${token}`,
+      Authorization: `Bearer ${token}`,
       Accept: "application/json"
     }
   }).then(checkStatus);
@@ -90,7 +91,7 @@ function postAuthenticatedJson(endpoint, token, params) {
   return fetch(`${backend}${endpoint}`, {
     method: "POST",
     headers: {
-      Authorization: `Token ${token}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
       "Accept": "application/json"
     },
