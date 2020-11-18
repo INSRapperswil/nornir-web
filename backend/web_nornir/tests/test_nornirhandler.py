@@ -6,6 +6,17 @@ host_file = 'web_nornir/nornir_config/test_config/hosts.yaml'
 group_file = 'web_nornir/nornir_config/test_config/groups.yaml'
 default_file = 'web_nornir/nornir_config/test_config/defaults.yaml'
 
+
+class MockTemplate:
+    function_name = 'job_function'
+
+    def get_package_path(self):
+        return 'web_nornir/job_templates'
+
+    def __init__(self, file_name='hello_world.py'):
+        self.file_name = file_name
+
+
 class TestNornirHandler:
     def test_init_nornir_with_valid_inventory_with_defaults(self):
         nh = NornirHandler(host_file, group_file, default_file)
@@ -66,6 +77,24 @@ class TestNornirHandler:
             {'data': {'asn': 65001, 'domain': 'test.testing', 'ospf': 1}, 'groups': ['testgroup', 'othergroup'],
              'hostname': '127.127.0.1', 'name': 'device1.test', 'platform': 'ios', 'port': 2202}, ]
 
+    def test_execute_task(self):
+        nh = NornirHandler(host_file, group_file, default_file)
+        result = nh.execute_task(MockTemplate(), {'name': 'Hello World'}, {'hosts': ['host1.test']})
+        assert result == {'failed': False,
+                          'hosts': [{'failed': False,
+                                     'hostname': '127.0.0.1',
+                                     'name': 'host1.test',
+                                     'result': ['host1.test says hello world!']}]}
+
+    def test_execute_task_fails(self):
+        nh = NornirHandler(host_file, group_file, default_file)
+        result = nh.execute_task(MockTemplate(file_name='ping.py'), {'name': 'Hello World'}, {'hosts': ['host1.test']})
+        assert result == {'failed': True,
+                          'hosts': [{'failed': True,
+                                     'hostname': '127.0.0.1',
+                                     'name': 'host1.test',
+                                     'result': 'Cannot import "linux". Is the library installed?'}]}
+
     def test_get_configuration(self):
         expected = {
             'logging': {'enabled': True,
@@ -92,7 +121,6 @@ class TestNornirHandler:
 
         NornirHandler.set_configuration(new_configuration)
         assert NornirHandler.get_configuration()['runner']['options']['num_workers'] == expected
-    
 
     def test_filter_hosts(self):
         nh = NornirHandler(host_file, group_file)
@@ -100,7 +128,7 @@ class TestNornirHandler:
         host_keys = filtered.inventory.hosts.keys()
         assert 'device1.test' in host_keys
         assert 'host1.test' not in host_keys
-    
+
     def test_filter_hosts_no_filters(self):
         nh = NornirHandler(host_file, group_file)
         initial = nh.nr.filter()

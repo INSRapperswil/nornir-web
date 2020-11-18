@@ -7,7 +7,9 @@ from pathlib import Path
 
 from .job_discovery import JobDiscovery
 
-# Global defaults for all nornir inventories
+# default Nornir inventory and default settings
+HOST_FILE = 'web_nornir/nornir_config/example_config/hosts.yaml'
+GROUP_FILE = 'web_nornir/nornir_config/example_config/groups.yaml'
 DEFAULT_FILE = 'web_nornir/nornir_config/defaults.yaml'
 
 
@@ -15,9 +17,9 @@ class NornirHandler:
     def __init__(self, host_file, group_file, default_file=DEFAULT_FILE):
         # Load default configs if invalid file path given
         if not Path(host_file).is_file():
-            host_file = 'web_nornir/nornir_config/example_config/hosts.yaml'
+            host_file = HOST_FILE
         if not Path(group_file).is_file():
-            group_file = 'web_nornir/nornir_config/example_config/groups.yaml'
+            group_file = GROUP_FILE
         if default_file is None or not Path(default_file).is_file():
             default_file = DEFAULT_FILE
 
@@ -103,21 +105,37 @@ class NornirHandler:
 
     @staticmethod
     def format_result(aggregated_result: AggregatedResult) -> dict:
-        result = {
-            'failed': aggregated_result.failed,
-            'hosts': []
-        }
-
-        for host_results in aggregated_result:
-            host_dict = {
-                'hostname': aggregated_result[host_results].host.hostname,
-                'name': aggregated_result[host_results].host.name,
-                'failed': aggregated_result[host_results].failed,
-                'result': aggregated_result[host_results].result[0].result
+        try:
+            result = {
+                'failed': aggregated_result.failed,
+                'hosts': []
             }
-            result['hosts'].append(host_dict)
 
-        return result
+            for host_results in aggregated_result:
+                host_dict = {
+                    'hostname': aggregated_result[host_results].host.hostname,
+                    'name': aggregated_result[host_results].host.name,
+                    'failed': aggregated_result[host_results].failed,
+                    'result': aggregated_result[host_results].result[0].result if not aggregated_result[
+                        host_results].failed else f'{aggregated_result[host_results][1].exception}'
+                }
+                result['hosts'].append(host_dict)
+
+            return result
+        except:
+            result = {
+                'failed': True,
+                'hosts': []
+            }
+            for host_results in aggregated_result:
+                host_dict = {
+                    'hostname': aggregated_result[host_results].host.hostname,
+                    'name': aggregated_result[host_results].host.name,
+                    'failed': aggregated_result[host_results].failed,
+                    'result': 'Exception thrown, please check backend log'
+                }
+                result['hosts'].append(host_dict)
+            return result
 
     @staticmethod
     def get_configuration() -> dict:
