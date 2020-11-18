@@ -130,9 +130,7 @@ export function getInventorySelectionId(state) {
 
 export function getToken(state) {
   if (Date.now() > state.user.access_expiry) {
-    console.log("old token: " + state.user.access_token);
-    console.log(state.user.access_expiry);
-    renewAccessToken(state.user.access_expiry);
+    renewAccessToken();
   }
   return state.user.access_token;
 }

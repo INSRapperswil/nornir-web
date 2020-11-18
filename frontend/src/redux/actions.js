@@ -95,10 +95,8 @@ export function authenticate(username, password) {
 }
 
 //TODO: Autoupdate access_token (lifetime of 5 minutes)
-export function renewAccessToken(blah) {
-  console.log("token expiry: " + blah);
+export function renewAccessToken() {
   return (dispatch, getState) => {
-    console.log("dini fetti mueter");
     dispatch({ type: "REFRESH_TOKEN_STARTED" });
     let refreshToken = getState().user.refresh_token;
     return api.renewAccessToken(refreshToken)
