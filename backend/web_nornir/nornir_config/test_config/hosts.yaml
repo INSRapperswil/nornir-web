@@ -26,3 +26,11 @@ device1.test:
   data:
     ospf: 1
     asn: 65001
+unreachable.host:
+  hostname: 0.0.0.0
+  port: 2202
+  username: example
+  password: example
+  platform: ios
+  groups:
+    - othergroup
