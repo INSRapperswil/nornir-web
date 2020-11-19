@@ -1,4 +1,5 @@
 import { combineReducers } from "redux";
+import { buildUserState } from "../helperFunctions";
 import { renewAccessToken } from "./actions";
 
 const initialTasksState = {
@@ -36,7 +37,8 @@ function initialUserFunction(state = initialUser) {
   const refresh_token = sessionStorage.getItem("refresh_token")
   const access_token = sessionStorage.getItem("access_token");
   if (refresh_token && access_token) {
-    return { ...state, refresh_token: refresh_token, access_token: access_token };
+    let user = buildUserState(refresh_token, access_token);
+    return { ...state, ...user };
   } else {
     return state;
   }
@@ -49,6 +51,12 @@ function user(state = initialUserFunction(), action) {
     case "FETCH_USER_SUCCEEDED":
       return { ...state, isLoading: false, ...action.user };
     case "FETCH_USER_FAILED":
+      return { ...state, isLoading: false, error: action.error };
+    case "REFRESH_TOKEN_STARTED":
+      return { ...state, isLoading: true, error: null };
+    case "REFRESH_TOKEN_SUCCEEDED":
+      return { ...state, isLoading: false, ...action.user };
+    case "REFRESH_TOKEN_FAILED":
       return { ...state, isLoading: false, error: action.error };
     case "LOGOUT":
       return { ...state, refresh_token: '' };
@@ -129,8 +137,12 @@ export function getInventorySelectionId(state) {
 }
 
 export function getToken(state) {
-  if (Date.now() > state.user.access_expiry) {
-    renewAccessToken();
+  // TODO: remove "debugging" code
+  let date = new Date(state.user.access_expiry * 1000);
+  console.log("Expires: " + date);
+  if (Date.now() > (state.user.access_expiry * 1000)) {
+    console.log("should renew token");
+    renewAccessToken(state.user);
   }
   return state.user.access_token;
 }

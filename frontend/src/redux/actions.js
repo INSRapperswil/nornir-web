@@ -1,5 +1,5 @@
 import * as api from "../api";
-import jwt_decode from "jwt-decode";
+import { buildUserState } from "../helperFunctions";
 
 export function fetchTasks() {
   return (dispatch, getState) => {
@@ -77,17 +77,7 @@ export function authenticate(username, password) {
       .then((result) => {
         sessionStorage.setItem('refresh_token', result.refresh);
         sessionStorage.setItem('access_token', result.access);
-        let decodedRefreshToken = jwt_decode(result.refresh);
-        let decodedAccessToken = jwt_decode(result.access);
-        let user = {
-          'user_id': decodedRefreshToken.user_id,
-          'refresh_token': result.refresh,
-          'refresh_expiry': decodedRefreshToken.exp,
-          'access_token': result.access,
-          'access_expiry': decodedAccessToken.exp,
-          'username': decodedRefreshToken.username,
-          'groups': decodedRefreshToken.groups,
-        }
+        let user = buildUserState(result.refresh, result.access);
         dispatch({ type: "FETCH_USER_SUCCEEDED", user: { ...getState().user, ...user } });
       })
       .catch((error) => dispatch({ type: "FETCH_USER_FAILED", error }));
@@ -95,8 +85,11 @@ export function authenticate(username, password) {
 }
 
 //TODO: Autoupdate access_token (lifetime of 5 minutes)
-export function renewAccessToken() {
+export function renewAccessToken(user) {
+  console.log("renewAccessToken called");
+  api.renewAccessToken(user.refresh_token).then((result) => console.log(result.access));
   return (dispatch, getState) => {
+    console.log("Refreshing Token");
     dispatch({ type: "REFRESH_TOKEN_STARTED" });
     let refreshToken = getState().user.refresh_token;
     return api.renewAccessToken(refreshToken)
@@ -105,6 +98,7 @@ export function renewAccessToken() {
         sessionStorage.setItem('access_token', new_access_token);
         dispatch({ type: "REFRESH_TOKEN_SUCCEEDED", user: { ...getState().user.access_token, new_access_token } });
       })
+      .catch((error) => dispatch({type: "REFRESH_TOKEN_FAILED", error}));
   }
 }
 
