@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getTasks } from '../api';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  Box, Collapse, IconButton, Paper, Tooltip,
+  Box, Collapse, IconButton, Paper, Tooltip, Grid,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField,
   Button, Select, MenuItem, InputLabel, FormControl,
 } from '@material-ui/core';
@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.action.hover,
   },
   box: {
-    marginBottom: 20,
+    marginBottom: 10,
     display: 'flex',
     alignItems: 'center',
     '& > *': {
@@ -43,6 +43,12 @@ const useStyles = makeStyles(theme => ({
       marginTop: 5,
       marginLeft: 0,
     },
+  },
+  filters: {
+    '& > *:last-child': {
+      marginRight: 0,
+    },
+    justifyContent: 'flex-end',
   },
 }));
 
@@ -176,7 +182,10 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
           </TableCell>
           <TableCell align="right">
             <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              {
+                open ? <Tooltip title="Close Details"><KeyboardArrowUpIcon /></Tooltip> : 
+                <Tooltip title="show Details"><KeyboardArrowDownIcon /></Tooltip>
+              }
             </IconButton>
           </TableCell>
         </TableRow>
@@ -202,8 +211,8 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
     { label: 'Finished', name: 'date_finished', orderable: true, hiddenForTaskTemplates: true },
     { label: 'Creator', name: 'creator' },
     { label: 'Template', name: 'template' },
-    { label: '', name: '' },
-    { label: '', name: '' },
+    { label: 'Rerun Task', name: '' },
+    { label: 'Detail View', name: '' },
   ];
 
   const handleSortChange = (event, name) => {
@@ -214,19 +223,23 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
 
   return (
     <div style={{ marginBottom: 20 }}>
-      <Box className={classes.box}>
-        <TextField
-          label="Search Field"
-          variant="outlined"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <Button onClick={handleSearch} variant="outlined">Search</Button>
-        <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
-        <Button variant="contained" color="primary" onClick={onRefresh} disabled={ isLoading }>
-          <RefreshIcon/><span style={{ marginLeft: 3 }}>Refresh</span>
-        </Button>
-      </Box>
+      <Grid container>
+        <Grid item className={classes.box} xs={6}>
+          <Button variant="contained" color="primary" onClick={onRefresh} disabled={ isLoading }>
+            <RefreshIcon/><span style={{ marginLeft: 3 }}>Refresh</span>
+          </Button>
+        </Grid>
+        <Grid item className={`${classes.box} ${classes.filters}`} xs={6}>
+          <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
+          <Button onClick={handleSearch} variant="outlined">Search</Button>
+          <TextField
+            label="Search Field"
+            variant="outlined"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </Grid>
+      </Grid>
       <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>

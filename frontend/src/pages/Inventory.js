@@ -45,7 +45,7 @@ function Inventory({ task }) {
           disabled={!stepValid}
           variant="contained"
           color="primary">
-            Run on Selection
+            Create Task with Selection
         </Button>
       </Badge>
       { runTaskWizard ? <TaskWizard getSteps={getSteps} /> :

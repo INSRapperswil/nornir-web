@@ -1,7 +1,7 @@
 import React from 'react';
 import TasksTable from '../components/TasksTable';
 
-function TaskDashboard() {
+function PreconfiguredTasks() {
   return (
     <div id="tasks-templates">
       <h1>Task Templates</h1>
@@ -10,4 +10,4 @@ function TaskDashboard() {
   );
 }
 
-export default TaskDashboard;
+export default PreconfiguredTasks;

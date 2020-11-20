@@ -85,8 +85,8 @@ function TaskDetail({ token, taskId }) {
           <RefreshIcon/><span style={{ marginLeft: 3 }}>Refresh</span>
         </Button>
       </Typography>
-      <DetailTable detailObject={task} />
       <Result result={task["result"]} />
+      <DetailTable detailObject={task} />
     </React.Fragment>
   );
 }

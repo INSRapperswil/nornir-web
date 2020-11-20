@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
-  TablePagination, TableSortLabel,
+  TablePagination, TableSortLabel, Tooltip,
   Checkbox, Paper, Typography, Collapse, Box, IconButton,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -50,7 +50,7 @@ function EnhancedTableHead({
             {headCell.label}
           </TableCell>
         ))}
-        <TableCell></TableCell>
+        <TableCell>Detail View</TableCell>
       </TableRow>
     </TableHead>
   );
@@ -196,7 +196,10 @@ export default function EnhancedTable({
                             size="small"
                             onClick={(event) => setOpen(event, row[selectionKey])}
                           >
-                            {isItemOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                            {
+                              isItemOpen ? <Tooltip title="Close Details"><KeyboardArrowUpIcon /></Tooltip> : 
+                              <Tooltip title="show Details"><KeyboardArrowDownIcon /></Tooltip>
+                            }
                           </IconButton>
                         </TableCell>
                         : ''
