@@ -17,10 +17,12 @@ export function postTaskWizard() {
   return (dispatch, getState) => {
     dispatch({ type: "POST_TASK_WIZARD_STARTED" });
     let inventoryId = getState().inventorySelection.inventory;
+    let userId = getState().user.user_id;
     let task = getState().taskWizard.task;
 
     task.template = task.template.id;
     task.inventory = inventoryId;
+    task.created_by = userId;
     if (!task.date_scheduled) {
       delete task.date_scheduled;
     }
