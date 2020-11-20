@@ -86,17 +86,17 @@ export function authenticate(username, password) {
   };
 }
 
-//TODO: Autoupdate access_token (lifetime of 5 minutes)
-export function renewAccessToken(user) {
+//TODO: Autoupdate working, but update is late
+export function renewAccessToken() {
   console.log("renewAccessToken called");
-  api.renewAccessToken(user.refresh_token).then((result) => console.log(result.access));
   return (dispatch, getState) => {
     console.log("Refreshing Token");
     dispatch({ type: "REFRESH_TOKEN_STARTED" });
     let refreshToken = getState().user.refresh_token;
     return api.renewAccessToken(refreshToken)
       .then((result) => {
-        let new_access_token = result.access_token;
+        console.log(result);
+        let new_access_token = result.access;
         sessionStorage.setItem('access_token', new_access_token);
         dispatch({ type: "REFRESH_TOKEN_SUCCEEDED", user: { ...getState().user.access_token, new_access_token } });
       })

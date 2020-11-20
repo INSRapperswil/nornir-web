@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getTaskDetails } from '../api';
-import { getToken } from '../redux/reducers';
+import { checkTokenExpiry, getToken } from '../redux/reducers';
+import { renewAccessToken } from '../redux/actions'
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { Button, Typography } from '@material-ui/core';
@@ -29,6 +30,7 @@ function TaskDetail({ token, taskId }) {
 
   useEffect(() => {
     if (task.length === 0) {
+      checkTokenExpiry(token, renewAccessToken);
       getTaskDetails(token, taskId).then((response) => {
         setTask(response);
         setIsLoading(false);

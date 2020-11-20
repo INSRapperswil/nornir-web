@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { updateTaskWizard } from '../redux/actions';
-import { getWizardTask, getToken } from '../redux/reducers';
+import { updateTaskWizard, renewAccessToken } from '../redux/actions';
+import { getWizardTask, getToken, checkTokenExpiry } from '../redux/reducers';
 import { getJobTemplates } from '../api';
 import {
   RadioGroup, Radio,
@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepValid }) {
+function JobTemplatesSelectionTable({ token, task, renewAccessToken, updateTaskWizard, setStepValid }) {
   let [templates, setTemplates] = useState([]);
   let [openRow, setOpenRow] = useState(-1);
   let [count, setCount] = useState(0);
@@ -63,6 +63,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
 
   useEffect(() => {
     if (templates.length === 0) {
+      checkTokenExpiry(token, renewAccessToken);
       getJobTemplates(token, rowsPerPage, 0).then((response) => {
         setTemplates(response.results);
         setCount(response.count);
@@ -220,6 +221,7 @@ const mapStateToProps = (state) => {
   };
 };
 const mapDispatchToProps = {
+  renewAccessToken,
   updateTaskWizard,
 };
 

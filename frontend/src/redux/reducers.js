@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
 import { buildUserState } from "../helperFunctions";
-import { renewAccessToken } from "./actions";
+import jwt_decode from "jwt-decode";
 
 const initialTasksState = {
   tasks: null,
@@ -137,14 +137,17 @@ export function getInventorySelectionId(state) {
 }
 
 export function getToken(state) {
-  // TODO: remove "debugging" code
-  let date = new Date(state.user.access_expiry * 1000);
-  console.log("Expires: " + date);
-  if (Date.now() > (state.user.access_expiry * 1000)) {
-    console.log("should renew token");
-    renewAccessToken(state.user);
-  }
   return state.user.access_token;
+}
+
+
+export function checkTokenExpiry(token, dispatchFunction) {
+  let decoded = jwt_decode(token);
+  if (Date.now() > (decoded.exp * 1000)) {
+    console.log("should renew token");
+    // await dispatchFunction();
+    dispatchFunction();
+  }
 }
 
 export function getIsAuthenticated(state) {
