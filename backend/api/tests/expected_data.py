@@ -15,7 +15,7 @@ expected_inventory_list = {
 }
 
 expected_jobtemplate_list = {
-    'count': 3,
+    'count': 4,
     'next': None,
     'previous': None,
     'results': [{'created_by': 1,
@@ -48,7 +48,19 @@ expected_jobtemplate_list = {
                  'id': 3,
                  'name': 'Get Interfaces',
                  'package_path': '/web_nornir/job_templates/',
-                 'variables': []}],
+                 'variables': []},
+                {'created_by': 1,
+                 'created_name': 'thomastest',
+                 'description': 'Pings a chosen network device and reports if '
+                                'reachable',
+                 'detail': 'http://testserver/api/templates/4/',
+                 'file_name': 'ping.py',
+                 'function_name': 'job_function',
+                 'id': 4,
+                 'name': 'Ping Device',
+                 'package_path': '/web_nornir/job_templates/',
+                 'variables': []},
+                ]
 }
 
 expected_task_list = {

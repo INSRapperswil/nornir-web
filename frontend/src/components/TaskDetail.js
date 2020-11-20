@@ -64,12 +64,16 @@ function TaskDetail({ token, taskId }) {
             <React.Fragment key={host.name}>
               <Typography variant="h6" gutterBottom component="div">{host["name"]} / {host["hostname"]}</Typography>
               <code className={classes.code}>
-                {host["result"].map((value) => {
-                  return (
-                    <span className={classes.codeLine}>
-                      {beautifyJson(value)}
-                    </span>)
-                })}
+                {Array.isArray(host["result"]) ?
+                  host["result"].map((value) => {
+                    return (
+                      <span className={classes.codeLine}>
+                        {beautifyJson(value)}
+                      </span>)
+                  })
+                  :
+                  beautifyJson(host["result"])
+                }
               </code>
             </React.Fragment>
           ))}
@@ -81,8 +85,8 @@ function TaskDetail({ token, taskId }) {
     <React.Fragment>
       <Typography variant="h5" gutterBottom component="div">
         Details
-        <Button variant="contained" color="primary" onClick={onRefresh} size="small" style={{ marginLeft: 20 }} disabled={ isLoading }>
-          <RefreshIcon/><span style={{ marginLeft: 3 }}>Refresh</span>
+        <Button variant="contained" color="primary" onClick={onRefresh} size="small" style={{ marginLeft: 20 }} disabled={isLoading}>
+          <RefreshIcon /><span style={{ marginLeft: 3 }}>Refresh</span>
         </Button>
       </Typography>
       <Result result={task["result"]} />
