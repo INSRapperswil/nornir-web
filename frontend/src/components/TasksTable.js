@@ -211,7 +211,7 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
     { label: 'Finished', name: 'date_finished', orderable: true, hiddenForTaskTemplates: true },
     { label: 'Creator', name: 'creator' },
     { label: 'Template', name: 'template' },
-    { label: 'Rerun Task', name: '' },
+    { label: (onlyTemplates ? 'Run Task' : 'Rerun Task'), name: '' },
     { label: 'Detail View', name: '' },
   ];
 

@@ -8,7 +8,7 @@ import TaskWizard from '../components/TaskWizard';
 import { getWizardTask } from '../redux/reducers';
 import { connect } from 'react-redux';
 
-function getSteps(setStepValid) {
+function getSteps(setStepValid, onNext) {
   return [
     {
       label: 'Select Template',
@@ -17,7 +17,7 @@ function getSteps(setStepValid) {
     },
     {
       label: 'Set Variables',
-      component: <VariableSetter setStepValid={setStepValid}/>,
+      component: <VariableSetter setStepValid={setStepValid} onNext={onNext}/>,
       completed: false,
     },
     {

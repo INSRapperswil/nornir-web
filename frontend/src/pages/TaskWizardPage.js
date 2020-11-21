@@ -6,7 +6,7 @@ import FinishTask from '../components/FinishTask';
 import TaskWizard from '../components/TaskWizard';
 import { useLocation } from 'react-router-dom';
 
-function getSteps(setStepValid) {
+function getSteps(setStepValid, onNext) {
   return [
     {
       label: 'Select Inventory',
@@ -20,7 +20,7 @@ function getSteps(setStepValid) {
     },
     {
       label: 'Set Variables',
-      component: <VariableSetter setStepValid={setStepValid}/>,
+      component: <VariableSetter setStepValid={setStepValid} onNext={onNext}/>,
       completed: false,
     },
     {

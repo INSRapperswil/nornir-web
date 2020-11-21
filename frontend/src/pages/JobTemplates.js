@@ -6,7 +6,7 @@ import VariableSetter from '../components/VariableSetter';
 import FinishTask from '../components/FinishTask';
 import TaskWizard from '../components/TaskWizard';
 
-function getSteps(setStepValid) {
+function getSteps(setStepValid, onNext) {
   return [
     {
       label: 'Select Inventory',
@@ -15,7 +15,7 @@ function getSteps(setStepValid) {
     },
     {
       label: 'Set Variables',
-      component: <VariableSetter setStepValid={setStepValid}/>,
+      component: <VariableSetter setStepValid={setStepValid} onNext={onNext}/>,
       completed: false,
     },
     {

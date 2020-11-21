@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import { getWizardTask, getWizard, getToken } from '../redux/reducers';
 import { updateTaskWizard, postTaskWizard } from '../redux/actions';
@@ -12,7 +12,8 @@ function TaskWizard({ task, getSteps, postTaskWizard, wizard, token, entryStep }
   const [stepValid, setStepValid] = useState(false);
   const [createdTaskId, setCreatedTaskId] = useState(0);
   const history = useHistory();
-  const steps = getSteps(setStepValid);
+  const onNext = useRef();
+  const steps = getSteps(setStepValid, onNext);
 
   const handleFinish = (event) => {
     postTaskWizard().then(result => {
@@ -30,6 +31,9 @@ function TaskWizard({ task, getSteps, postTaskWizard, wizard, token, entryStep }
     handleNext(event);
   };
   const handleNext = (event) => {
+    if(onNext && onNext.current) {
+      onNext.current.onNext()
+    }
     setStepValid(false);
     setActiveStep(activeStep + 1);
   };
