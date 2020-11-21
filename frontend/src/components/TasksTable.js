@@ -184,7 +184,7 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
             <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
               {
                 open ? <Tooltip title="Close Details"><KeyboardArrowUpIcon /></Tooltip> : 
-                <Tooltip title="show Details"><KeyboardArrowDownIcon /></Tooltip>
+                <Tooltip title="Show Details"><KeyboardArrowDownIcon /></Tooltip>
               }
             </IconButton>
           </TableCell>

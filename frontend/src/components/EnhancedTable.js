@@ -50,7 +50,7 @@ function EnhancedTableHead({
             {headCell.label}
           </TableCell>
         ))}
-        <TableCell>Detail View</TableCell>
+        <TableCell align="right">Detail View</TableCell>
       </TableRow>
     </TableHead>
   );
@@ -198,7 +198,7 @@ export default function EnhancedTable({
                           >
                             {
                               isItemOpen ? <Tooltip title="Close Details"><KeyboardArrowUpIcon /></Tooltip> : 
-                              <Tooltip title="show Details"><KeyboardArrowDownIcon /></Tooltip>
+                              <Tooltip title="Show Details"><KeyboardArrowDownIcon /></Tooltip>
                             }
                           </IconButton>
                         </TableCell>

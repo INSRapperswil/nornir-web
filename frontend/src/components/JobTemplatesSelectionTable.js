@@ -115,7 +115,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
             <IconButton aria-label="expand row" size="small" onClick={handleOpen}>
               {
                 isOpen ? <Tooltip title="Close Details"><KeyboardArrowUpIcon /></Tooltip> : 
-                <Tooltip title="show Details"><KeyboardArrowDownIcon /></Tooltip>
+                <Tooltip title="Show Details"><KeyboardArrowDownIcon /></Tooltip>
               }
             </IconButton>
           </TableCell>
