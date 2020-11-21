@@ -140,6 +140,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
             label="Search Field"
             variant="outlined"
             value={search}
+            onKeyPress={(e) => e.key === 'Enter' ? handleSearch(e) : null}
             onChange={(e) => setSearch(e.target.value)}
           />
         </Grid>
