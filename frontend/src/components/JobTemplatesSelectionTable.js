@@ -6,7 +6,7 @@ import { getJobTemplates } from '../api';
 import {
   RadioGroup, Radio,
   Table, TableHead, TableBody, TableContainer, TableRow, TableCell, TablePagination,
-  Paper, Box, Typography, Collapse, IconButton, FormControlLabel, Button, TextField, 
+  Paper, Box, Typography, Collapse, IconButton, FormControlLabel, Button, TextField,
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function JobTemplatesSelectionTable({ token, task, renewAccessToken, updateTaskWizard, setStepValid }) {
+function JobTemplatesSelectionTable({ token, renewAccessToken, task, updateTaskWizard, setStepValid }) {
   let [templates, setTemplates] = useState([]);
   let [openRow, setOpenRow] = useState(-1);
   let [count, setCount] = useState(0);
@@ -70,8 +70,8 @@ function JobTemplatesSelectionTable({ token, task, renewAccessToken, updateTaskW
         setStepValid(task.template.id !== 0);
       });
     }
-  // empty dependencies array, so it only runs on mount.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // empty dependencies array, so it only runs on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
@@ -126,7 +126,7 @@ function JobTemplatesSelectionTable({ token, task, renewAccessToken, updateTaskW
     )
   }
 
-  const fetchAndSetTemplates = (page, pageSize, _filters=filters, _search=search, _orderBy=orderBy) => {
+  const fetchAndSetTemplates = (page, pageSize, _filters = filters, _search = search, _orderBy = orderBy) => {
     const offset = page * pageSize;
     getJobTemplates(token, pageSize, offset, _filters, _search, _orderBy).then((response) => {
       setTemplates(response.results);
@@ -173,7 +173,7 @@ function JobTemplatesSelectionTable({ token, task, renewAccessToken, updateTaskW
   };
 
   return (
-    <div id="job-templates-selection-table" style={{ marginBottom: 20,  marginTop: 10 }}>
+    <div id="job-templates-selection-table" style={{ marginBottom: 20, marginTop: 10 }}>
       <Box className={classes.box}>
         <TextField
           label="Search Field"
@@ -182,15 +182,15 @@ function JobTemplatesSelectionTable({ token, task, renewAccessToken, updateTaskW
           onChange={(e) => setSearch(e.target.value)}
         />
         <Button onClick={handleSearch} variant="outlined">Search</Button>
-        <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
+        <FilterDialog filters={filters} onFilterChange={handleFilterChange} />
       </Box>
       <TableContainer component={Paper}>
         <RadioGroup name="template-id" value={task.template.id} onChange={handleSelectionChange}>
           <Table aria-label="templates table">
             <TableHead>
               <TableRow>
-                { headCells.map((cell, index) => {
-                  return <SortableTableHead cell={cell} key={index} orderBy={orderBy} onSortChange={handleSortChange}/>
+                {headCells.map((cell, index) => {
+                  return <SortableTableHead cell={cell} key={index} orderBy={orderBy} onSortChange={handleSortChange} />
                 })}
               </TableRow>
             </TableHead>

@@ -24,7 +24,7 @@ const useStyles = makeStyles({
   },
 });
 
-function TaskDetail({ token, taskId }) {
+function TaskDetail({ token, renewAccessToken, taskId }) {
   let [task, setTask] = useState([]);
   let [isLoading, setIsLoading] = useState(true);
 
@@ -36,7 +36,7 @@ function TaskDetail({ token, taskId }) {
         setIsLoading(false);
       });
     }
-  }, [task, setTask, token, taskId]);
+  }, [task, setTask, token, taskId, renewAccessToken]);
 
   const classes = useStyles();
 
@@ -98,5 +98,8 @@ const mapStateToProps = (state) => {
     token: getToken(state),
   };
 };
+const mapDispatchToProps = {
+  renewAccessToken,
+};
 
-export default connect(mapStateToProps)(TaskDetail);
+export default connect(mapStateToProps, mapDispatchToProps)(TaskDetail);

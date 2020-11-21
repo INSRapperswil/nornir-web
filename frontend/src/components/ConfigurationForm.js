@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getConfiguration, postConfiguration } from '../api';
-import { getToken } from '../redux/reducers';
+import { renewAccessToken } from '../redux/actions';
+import { getToken, checkTokenExpiry } from '../redux/reducers';
 import { connect } from 'react-redux';
 import {
   Button, Checkbox, FormControl, FormControlLabel, InputLabel, Select, MenuItem, TextField
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ConfigurationForm({ token }) {
+function ConfigurationForm({ token, renewAccessToken,  }) {
   let [loadState, setLoadState] = useState({ "notLoaded": true });
   let [loggingEnabled, setLoggingEnabled] = useState(false);
   let [loggingFormat, setLoggingFormat] = useState('');
@@ -40,6 +41,7 @@ function ConfigurationForm({ token }) {
 
   useEffect(() => {
     if (loadState.notLoaded) {
+      checkTokenExpiry(token, renewAccessToken);
       getConfiguration(token).then((response) => {
         setLoggingEnabled(response.logging.enabled);
         setLoggingFormat(response.logging.format);
@@ -59,6 +61,7 @@ function ConfigurationForm({ token }) {
     loggingFile, setLoggingFile,
     runnerOptionsNumWorkers, setRunnerOptionsNumWorkers,
     runnerPlugin, setRunnerPlugin,
+    renewAccessToken,
   ]);
 
   const classes = useStyles();
@@ -118,4 +121,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(ConfigurationForm);
+const mapDispatchToProps = {
+  renewAccessToken,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ConfigurationForm);

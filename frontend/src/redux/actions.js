@@ -88,14 +88,11 @@ export function authenticate(username, password) {
 
 //TODO: Autoupdate working, but update is late
 export function renewAccessToken() {
-  console.log("renewAccessToken called");
-  return (dispatch, getState) => {
-    console.log("Refreshing Token");
+  return async (dispatch, getState) => {
     dispatch({ type: "REFRESH_TOKEN_STARTED" });
     let refreshToken = getState().user.refresh_token;
-    return api.renewAccessToken(refreshToken)
+    return await api.renewAccessToken(refreshToken)
       .then((result) => {
-        console.log(result);
         let new_access_token = result.access;
         sessionStorage.setItem('access_token', new_access_token);
         dispatch({ type: "REFRESH_TOKEN_SUCCEEDED", user: { ...getState().user.access_token, new_access_token } });

@@ -144,8 +144,7 @@ export function getToken(state) {
 export function checkTokenExpiry(token, dispatchFunction) {
   let decoded = jwt_decode(token);
   if (Date.now() > (decoded.exp * 1000)) {
-    console.log("should renew token");
-    // await dispatchFunction();
+    console.log("Refreshing Token...")
     dispatchFunction();
   }
 }

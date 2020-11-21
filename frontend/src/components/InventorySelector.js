@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { getInventoryList } from '../api';
-import { getInventorySelectionId, getToken } from '../redux/reducers';
-import { updateInventorySelection } from '../redux/actions';
+import { renewAccessToken, updateInventorySelection } from '../redux/actions';
+import { checkTokenExpiry, getInventorySelectionId, getToken } from '../redux/reducers';
 import { connect } from 'react-redux';
 import {
   FormControl, InputLabel, MenuItem, Select
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-function InventorySelector({ token, inventory, onInventoryChange, updateInventorySelection }) {
+function InventorySelector({ token, renewAccessToken, inventory, onInventoryChange, updateInventorySelection }) {
   let [inventoryList, setInventoryList] = useState([{ "id": 1, "name": "Loading...", "notLoaded": true }]);
 
   useEffect(() => {
     if (inventoryList[0].notLoaded) {
+      checkTokenExpiry(token, renewAccessToken);
       getInventoryList(token).then((response) => setInventoryList(response.results));
     }
-  }, [inventoryList, setInventoryList, token]);
+  }, [inventoryList, setInventoryList, token, renewAccessToken]);
 
   const useStyles = makeStyles({
     formControl: {
@@ -56,6 +57,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
+  renewAccessToken,
   updateInventorySelection,
 }
 

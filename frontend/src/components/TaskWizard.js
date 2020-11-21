@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { getWizardTask, getWizard, getToken } from '../redux/reducers';
-import { updateTaskWizard, postTaskWizard } from '../redux/actions';
+import { getWizardTask, getWizard, getToken, checkTokenExpiry } from '../redux/reducers';
+import { updateTaskWizard, postTaskWizard, renewAccessToken } from '../redux/actions';
 import { Stepper, Step, StepLabel, Button } from '@material-ui/core';
 import { runTask, runTaskAsync } from '../api';
 import TaskDetail from './TaskDetail';
@@ -16,11 +16,12 @@ function TaskWizard({ task, getSteps, postTaskWizard, wizard, token, entryStep }
 
   const handleFinish = (event) => {
     postTaskWizard().then(result => {
+      checkTokenExpiry(token, renewAccessToken);
       setCreatedTaskId(result.id);
-      if(result.is_template) {
+      if (result.is_template) {
         history.push('/task-templates');
       } else {
-        if(result.date_scheduled) {
+        if (result.date_scheduled) {
           runTaskAsync(token, result.id)
         } else {
           runTask(token, result.id);
@@ -34,12 +35,12 @@ function TaskWizard({ task, getSteps, postTaskWizard, wizard, token, entryStep }
     setActiveStep(activeStep + 1);
   };
   const handleBack = (event) => {
-    if(activeStep > 0) {
+    if (activeStep > 0) {
       setActiveStep(activeStep - 1);
     }
   };
   const getCreatedTask = () => {
-    return (createdTaskId > 0) ? <TaskDetail taskId={createdTaskId}/> : '';
+    return (createdTaskId > 0) ? <TaskDetail taskId={createdTaskId} /> : '';
   }
 
   return (
@@ -54,10 +55,10 @@ function TaskWizard({ task, getSteps, postTaskWizard, wizard, token, entryStep }
           );
         })}
       </Stepper>
-      { activeStep !== 0 && activeStep < steps.length ? <Button onClick={handleBack}>Back</Button> : '' }
-      { activeStep < steps.length-1 ? <Button onClick={handleNext} disabled={!stepValid} variant="contained" color="primary">Next</Button> : '' }
-      { activeStep === steps.length-1 ? <Button onClick={handleFinish} variant="contained" color="primary">Finish</Button> : '' }
-      { activeStep < steps.length ? steps[activeStep].component : getCreatedTask() }
+      { activeStep !== 0 && activeStep < steps.length ? <Button onClick={handleBack}>Back</Button> : ''}
+      { activeStep < steps.length - 1 ? <Button onClick={handleNext} disabled={!stepValid} variant="contained" color="primary">Next</Button> : ''}
+      { activeStep === steps.length - 1 ? <Button onClick={handleFinish} variant="contained" color="primary">Finish</Button> : ''}
+      { activeStep < steps.length ? steps[activeStep].component : getCreatedTask()}
     </div>
   );
 }
@@ -70,6 +71,7 @@ const mapStateToProps = (state) => {
   };
 };
 const mapDispatchToProps = {
+  renewAccessToken,
   updateTaskWizard,
   postTaskWizard,
 };

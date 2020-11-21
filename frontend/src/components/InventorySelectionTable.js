@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getWizardTask, getToken, getInventorySelectionId } from '../redux/reducers';
-import { updateTaskWizard } from '../redux/actions';
+import { renewAccessToken, updateTaskWizard } from '../redux/actions';
+import { getWizardTask, getToken, getInventorySelectionId, checkTokenExpiry } from '../redux/reducers';
 import { connect } from 'react-redux';
 import { getInventoryHosts } from '../api';
 import { EnhancedTable } from './EnhancedTable';
@@ -39,7 +39,7 @@ function checkStepValidity(filters) {
   return (filters !== undefined && filters.length > 0);
 }
 
-function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, inventorySelectionId }) {
+function InventorySelectionTable({ token, renewAccessToken, task, updateTaskWizard, setStepValid, inventorySelectionId }) {
   let [inventory, setInventory] = useState([]);
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
@@ -61,17 +61,18 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
 
   useEffect(() => {
     if (inventory.length === 0) {
+      checkTokenExpiry(token, renewAccessToken);
       getInventoryHosts(token, inventorySelectionId, rowsPerPage, 0, []).then((response) => {
         setInventory(response.results);
         setCount(response.count);
         setStepValid(checkStepValidity(task.filters.hosts));
       });
     }
-  // empty dependencies array, so it only runs on mount.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // empty dependencies array, so it only runs on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchAndSetHosts = (page, pageSize, _filters=filters, _search=search, _orderBy=orderBy) => {
+  const fetchAndSetHosts = (page, pageSize, _filters = filters, _search = search, _orderBy = orderBy) => {
     const offset = pageSize * page;
     getInventoryHosts(token, inventorySelectionId, pageSize, offset, _filters, _search, _orderBy).then((response) => {
       setInventory(response.results);
@@ -132,7 +133,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
           onChange={(e) => setSearch(e.target.value)}
         />
         <Button onClick={handleSearch} variant="outlined">Search</Button>
-        <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
+        <FilterDialog filters={filters} onFilterChange={handleFilterChange} />
       </Box>
       <EnhancedTable
         rows={inventory}
@@ -159,6 +160,7 @@ const mapStateToProps = (state) => {
   };
 };
 const mapDispatchToProps = {
+  renewAccessToken,
   updateTaskWizard,
 };
 

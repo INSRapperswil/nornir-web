@@ -11,8 +11,8 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import RepeatIcon from '@material-ui/icons/Repeat';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
-import { getToken } from '../redux/reducers';
-import { setRerunTask } from '../redux/actions';
+import { checkTokenExpiry, getToken } from '../redux/reducers';
+import { setRerunTask, renewAccessToken } from '../redux/actions';
 import { connect } from 'react-redux';
 import TaskDetail from './TaskDetail';
 import {
@@ -53,13 +53,13 @@ function SelectStatus({ defaultValue }) {
       <InputLabel htmlFor="status">Status</InputLabel>
       <Select id="status" name="status" label="Status" defaultValue={defaultValue}>
         <MenuItem value=""><em>None</em></MenuItem>
-        { selectList.map(item => <MenuItem value={item} key={item}>{ statusIdToText(item) }</MenuItem>) }
+        {selectList.map(item => <MenuItem value={item} key={item}>{statusIdToText(item)}</MenuItem>)}
       </Select>
     </FormControl>
   );
 }
 
-function TasksTable({ token, setRerunTask, onlyTemplates }) {
+function TasksTable({ token, renewAccessToken, setRerunTask, onlyTemplates }) {
   let [tasks, setTasks] = useState([]);
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
@@ -71,7 +71,7 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
     { label: 'Template Name', name: 'template__name', value: '' },
     { label: 'Inventory Name', name: 'inventory__name', value: '' },
     { label: 'Creator', name: 'created_by__username', value: '' },
-    { label: 'Status', name: 'status', value: '', component: (defaultValue) => <SelectStatus defaultValue={defaultValue}/> },
+    { label: 'Status', name: 'status', value: '', component: (defaultValue) => <SelectStatus defaultValue={defaultValue} /> },
   ]);
   const history = useHistory();
 
@@ -83,14 +83,15 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
 
   useEffect(() => {
     if (tasks.length === 0) {
+      checkTokenExpiry(token, renewAccessToken);
       getTasks(token, rowsPerPage, 0, aggregateFilters()).then((response) => {
         setTasks(response.results);
         setCount(response.count);
         setIsLoading(false);
       });
     }
-  // empty dependencies array, so it only runs on mount.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // empty dependencies array, so it only runs on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const classes = useStyles();
@@ -150,28 +151,28 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
           <TableCell>{statusIdToText(row.status)}</TableCell>
           {
             onlyTemplates ? null :
-            <React.Fragment>
-              <TableCell>{beautifyDate(row.date_scheduled)}</TableCell>
-              <TableCell>{beautifyDate(row.date_started)}</TableCell>
-              <TableCell>{beautifyDate(row.date_finished)}</TableCell>
-            </React.Fragment>
+              <React.Fragment>
+                <TableCell>{beautifyDate(row.date_scheduled)}</TableCell>
+                <TableCell>{beautifyDate(row.date_started)}</TableCell>
+                <TableCell>{beautifyDate(row.date_finished)}</TableCell>
+              </React.Fragment>
           }
           <TableCell>{row.created_name}</TableCell>
           <TableCell>{row.template_name}</TableCell>
           <TableCell>
             {
               onlyTemplates ?
-              <Tooltip title="Run Task">
-                <IconButton onClick={(e) => handleReRun(e, row)}>
-                  <PlayCircleOutlineIcon color="primary"/>
-                </IconButton>
-              </Tooltip>
-              :
-              <Tooltip title="Re-Run Task">
-                <IconButton onClick={(e) => handleReRun(e, row)}>
-                  <RepeatIcon/>
-                </IconButton>
-              </Tooltip>
+                <Tooltip title="Run Task">
+                  <IconButton onClick={(e) => handleReRun(e, row)}>
+                    <PlayCircleOutlineIcon color="primary" />
+                  </IconButton>
+                </Tooltip>
+                :
+                <Tooltip title="Re-Run Task">
+                  <IconButton onClick={(e) => handleReRun(e, row)}>
+                    <RepeatIcon />
+                  </IconButton>
+                </Tooltip>
             }
           </TableCell>
           <TableCell align="right">
@@ -222,20 +223,20 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
           onChange={(e) => setSearch(e.target.value)}
         />
         <Button onClick={handleSearch} variant="outlined">Search</Button>
-        <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
-        <Button variant="contained" color="primary" onClick={onRefresh} disabled={ isLoading }>
-          <RefreshIcon/><span style={{ marginLeft: 3 }}>Refresh</span>
+        <FilterDialog filters={filters} onFilterChange={handleFilterChange} />
+        <Button variant="contained" color="primary" onClick={onRefresh} disabled={isLoading}>
+          <RefreshIcon /><span style={{ marginLeft: 3 }}>Refresh</span>
         </Button>
       </Box>
       <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-              { headCells.map((cell, index) => {
-                if(onlyTemplates && cell.hiddenForTaskTemplates) {
+              {headCells.map((cell, index) => {
+                if (onlyTemplates && cell.hiddenForTaskTemplates) {
                   return null;
                 } else {
-                  return <SortableTableHead key={index} cell={cell} orderBy={orderBy} onSortChange={handleSortChange}/>
+                  return <SortableTableHead key={index} cell={cell} orderBy={orderBy} onSortChange={handleSortChange} />
                 }
               })}
             </TableRow>
@@ -266,6 +267,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
+  renewAccessToken,
   setRerunTask,
 };
 

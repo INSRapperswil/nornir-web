@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
+function VariableSetter({ token, renewAccessToken, task, updateTaskWizard, setStepValid }) {
   let [runNow, setRunNow] = useState(true);
   let [isTemplate, setIsTemplate] = useState(false);
   const classes = useStyles();
