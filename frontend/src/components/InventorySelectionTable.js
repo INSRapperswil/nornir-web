@@ -42,7 +42,7 @@ const headCells = [
   { id: 'platform', numeric: false, label: 'Platform', orderable: true },
 ];
 
-function checkStepValidity(filters) {
+export function checkStepValidity(filters) {
   return (filters !== undefined && filters.length > 0);
 }
 

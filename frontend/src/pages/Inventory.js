@@ -1,39 +1,16 @@
 import React, { useState } from 'react';
 import InventorySelectionTable from '../components/InventorySelectionTable';
 import { Button, Badge } from '@material-ui/core';
-import JobTemplatesSelectionTable from '../components/JobTemplatesSelectionTable';
-import VariableSetter from '../components/VariableSetter';
-import FinishTask from '../components/FinishTask';
-import TaskWizard from '../components/TaskWizard';
 import { getWizardTask } from '../redux/reducers';
 import { connect } from 'react-redux';
-
-function getSteps(setStepValid, onNext) {
-  return [
-    {
-      label: 'Select Template',
-      component: <JobTemplatesSelectionTable setStepValid={setStepValid}/>,
-      completed: false,
-    },
-    {
-      label: 'Set Variables',
-      component: <VariableSetter setStepValid={setStepValid} onNext={onNext}/>,
-      completed: false,
-    },
-    {
-      label: 'Finish',
-      component: <FinishTask setStepValid={setStepValid}/>,
-      completed: false,
-    },
-  ];
-}
+import { useHistory } from 'react-router-dom';
 
 function Inventory({ task }) {
   let [stepValid, setStepValid] = useState(false);
-  let [runTaskWizard, setRunTaskWizard] = useState(false);
+  const history = useHistory();
 
   const handleRunOnSelection = () => {
-    setRunTaskWizard(true);
+    history.push('/wizard?step=1');
   };
 
   return (
@@ -48,8 +25,7 @@ function Inventory({ task }) {
             Create Task with Selection
         </Button>
       </Badge>
-      { runTaskWizard ? <TaskWizard getSteps={getSteps} /> :
-      <InventorySelectionTable setStepValid={setStepValid}/> }
+      <InventorySelectionTable setStepValid={setStepValid}/>
     </div>
   );
 }
