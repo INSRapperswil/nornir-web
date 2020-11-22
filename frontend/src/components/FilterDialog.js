@@ -30,7 +30,7 @@ function FilterDialog({ filters, onFilterChange }) {
   return (
     <React.Fragment>
       <Badge badgeContent={getFiltersActive()} color="primary">
-        <Button variant="contained" onClick={(e) => setOpen(true)}>Filter</Button>
+        <Button variant="outlined" onClick={(e) => setOpen(true)}>Filter</Button>
       </Badge>
       <Dialog open={open} onClose={(e) => setOpen(false)} aria-labelledby="filter-dialog">
         <form onSubmit={handleSubmit}>

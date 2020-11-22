@@ -4,7 +4,7 @@ import { updateTaskWizard } from '../redux/actions';
 import { getWizardTask, getToken } from '../redux/reducers';
 import { getJobTemplates } from '../api';
 import {
-  RadioGroup, Radio,
+  RadioGroup, Radio, Tooltip, Grid,
   Table, TableHead, TableBody, TableContainer, TableRow, TableCell, TablePagination,
   Paper, Box, Typography, Collapse, IconButton, FormControlLabel, Button, TextField, 
 } from '@material-ui/core';
@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.action.hover,
   },
   box: {
-    marginBottom: 20,
+    marginBottom: 10,
     display: 'flex',
     alignItems: 'center',
     '& > *': {
@@ -41,6 +41,12 @@ const useStyles = makeStyles(theme => ({
       marginTop: 5,
       marginLeft: 0,
     }
+  },
+  filters: {
+    '& > *:last-child': {
+      marginRight: 0,
+    },
+    justifyContent: 'flex-end',
   },
 }));
 
@@ -107,7 +113,10 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
           <TableCell>{row.created_name}</TableCell>
           <TableCell align="right">
             <IconButton aria-label="expand row" size="small" onClick={handleOpen}>
-              {isOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              {
+                isOpen ? <Tooltip title="Close Details"><KeyboardArrowUpIcon /></Tooltip> : 
+                <Tooltip title="Show Details"><KeyboardArrowDownIcon /></Tooltip>
+              }
             </IconButton>
           </TableCell>
         </TableRow>
@@ -162,7 +171,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     { label: 'Name', name: 'name', orderable: true },
     { label: 'Description', name: 'description', orderable: false },
     { label: 'Creator', name: 'created_by__username', orderable: true },
-    { label: '', name: '' },
+    { label: 'Detail View', name: '' },
   ];
 
   const handleSortChange = (event, name) => {
@@ -173,16 +182,18 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
 
   return (
     <div id="job-templates-selection-table" style={{ marginBottom: 20,  marginTop: 10 }}>
-      <Box className={classes.box}>
-        <TextField
-          label="Search Field"
-          variant="outlined"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <Button onClick={handleSearch} variant="outlined">Search</Button>
-        <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
-      </Box>
+      <Grid container>
+        <Grid item className={`${classes.box}`} xs={6}>
+          <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
+          <Button onClick={handleSearch} variant="outlined">Search</Button>
+          <TextField
+            label="Search Field"
+            variant="outlined"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </Grid>
+      </Grid>
       <TableContainer component={Paper}>
         <RadioGroup name="template-id" value={task.template.id} onChange={handleSelectionChange}>
           <Table aria-label="templates table">

@@ -9,7 +9,7 @@ import InventorySelector from './InventorySelector';
 import FilterDialog from './FilterDialog';
 import { beautifyJson, newOrderName } from '../helperFunctions';
 import {
-  Box, TextField, Button,
+  Grid, TextField, Button,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
@@ -23,8 +23,14 @@ const useStyles = makeStyles(theme => ({
       marginRight: 10,
       marginTop: 5,
       marginLeft: 0,
-    }
+    },
   },
+  filters: {
+    '& > *:last-child': {
+      marginRight: 0,
+    },
+    justifyContent: 'flex-end',
+  }
 }));
 
 const headCells = [
@@ -123,17 +129,21 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
 
   return (
     <div id="inventory-selection-table" style={{ marginBottom: 20, marginTop: 10, }}>
-      <Box className={classes.box}>
-        <InventorySelector onInventoryChange={handleInventoryChange} />
-        <TextField
-          label="Search Field"
-          variant="outlined"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <Button onClick={handleSearch} variant="outlined">Search</Button>
-        <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
-      </Box>
+      <Grid container>
+        <Grid item className={ classes.box } xs={6}>
+          <InventorySelector onInventoryChange={handleInventoryChange} />
+        </Grid>
+        <Grid item className={`${classes.box} ${classes.filters}`} xs={6}>
+          <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
+          <Button onClick={handleSearch} variant="outlined">Search</Button>
+          <TextField
+            label="Search Field"
+            variant="outlined"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </Grid>
+      </Grid>
       <EnhancedTable
         rows={inventory}
         paginationDetails={{

@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: 'wrap',
     flexDirection: 'column',
     alignItems: 'flex-start',
+    marginTop: 30,
     marginBottom: 10,
   },
   textField: {
@@ -22,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   alert: {
     marginTop: theme.spacing(1),
     width: '50ch',
-  }
+  },
 }));
 
 function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
@@ -70,18 +71,18 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid }) {
 
   return (
     <div id="variable-setter">
-      <h2>Set Variables</h2>
       <form className={classes.root} onSubmit={handleSubmit}>
         <TextField
           id="name"
           required
           defaultValue={task.name}
-          label="Name"
+          label="Task Name"
           className={classes.textField}
           variant="outlined"/>
         <FormControlLabel
           control={<Checkbox name="is-template" id="is-template" checked={isTemplate} onChange={handleIsTemplateChange}/>}
           label="Save Task as Template"/>
+        <h3>Set Variables</h3>
         <FormControlLabel
           control={<Checkbox name="run-now" id="run-now" checked={runNow} onChange={handleCheckedChange}/>}
           disabled={isTemplate}
