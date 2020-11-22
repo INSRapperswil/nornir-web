@@ -15,7 +15,7 @@ expected_inventory_list = {
 }
 
 expected_jobtemplate_list = {
-    'count': 4,
+    'count': 5,
     'next': None,
     'previous': None,
     'results': [{'created_by': 1,
@@ -58,6 +58,16 @@ expected_jobtemplate_list = {
                  'function_name': 'job_function',
                  'id': 4,
                  'name': 'Ping Device',
+                 'package_path': '/web_nornir/job_templates/',
+                 'variables': []},
+                {'created_by': 1,
+                 'created_name': 'thomastest',
+                 'description': 'Gets all configuration from device',
+                 'detail': 'http://testserver/api/templates/5/',
+                 'file_name': 'get_configuration.py',
+                 'function_name': 'job_function',
+                 'id': 5,
+                 'name': 'Get Configuration',
                  'package_path': '/web_nornir/job_templates/',
                  'variables': []},
                 ]

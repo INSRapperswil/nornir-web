@@ -15,6 +15,8 @@ const useStyles = makeStyles({
     backgroundColor: "black",
     color: "white",
     padding: 16,
+    overflowY: "scroll",
+    height: 240,
   },
   codeLine:
   {
