@@ -15,8 +15,17 @@ const useStyles = makeStyles({
     backgroundColor: "black",
     color: "white",
     padding: 16,
-    overflowY: "scroll",
-    height: 240,
+  },
+  collapsed: {
+    overflowY: "hidden",
+    maxHeight: 240,
+    '&::before': {
+      textAlign: "center",
+      content: '"Click to expand full configuration"',
+      display: 'block',
+      height: 30,
+    },
+    background: "linear-gradient(0deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,1) 25%)"
   },
   codeLine:
   {
@@ -48,6 +57,15 @@ function TaskDetail({ token, taskId }) {
     });
   };
 
+  const handleExpansion = (event) => {
+    event.target.expanded = !event.target.expanded;
+    if (event.target.expanded) {
+      event.target.className = classes.code;
+    } else {
+      event.target.className = classes.code + ' ' + classes.collapsed;
+    }
+  };
+
   function Result(props) {
     const { result } = props;
     let failed, hosts;
@@ -65,7 +83,7 @@ function TaskDetail({ token, taskId }) {
           {Object.values(hosts).map((host) => (
             <React.Fragment key={host.name}>
               <Typography variant="h6" gutterBottom component="div">{host["name"]} / {host["hostname"]}</Typography>
-              <code className={classes.code}>
+              <code className={classes.code + ' ' + classes.collapsed} onClick={handleExpansion}>
                 {Array.isArray(host["result"]) ?
                   host["result"].map((value) => {
                     return (
