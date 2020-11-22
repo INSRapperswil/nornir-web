@@ -1,13 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { getWizardTask, getToken } from '../redux/reducers';
-import { updateTaskWizard, postTaskWizard } from '../redux/actions';
+import { updateTaskWizard, postTaskWizard, clearTaskWizard } from '../redux/actions';
 import { Stepper, Step, StepLabel, Button } from '@material-ui/core';
 import { runTask, runTaskAsync } from '../api';
 import TaskDetail from './TaskDetail';
 import { useHistory } from 'react-router-dom';
 
-function TaskWizard({ task, steps, postTaskWizard, token, entryStep }) {
+function TaskWizard({ task, steps, postTaskWizard, clearTaskWizard, token, entryStep }) {
   const initiallyValid = () => {
     const step = parseInt(entryStep);
     let isValid = false;
@@ -31,6 +31,14 @@ function TaskWizard({ task, steps, postTaskWizard, token, entryStep }) {
   const [createdTaskId, setCreatedTaskId] = useState(0);
   const history = useHistory();
   const onNext = useRef();
+
+  useEffect(() => {
+    return () => {
+      clearTaskWizard();
+    }
+  // empty dependencies array, so it only runs on mount.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleFinish = (event) => {
     postTaskWizard().then(result => {
@@ -92,6 +100,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   updateTaskWizard,
   postTaskWizard,
+  clearTaskWizard,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TaskWizard);

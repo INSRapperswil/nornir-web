@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getWizardTask, getToken, getInventorySelectionId } from '../redux/reducers';
-import { updateTaskWizard } from '../redux/actions';
+import { updateTaskWizard, clearTaskWizard } from '../redux/actions';
 import { connect } from 'react-redux';
 import { getInventoryHosts } from '../api';
 import { EnhancedTable } from './EnhancedTable';
@@ -46,7 +46,7 @@ export function checkStepValidity(filters) {
   return (filters !== undefined && filters.length > 0);
 }
 
-function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, inventorySelectionId }) {
+function InventorySelectionTable({ token, task, updateTaskWizard, clearTaskWizard, setStepValid, inventorySelectionId }) {
   let [inventory, setInventory] = useState([]);
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
@@ -100,6 +100,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
   };
 
   const handleInventoryChange = (inventoryId) => {
+    clearTaskWizard();
     getInventoryHosts(token, inventoryId, rowsPerPage, 0).then((response) => {
       setInventory(response.results);
       setCount(response.count);
@@ -188,6 +189,7 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = {
   updateTaskWizard,
+  clearTaskWizard,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(InventorySelectionTable);
