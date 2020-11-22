@@ -4,7 +4,7 @@ import {
   Button, TextField, Badge,
 } from '@material-ui/core';
 
-function FilterDialog({ filters, onFilterChange }) {
+function FilterDialog({ filters, onFilterSubmit }) {
   let [open, setOpen] = useState(false);
 
   const handleSubmit = (event) => {
@@ -14,7 +14,7 @@ function FilterDialog({ filters, onFilterChange }) {
       filter.value = target[filter.name].value;
     }
     setOpen(false);
-    onFilterChange(filters);
+    onFilterSubmit(filters);
   }
 
   const getFiltersActive = () => {
@@ -36,20 +36,20 @@ function FilterDialog({ filters, onFilterChange }) {
         <form onSubmit={handleSubmit}>
           <DialogTitle>Filters</DialogTitle>
           <DialogContent>
-              {filters.map((filter, index) => {
-                return <React.Fragment key={index}>
-                  {
-                    filter.component ? filter.component(filter.value) :
-                    <div>
-                      <TextField
-                        label={filter.label}
-                        name={filter.name}
-                        defaultValue={filter.value}
-                      />
-                    </div>
-                  }
-                </React.Fragment>
-              })}
+            {filters.map((filter, index) => {
+              return <React.Fragment key={index}>
+                {
+                  filter.component ? filter.component(filter.value) :
+                  <div>
+                    <TextField
+                      label={filter.label}
+                      name={filter.name}
+                      defaultValue={filter.value}
+                    />
+                  </div>
+                }
+              </React.Fragment>
+            })}
           </DialogContent>
           <DialogActions>
             <Button type="submit">Apply Filter</Button>

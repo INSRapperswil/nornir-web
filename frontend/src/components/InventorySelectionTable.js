@@ -9,9 +9,10 @@ import InventorySelector from './InventorySelector';
 import FilterDialog from './FilterDialog';
 import { beautifyJson, newOrderName } from '../helperFunctions';
 import {
-  Grid, TextField, Button,
+  Grid, TextField, Button, Tooltip,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 const useStyles = makeStyles(theme => ({
   box: {
@@ -52,12 +53,15 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
   let [rowsPerPage, setRowsPerPage] = useState(25);
   let [search, setSearch] = useState('');
   let [orderBy, setOrderBy] = useState('');
-  let [filters, setFilters] = useState([
-    { label: 'Name', name: 'name__contains', value: '' },
-    { label: 'hostname', name: 'hostname__contains', value: '' },
-    { label: 'Groups', name: 'groups__contains', value: '' },
-    { label: 'Platform', name: 'platform__contains', value: '' },
-  ]);
+  const getDefaultFilters = () => {
+    return [
+      { label: 'Name', name: 'name__contains', value: '' },
+      { label: 'hostname', name: 'hostname__contains', value: '' },
+      { label: 'Groups', name: 'groups__contains', value: '' },
+      { label: 'Platform', name: 'platform__contains', value: '' },
+    ];
+  };
+  let [filters, setFilters] = useState(getDefaultFilters());
 
   const classes = useStyles();
 
@@ -111,7 +115,7 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
     fetchAndSetHosts(newPage, newPageSize);
   };
 
-  const handleFilterChange = (filters) => {
+  const handleFilterSubmit = () => {
     setFilters(filters);
     setPage(0);
     fetchAndSetHosts(page, rowsPerPage, filters);
@@ -119,6 +123,14 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
 
   const handleSearch = (event) => {
     fetchAndSetHosts(0, rowsPerPage, filters, search);
+  };
+
+  const handleClearSearchFilter = (event) => {
+    const newSearch = '';
+    const newFilters = getDefaultFilters();
+    setSearch(newSearch);
+    setFilters(newFilters);
+    fetchAndSetHosts(page, rowsPerPage, newFilters, newSearch, orderBy);
   };
 
   const handleOrderChange = (event, name) => {
@@ -134,7 +146,12 @@ function InventorySelectionTable({ token, task, updateTaskWizard, setStepValid, 
           <InventorySelector onInventoryChange={handleInventoryChange} />
         </Grid>
         <Grid item className={`${classes.box} ${classes.filters}`} xs={6}>
-          <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
+          <Tooltip title="Clear Search and Filters">
+            <Button variant="outlined" onClick={handleClearSearchFilter}>
+              <HighlightOffIcon/>
+            </Button>
+          </Tooltip>
+          <FilterDialog filters={filters} onFilterSubmit={handleFilterSubmit}/>
           <Button onClick={handleSearch} variant="outlined">Search</Button>
           <TextField
             label="Search Field"

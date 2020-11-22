@@ -14,6 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import JobTemplateDetail from './JobTemplateDetail';
 import FilterDialog from './FilterDialog';
 import { SortableTableHead, newOrderName } from '../helperFunctions';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -58,12 +59,15 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
   let [rowsPerPage, setRowsPerPage] = useState(25);
   let [search, setSearch] = useState('');
   let [orderBy, setOrderBy] = useState('');
-  let [filters, setFilters] = useState([
-    { label: 'File Name', name: 'file_name', value: '' },
-    { label: 'Function Name', name: 'function_name', value: '' },
-    { label: 'Package Path', name: 'package_path', value: '' },
-    { label: 'Creator', name: 'created_by__username', value: '' },
-  ]);
+  const getDefaultFilters = () => {
+    return [
+      { label: 'File Name', name: 'file_name', value: '' },
+      { label: 'Function Name', name: 'function_name', value: '' },
+      { label: 'Package Path', name: 'package_path', value: '' },
+      { label: 'Creator', name: 'created_by__username', value: '' },
+    ];
+  };
+  let [filters, setFilters] = useState(getDefaultFilters());
 
   const classes = useStyles();
 
@@ -155,7 +159,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     fetchAndSetTemplates(newPage, newPageSize);
   };
 
-  const handleFilterChange = (filters) => {
+  const handleFilterSubmit = (filters) => {
     setFilters(filters);
     setPage(0)
     fetchAndSetTemplates(page, rowsPerPage, filters);
@@ -164,6 +168,14 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
   const handleSearch = (event) => {
     fetchAndSetTemplates(0, rowsPerPage, filters, search);
   }
+
+  const handleClearSearchFilter = (event) => {
+    const newSearch = '';
+    const newFilters = getDefaultFilters();
+    setSearch(newSearch);
+    setFilters(newFilters);
+    fetchAndSetTemplates(page, rowsPerPage, newFilters, newSearch, orderBy);
+  };
 
   const headCells = [
     { label: '', name: '' },
@@ -183,8 +195,13 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
   return (
     <div id="job-templates-selection-table" style={{ marginBottom: 20,  marginTop: 10 }}>
       <Grid container>
-        <Grid item className={`${classes.box}`} xs={6}>
-          <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
+        <Grid item className={`${classes.box}`} xs={12}>
+          <Tooltip title="Clear Search and Filters">
+            <Button variant="outlined" onClick={handleClearSearchFilter}>
+              <HighlightOffIcon/>
+            </Button>
+          </Tooltip>
+          <FilterDialog filters={filters} onFilterSubmit={handleFilterSubmit}/>
           <Button onClick={handleSearch} variant="outlined">Search</Button>
           <TextField
             label="Search Field"
