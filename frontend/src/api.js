@@ -11,7 +11,8 @@ function createFilterString(filters) {
 }
 
 export function getTasks(token, limit=25, offset=0, filters=[], search='', ordering='') {
-  return getAuthenticatedJson(`/api/tasks/?limit=${limit}&offset=${offset}&ordering=${ordering}&search=${search}${createFilterString(filters)}`, token)
+  const omit = 'detail,variables,result_host_selection,filters,result,inventory,inventory_name';
+  return getAuthenticatedJson(`/api/tasks/?limit=${limit}&offset=${offset}&ordering=${ordering}&search=${search}${createFilterString(filters)}&omit=${omit}`, token)
           .then(parseJson);
 }
 
