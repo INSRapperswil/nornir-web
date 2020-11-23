@@ -37,6 +37,13 @@ class TaskViewSet(viewsets.ModelViewSet):
         task.schedule()
         return Response(status=status.HTTP_202_ACCEPTED)
 
+    @action(detail=True, methods=['PUT'])
+    def abort(self, request, pk):
+        task = self.get_object()
+        task.abort()
+        serializer = self.get_serializer(task)
+        return Response(serializer.data)
+
 
 class JobTemplateViewSet(viewsets.ModelViewSet):
     """

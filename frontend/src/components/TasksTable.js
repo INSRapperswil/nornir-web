@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getTasks } from '../api';
+import { getTasks, abortTask } from '../api';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Box, Collapse, IconButton, Paper, Tooltip, Grid,
@@ -11,6 +11,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import RepeatIcon from '@material-ui/icons/Repeat';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
+import CancelIcon from '@material-ui/icons/Cancel';
 import { getToken } from '../redux/reducers';
 import { setRerunTask } from '../redux/actions';
 import { connect } from 'react-redux';
@@ -141,6 +142,15 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
     history.push('/wizard?step=2')
   };
 
+  const handleAbortTask = (e, task) => {
+    abortTask(token, task.id).then((result) => {
+      let updatedTasks = tasks.slice();
+      const index = updatedTasks.findIndex((task) => task.id === result.id);
+      updatedTasks[index] = result;
+      setTasks(updatedTasks);
+    });
+  }
+
   function Row(props) {
     const { row } = props;
     const [open, setOpen] = React.useState(false);
@@ -164,6 +174,16 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
           }
           <TableCell>{row.created_name}</TableCell>
           <TableCell>{row.template_name}</TableCell>
+          <TableCell>
+            {
+              [1, 2].includes(row.status) ?
+              <Tooltip title="Abort Task execution">
+                <IconButton onClick={(e) => handleAbortTask(e, row)}>
+                  <CancelIcon/>
+                </IconButton>
+              </Tooltip> : null
+            }
+          </TableCell>
           <TableCell>
             {
               onlyTemplates ?
@@ -211,6 +231,7 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
     { label: 'Finished', name: 'date_finished', orderable: true, hiddenForTaskTemplates: true },
     { label: 'Creator', name: 'creator' },
     { label: 'Template', name: 'template' },
+    { label: 'Abort Task', name: '' },
     { label: 'Rerun Task', name: '' },
     { label: 'Detail View', name: '' },
   ];
@@ -255,7 +276,7 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
           </TableHead>
           <TableBody>
             {tasks.map((value) => (
-              <Row key={value.id} row={value} />
+              <Row key={`${value.id}-${value.status}`} row={value} />
             ))}
           </TableBody>
         </Table>
