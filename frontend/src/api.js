@@ -61,6 +61,10 @@ export function runTaskAsync(token, id) {
   return postAuthenticatedJson(`/api/tasks/${id}/run_async/`, token);
 }
 
+export function abortTask(token, id) {
+  return putAuthenticatedJson(`/api/tasks/${id}/abort/`, token).then(parseJson);
+}
+
 export function getConfiguration(token) {
   return getAuthenticatedJson(`/api/configuration/`, token).then(parseJson);
 }
@@ -90,6 +94,18 @@ function getAuthenticatedJson(endpoint, token) {
 function postAuthenticatedJson(endpoint, token, params) {
   return fetch(`${backend}${endpoint}`, {
     method: "POST",
+    headers: {
+      Authorization: `Token ${token}`,
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    body: JSON.stringify(params)
+  }).then(checkStatus);
+}
+
+function putAuthenticatedJson(endpoint, token, params) {
+  return fetch(`${backend}${endpoint}`, {
+    method: "PUT",
     headers: {
       Authorization: `Token ${token}`,
       "Content-Type": "application/json",
