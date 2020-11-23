@@ -67,7 +67,7 @@ function TaskDetail({ token, taskId }) {
                 {Array.isArray(host["result"]) ?
                   host["result"].map((value) => {
                     return (
-                      <span className={classes.codeLine}>
+                      <span className={classes.codeLine} key={value}>
                         {beautifyJson(value)}
                       </span>)
                   })
