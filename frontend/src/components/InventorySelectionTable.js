@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { renewAccessToken, updateTaskWizard } from '../redux/actions';
-import { getWizardTask, getToken, getInventorySelectionId, checkAndGetToken } from '../redux/reducers';
+import { checkAndGetToken, updateTaskWizard } from '../redux/actions';
+import { getWizardTask, getInventorySelectionId } from '../redux/reducers';
 import { connect } from 'react-redux';
 import { getInventoryHosts } from '../api';
 import { EnhancedTable } from './EnhancedTable';
@@ -39,7 +39,7 @@ function checkStepValidity(filters) {
   return (filters !== undefined && filters.length > 0);
 }
 
-function InventorySelectionTable({ token, renewAccessToken, task, updateTaskWizard, setStepValid, inventorySelectionId }) {
+function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, setStepValid, inventorySelectionId }) {
   let [inventory, setInventory] = useState([]);
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
@@ -61,8 +61,8 @@ function InventorySelectionTable({ token, renewAccessToken, task, updateTaskWiza
 
   useEffect(() => {
     if (inventory.length === 0) {
-      checkAndGetToken(token, renewAccessToken).then((access_token) => {
-        getInventoryHosts(access_token, inventorySelectionId, rowsPerPage, 0, []).then((response) => {
+      checkAndGetToken().then((token) => {
+        getInventoryHosts(token, inventorySelectionId, rowsPerPage, 0, []).then((response) => {
           setInventory(response.results);
           setCount(response.count);
           setStepValid(checkStepValidity(task.filters.hosts));
@@ -76,10 +76,12 @@ function InventorySelectionTable({ token, renewAccessToken, task, updateTaskWiza
 
   const fetchAndSetHosts = (page, pageSize, _filters = filters, _search = search, _orderBy = orderBy) => {
     const offset = pageSize * page;
-    getInventoryHosts(token, inventorySelectionId, pageSize, offset, _filters, _search, _orderBy).then((response) => {
-      setInventory(response.results);
-      setCount(response.count);
-    })
+    checkAndGetToken().then((token) => {
+      getInventoryHosts(token, inventorySelectionId, pageSize, offset, _filters, _search, _orderBy).then((response) => {
+        setInventory(response.results);
+        setCount(response.count);
+      });
+    });
   };
 
   const handleSelectionChange = (params) => {
@@ -93,9 +95,11 @@ function InventorySelectionTable({ token, renewAccessToken, task, updateTaskWiza
   };
 
   const handleInventoryChange = (inventoryId) => {
-    getInventoryHosts(token, inventoryId, rowsPerPage, 0).then((response) => {
-      setInventory(response.results);
-      setCount(response.count);
+    checkAndGetToken().then((token) => {
+      getInventoryHosts(token, inventoryId, rowsPerPage, 0).then((response) => {
+        setInventory(response.results);
+        setCount(response.count);
+      });
     });
     setPage(0);
   };
@@ -158,11 +162,10 @@ const mapStateToProps = (state) => {
   return {
     inventorySelectionId: getInventorySelectionId(state),
     task: getWizardTask(state),
-    token: getToken(state),
   };
 };
 const mapDispatchToProps = {
-  renewAccessToken,
+  checkAndGetToken,
   updateTaskWizard,
 };
 

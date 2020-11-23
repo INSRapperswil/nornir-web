@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { getWizardTask, getWizard, getToken, checkAndGetToken } from '../redux/reducers';
-import { updateTaskWizard, postTaskWizard, renewAccessToken } from '../redux/actions';
+import { getWizardTask, getWizard } from '../redux/reducers';
+import { updateTaskWizard, postTaskWizard, checkAndGetToken } from '../redux/actions';
 import { Stepper, Step, StepLabel, Button } from '@material-ui/core';
 import { runTask, runTaskAsync } from '../api';
 import TaskDetail from './TaskDetail';
 import { useHistory } from 'react-router-dom';
 
-function TaskWizard({ task, getSteps, postTaskWizard, wizard, token, entryStep }) {
+function TaskWizard({ checkAndGetToken, task, getSteps, postTaskWizard, wizard, entryStep }) {
   const [activeStep, setActiveStep] = useState(entryStep ? parseInt(entryStep) : 0);
   const [stepValid, setStepValid] = useState(false);
   const [createdTaskId, setCreatedTaskId] = useState(0);
@@ -16,7 +16,7 @@ function TaskWizard({ task, getSteps, postTaskWizard, wizard, token, entryStep }
 
   const handleFinish = (event) => {
     postTaskWizard().then(result => {
-      checkAndGetToken(token, renewAccessToken).then((access_token) => {
+      checkAndGetToken().then((token) => {
         setCreatedTaskId(result.id);
         if (result.is_template) {
           history.push('/task-templates');
@@ -68,11 +68,10 @@ const mapStateToProps = (state) => {
   return {
     task: getWizardTask(state),
     wizard: getWizard(state),
-    token: getToken(state),
   };
 };
 const mapDispatchToProps = {
-  renewAccessToken,
+  checkAndGetToken,
   updateTaskWizard,
   postTaskWizard,
 };

@@ -1,5 +1,6 @@
 import * as api from "../api";
 import { buildUserState } from "../helperFunctions";
+import jwt_decode from "jwt-decode";
 
 export function fetchTasks() {
   return (dispatch, getState) => {
@@ -86,7 +87,17 @@ export function authenticate(username, password) {
   };
 }
 
-//TODO: Autoupdate working, but update is late
+export function checkAndGetToken() {
+  return async (dispatch, getState) => {
+    let token = getState().user.access_token;
+    let decoded = jwt_decode(token);
+    if (Date.now() > (decoded.exp * 1000)) {
+      return await dispatch(renewAccessToken());
+    }
+    return token;
+  };
+}
+
 export function renewAccessToken() {
   return (dispatch, getState) => {
     dispatch({ type: "REFRESH_TOKEN_STARTED" });
@@ -100,7 +111,7 @@ export function renewAccessToken() {
         return access_token;
       })
       .catch((error) => dispatch({ type: "REFRESH_TOKEN_FAILED", error }));
-  }
+  };
 }
 
 export function logout() {

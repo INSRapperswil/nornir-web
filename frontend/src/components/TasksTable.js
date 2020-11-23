@@ -11,8 +11,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import RepeatIcon from '@material-ui/icons/Repeat';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
-import { checkAndGetToken, getToken } from '../redux/reducers';
-import { setRerunTask, renewAccessToken } from '../redux/actions';
+import { setRerunTask, checkAndGetToken } from '../redux/actions';
 import { connect } from 'react-redux';
 import TaskDetail from './TaskDetail';
 import {
@@ -59,7 +58,7 @@ function SelectStatus({ defaultValue }) {
   );
 }
 
-function TasksTable({ token, renewAccessToken, setRerunTask, onlyTemplates }) {
+function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
   let [tasks, setTasks] = useState([]);
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
@@ -83,8 +82,8 @@ function TasksTable({ token, renewAccessToken, setRerunTask, onlyTemplates }) {
 
   useEffect(() => {
     if (tasks.length === 0) {
-      checkAndGetToken(token, renewAccessToken).then((access_token) => {
-        getTasks(access_token, rowsPerPage, 0, aggregateFilters()).then((response) => {
+      checkAndGetToken().then((token) => {
+        getTasks(token, rowsPerPage, 0, aggregateFilters()).then((response) => {
           setTasks(response.results);
           setCount(response.count);
           setIsLoading(false);
@@ -101,11 +100,14 @@ function TasksTable({ token, renewAccessToken, setRerunTask, onlyTemplates }) {
   const fetchAndSetTasks = (page, pageSize, filters, search, order) => {
     const offset = page * pageSize;
     setIsLoading(true);
-    getTasks(token, pageSize, offset, aggregateFilters(), search, order).then((response) => {
-      setTasks(response.results);
-      setCount(response.count);
-      setIsLoading(false);
-    });
+    checkAndGetToken().then((token) => {
+      getTasks(token, pageSize, offset, aggregateFilters(), search, order).then((response) => {
+        setTasks(response.results);
+        setCount(response.count);
+        setIsLoading(false);
+      });
+    })
+
     setPage(page);
   };
 
@@ -264,12 +266,11 @@ function TasksTable({ token, renewAccessToken, setRerunTask, onlyTemplates }) {
 
 const mapStateToProps = (state) => {
   return {
-    token: getToken(state),
   };
 };
 
 const mapDispatchToProps = {
-  renewAccessToken,
+  checkAndGetToken,
   setRerunTask,
 };
 

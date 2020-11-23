@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getTaskDetails } from '../api';
-import { checkAndGetToken, getToken } from '../redux/reducers';
-import { renewAccessToken } from '../redux/actions'
+import { checkAndGetToken } from '../redux/actions'
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { Button, Typography } from '@material-ui/core';
@@ -24,29 +23,32 @@ const useStyles = makeStyles({
   },
 });
 
-function TaskDetail({ token, renewAccessToken, taskId }) {
+function TaskDetail({ checkAndGetToken, taskId }) {
   let [task, setTask] = useState([]);
   let [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (task.length === 0) {
-      checkAndGetToken(token, renewAccessToken).then((access_token) => {
-        getTaskDetails(access_token, taskId).then((response) => {
+      checkAndGetToken().then((token) => {
+        getTaskDetails(token, taskId).then((response) => {
           setTask(response);
           setIsLoading(false);
         });
       });
     }
-  }, [task, setTask, token, taskId, renewAccessToken]);
+  }, [checkAndGetToken, task, setTask, taskId]);
 
   const classes = useStyles();
 
   const onRefresh = () => {
     setIsLoading(true);
-    getTaskDetails(token, taskId).then((response) => {
-      setTask(response);
-      setIsLoading(false);
+    checkAndGetToken().then((token) => {
+      getTaskDetails(token, taskId).then((response) => {
+        setTask(response);
+        setIsLoading(false);
+      });
     });
+
   };
 
   function Result(props) {
@@ -95,12 +97,10 @@ function TaskDetail({ token, renewAccessToken, taskId }) {
 }
 
 const mapStateToProps = (state) => {
-  return {
-    token: getToken(state),
-  };
+  return {};
 };
 const mapDispatchToProps = {
-  renewAccessToken,
+  checkAndGetToken,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TaskDetail);

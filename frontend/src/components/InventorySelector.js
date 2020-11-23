@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { getInventoryList } from '../api';
-import { renewAccessToken, updateInventorySelection } from '../redux/actions';
-import { checkAndGetToken, getInventorySelectionId, getToken } from '../redux/reducers';
+import { checkAndGetToken, updateInventorySelection } from '../redux/actions';
+import { getInventorySelectionId } from '../redux/reducers';
 import { connect } from 'react-redux';
 import {
   FormControl, InputLabel, MenuItem, Select
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-function InventorySelector({ token, renewAccessToken, inventory, onInventoryChange, updateInventorySelection }) {
+function InventorySelector({ checkAndGetToken, inventory, onInventoryChange, updateInventorySelection }) {
   let [inventoryList, setInventoryList] = useState([{ "id": 1, "name": "Loading...", "notLoaded": true }]);
 
   useEffect(() => {
     if (inventoryList[0].notLoaded) {
-      checkAndGetToken(token, renewAccessToken).then((access_token) => {
-        getInventoryList(access_token).then((response) => setInventoryList(response.results));
+      checkAndGetToken().then((token) => {
+        getInventoryList(token).then((response) => setInventoryList(response.results));
       });
     }
-  }, [inventoryList, setInventoryList, token, renewAccessToken]);
+  }, [checkAndGetToken, inventoryList, setInventoryList]);
 
   const useStyles = makeStyles({
     formControl: {
@@ -53,12 +53,11 @@ function InventorySelector({ token, renewAccessToken, inventory, onInventoryChan
 const mapStateToProps = (state) => {
   return {
     inventory: getInventorySelectionId(state),
-    token: getToken(state),
   };
 };
 
 const mapDispatchToProps = {
-  renewAccessToken,
+  checkAndGetToken,
   updateInventorySelection,
 }
 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getConfiguration, postConfiguration } from '../api';
-import { renewAccessToken } from '../redux/actions';
-import { getToken, checkAndGetToken } from '../redux/reducers';
+import { checkAndGetToken } from '../redux/actions';
 import { connect } from 'react-redux';
 import {
   Button, Checkbox, FormControl, FormControlLabel, InputLabel, Select, MenuItem, TextField
@@ -30,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ConfigurationForm({ token, renewAccessToken, }) {
+function ConfigurationForm({ checkAndGetToken }) {
   let [loadState, setLoadState] = useState({ "notLoaded": true });
   let [loggingEnabled, setLoggingEnabled] = useState(false);
   let [loggingFormat, setLoggingFormat] = useState('');
@@ -41,8 +40,8 @@ function ConfigurationForm({ token, renewAccessToken, }) {
 
   useEffect(() => {
     if (loadState.notLoaded) {
-      checkAndGetToken(token, renewAccessToken).then((access_token) => {
-        getConfiguration(access_token).then((response) => {
+      checkAndGetToken().then((token) => {
+        getConfiguration(token).then((response) => {
           setLoggingEnabled(response.logging.enabled);
           setLoggingFormat(response.logging.format);
           setLoggingLevel(response.logging.level);
@@ -54,7 +53,7 @@ function ConfigurationForm({ token, renewAccessToken, }) {
       });
     }
   }, [
-    token,
+    checkAndGetToken,
     loadState, setLoadState,
     loggingEnabled, setLoggingEnabled,
     loggingFormat, setLoggingFormat,
@@ -62,7 +61,6 @@ function ConfigurationForm({ token, renewAccessToken, }) {
     loggingFile, setLoggingFile,
     runnerOptionsNumWorkers, setRunnerOptionsNumWorkers,
     runnerPlugin, setRunnerPlugin,
-    renewAccessToken,
   ]);
 
   const classes = useStyles();
@@ -83,7 +81,9 @@ function ConfigurationForm({ token, renewAccessToken, }) {
         "plugin": runnerPlugin,
       },
     };
-    postConfiguration(token, configuration);
+    checkAndGetToken().then((token) => {
+      postConfiguration(token, configuration);
+    });
   }
 
   return (loadState.notLoaded === true ?
@@ -117,13 +117,11 @@ function ConfigurationForm({ token, renewAccessToken, }) {
 }
 
 const mapStateToProps = (state) => {
-  return {
-    token: getToken(state),
-  };
+  return {};
 };
 
 const mapDispatchToProps = {
-  renewAccessToken,
+  checkAndGetToken,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ConfigurationForm);

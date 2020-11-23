@@ -1,6 +1,5 @@
 import { combineReducers } from "redux";
 import { buildUserState } from "../helperFunctions";
-import jwt_decode from "jwt-decode";
 
 const initialTasksState = {
   tasks: null,
@@ -134,18 +133,6 @@ export function getWizard(state) {
 
 export function getInventorySelectionId(state) {
   return state.inventorySelection.inventory;
-}
-
-export function getToken(state) {
-  return state.user.access_token;
-}
-
-export async function checkAndGetToken(token, dispatchFunction) {
-  let decoded = jwt_decode(token);
-  if (Date.now() > (decoded.exp * 1000)) {
-    return await dispatchFunction();
-  }
-  return token;
 }
 
 export function getIsAuthenticated(state) {

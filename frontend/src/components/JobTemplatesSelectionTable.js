@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { updateTaskWizard, renewAccessToken } from '../redux/actions';
-import { getWizardTask, getToken, checkAndGetToken } from '../redux/reducers';
+import { updateTaskWizard, checkAndGetToken } from '../redux/actions';
+import { getWizardTask } from '../redux/reducers';
 import { getJobTemplates } from '../api';
 import {
   RadioGroup, Radio,
@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function JobTemplatesSelectionTable({ token, renewAccessToken, task, updateTaskWizard, setStepValid }) {
+function JobTemplatesSelectionTable({ checkAndGetToken, task, updateTaskWizard, setStepValid }) {
   let [templates, setTemplates] = useState([]);
   let [openRow, setOpenRow] = useState(-1);
   let [count, setCount] = useState(0);
@@ -63,8 +63,8 @@ function JobTemplatesSelectionTable({ token, renewAccessToken, task, updateTaskW
 
   useEffect(() => {
     if (templates.length === 0) {
-      checkAndGetToken(token, renewAccessToken).then((access_token) => {
-        getJobTemplates(access_token, rowsPerPage, 0).then((response) => {
+      checkAndGetToken().then((token) => {
+        getJobTemplates(token, rowsPerPage, 0).then((response) => {
           setTemplates(response.results);
           setCount(response.count);
           setStepValid(task.template.id !== 0);
@@ -129,10 +129,13 @@ function JobTemplatesSelectionTable({ token, renewAccessToken, task, updateTaskW
 
   const fetchAndSetTemplates = (page, pageSize, _filters = filters, _search = search, _orderBy = orderBy) => {
     const offset = page * pageSize;
-    getJobTemplates(token, pageSize, offset, _filters, _search, _orderBy).then((response) => {
-      setTemplates(response.results);
-      setCount(response.count);
+    checkAndGetToken().then((token) => {
+      getJobTemplates(token, pageSize, offset, _filters, _search, _orderBy).then((response) => {
+        setTemplates(response.results);
+        setCount(response.count);
+      });
     });
+
   }
 
   const handleChangePage = (event, requestedPage) => {
@@ -218,12 +221,12 @@ function JobTemplatesSelectionTable({ token, renewAccessToken, task, updateTaskW
 const mapStateToProps = (state) => {
   return {
     task: getWizardTask(state),
-    token: getToken(state),
   };
 };
 const mapDispatchToProps = {
-  renewAccessToken,
+  checkAndGetToken,
   updateTaskWizard,
+
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(JobTemplatesSelectionTable);
