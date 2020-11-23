@@ -226,7 +226,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   checkAndGetToken,
   updateTaskWizard,
-
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(JobTemplatesSelectionTable);

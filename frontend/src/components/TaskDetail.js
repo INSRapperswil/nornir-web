@@ -48,7 +48,6 @@ function TaskDetail({ checkAndGetToken, taskId }) {
         setIsLoading(false);
       });
     });
-
   };
 
   function Result(props) {

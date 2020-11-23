@@ -265,8 +265,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
 }
 
 const mapStateToProps = (state) => {
-  return {
-  };
+  return {};
 };
 
 const mapDispatchToProps = {

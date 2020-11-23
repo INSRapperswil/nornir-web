@@ -27,12 +27,14 @@ export function postTaskWizard() {
     if (!task.date_scheduled) {
       delete task.date_scheduled;
     }
-    return api.postTask(getState().user.access_token, getState().taskWizard.task)
-      .then((result) => {
-        dispatch({ type: "POST_TASK_WIZARD_SUCCEEDED", lastCreatedTaskId: result.id })
-        return result;
-      })
-      .catch((error) => dispatch({ type: "POST_TASK_WIZARD_FAILED", error }));
+    // checkAndGetToken().then((token) => {
+      return api.postTask(getState().user.access_token, getState().taskWizard.task)
+        .then((result) => {
+          dispatch({ type: "POST_TASK_WIZARD_SUCCEEDED", lastCreatedTaskId: result.id })
+          return result;
+        })
+        .catch((error) => dispatch({ type: "POST_TASK_WIZARD_FAILED", error }));
+    // });
   };
 }
 
