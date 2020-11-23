@@ -21,6 +21,7 @@ import {
 } from '../helperFunctions';
 import FilterDialog from './FilterDialog';
 import { useHistory } from 'react-router-dom';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -76,15 +77,19 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
   let [search, setSearch] = useState('');
   let [orderBy, setOrderBy] = useState('');
   let [isLoading, setIsLoading] = useState(true);
-  let [filters, setFilters] = useState([
-    { label: 'Template Name', name: 'template__name', value: '' },
-    { label: 'Inventory Name', name: 'inventory__name', value: '' },
-    { label: 'Creator', name: 'created_by__username', value: '' },
-    { label: 'Status', name: 'status', value: '', component: (defaultValue) => <SelectStatus defaultValue={defaultValue}/> },
-  ]);
+  const getDefaultFilters = () => {
+    return [
+      { label: 'Template Name', name: 'template__name', value: '' },
+      { label: 'Inventory Name', name: 'inventory__name', value: '' },
+      { label: 'Creator', name: 'created_by__username', value: '' },
+      { label: 'Status', name: 'status', value: '',
+        component: (defaultValue) => <SelectStatus defaultValue={defaultValue}/> },
+    ];
+  };
+  let [filters, setFilters] = useState(getDefaultFilters());
   const history = useHistory();
 
-  const aggregateFilters = () => {
+  const aggregateFilters = (filters) => {
     let f = Object.assign([], filters);
     f.push({ name: 'is_template', value: (onlyTemplates ? 'true' : 'false') });
     return f;
@@ -107,7 +112,7 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
   const fetchAndSetTasks = (page, pageSize, filters, search, order) => {
     const offset = page * pageSize;
     setIsLoading(true);
-    getTasks(token, pageSize, offset, aggregateFilters(), search, order).then((response) => {
+    getTasks(token, pageSize, offset, aggregateFilters(filters), search, order).then((response) => {
       setTasks(response.results);
       setCount(response.count);
       setIsLoading(false);
@@ -119,9 +124,18 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
     fetchAndSetTasks(0, rowsPerPage, filters, search, orderBy);
   };
 
-  const handleFilterChange = (newFilters) => {
+  const handleFilterSubmit = (newFilters) => {
+    setPage(0);
     setFilters(newFilters);
     fetchAndSetTasks(0, rowsPerPage, newFilters, search, orderBy);
+  };
+
+  const handleClearSearchFilter = (event) => {
+    const newSearch = '';
+    const newFilters = getDefaultFilters();
+    setSearch(newSearch);
+    setFilters(newFilters);
+    fetchAndSetTasks(page, rowsPerPage, newFilters, newSearch, orderBy);
   };
 
   const handleChangePage = (event, requestedPage) => {
@@ -243,7 +257,7 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
     { label: 'Creator', name: 'creator' },
     { label: 'Template', name: 'template' },
     { label: 'Abort Task', name: '' },
-    { label: 'Rerun Task', name: '' },
+    { label: (onlyTemplates ? 'Run Task' : 'Rerun Task'), name: '' },
     { label: 'Detail View', name: '' },
   ];
 
@@ -262,12 +276,18 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
           </Button>
         </Grid>
         <Grid item className={`${classes.box} ${classes.filters}`} xs={6}>
-          <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
+          <Tooltip title="Clear Search and Filters">
+            <Button variant="outlined" onClick={handleClearSearchFilter}>
+              <HighlightOffIcon/>
+            </Button>
+          </Tooltip>
+          <FilterDialog filters={filters} setFilters={setFilters} onFilterSubmit={handleFilterSubmit}/>
           <Button onClick={handleSearch} variant="outlined">Search</Button>
           <TextField
             label="Search Field"
             variant="outlined"
             value={search}
+            onKeyPress={(e) => e.key === 'Enter' ? handleSearch(e) : null}
             onChange={(e) => setSearch(e.target.value)}
           />
         </Grid>
