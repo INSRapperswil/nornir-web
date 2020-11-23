@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     maxHeight: 240,
     '&::before': {
       textAlign: "center",
-      content: '"Click to expand full configuration"',
+      content: '"Double click to expand full result"',
       display: 'block',
       height: 30,
     },
@@ -83,7 +83,7 @@ function TaskDetail({ token, taskId }) {
           {Object.values(hosts).map((host) => (
             <React.Fragment key={host.name}>
               <Typography variant="h6" gutterBottom component="div">{host["name"]} / {host["hostname"]}</Typography>
-              <code className={classes.code + ' ' + classes.collapsed} onClick={handleExpansion}>
+              <code className={classes.code + ' ' + classes.collapsed} onDoubleClick={handleExpansion}>
                 {Array.isArray(host["result"]) ?
                   host["result"].map((value) => {
                     return (
