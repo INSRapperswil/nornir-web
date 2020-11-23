@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getHostDetails } from '../api';
 import { renewAccessToken } from '../redux/actions';
-import { getToken, checkTokenExpiry } from '../redux/reducers';
+import { getToken, checkAndGetToken } from '../redux/reducers';
 import { connect } from 'react-redux';
 import DetailTable from './DetailTable';
 
@@ -10,8 +10,9 @@ function InventoryHostDetail({ token, renewAccessToken, inventoryId, name }) {
 
   useEffect(() => {
     if (host.length === 0) {
-      checkTokenExpiry(token, renewAccessToken);
-      getHostDetails(token, inventoryId, name).then((response) => setHost(response))
+      checkAndGetToken(token, renewAccessToken).then((access_token) => {
+        getHostDetails(access_token, inventoryId, name).then((response) => setHost(response))
+      });
     }
   }, [host, setHost, token, inventoryId, name, renewAccessToken]);
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { getWizardTask, getWizard, getToken, checkTokenExpiry } from '../redux/reducers';
+import { getWizardTask, getWizard, getToken, checkAndGetToken } from '../redux/reducers';
 import { updateTaskWizard, postTaskWizard, renewAccessToken } from '../redux/actions';
 import { Stepper, Step, StepLabel, Button } from '@material-ui/core';
 import { runTask, runTaskAsync } from '../api';
@@ -16,17 +16,18 @@ function TaskWizard({ task, getSteps, postTaskWizard, wizard, token, entryStep }
 
   const handleFinish = (event) => {
     postTaskWizard().then(result => {
-      checkTokenExpiry(token, renewAccessToken);
-      setCreatedTaskId(result.id);
-      if (result.is_template) {
-        history.push('/task-templates');
-      } else {
-        if (result.date_scheduled) {
-          runTaskAsync(token, result.id)
+      checkAndGetToken(token, renewAccessToken).then((access_token) => {
+        setCreatedTaskId(result.id);
+        if (result.is_template) {
+          history.push('/task-templates');
         } else {
-          runTask(token, result.id);
+          if (result.date_scheduled) {
+            runTaskAsync(token, result.id)
+          } else {
+            runTask(token, result.id);
+          }
         }
-      }
+      });
     })
     handleNext(event);
   };

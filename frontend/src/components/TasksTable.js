@@ -11,7 +11,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import RepeatIcon from '@material-ui/icons/Repeat';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
-import { checkTokenExpiry, getToken } from '../redux/reducers';
+import { checkAndGetToken, getToken } from '../redux/reducers';
 import { setRerunTask, renewAccessToken } from '../redux/actions';
 import { connect } from 'react-redux';
 import TaskDetail from './TaskDetail';
@@ -83,7 +83,7 @@ function TasksTable({ token, renewAccessToken, setRerunTask, onlyTemplates }) {
 
   useEffect(() => {
     if (tasks.length === 0) {
-      checkTokenExpiry(token, renewAccessToken).then((access_token) => {
+      checkAndGetToken(token, renewAccessToken).then((access_token) => {
         getTasks(access_token, rowsPerPage, 0, aggregateFilters()).then((response) => {
           setTasks(response.results);
           setCount(response.count);

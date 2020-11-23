@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { renewAccessToken, updateTaskWizard } from '../redux/actions';
-import { getWizardTask, getToken, getInventorySelectionId, checkTokenExpiry } from '../redux/reducers';
+import { getWizardTask, getToken, getInventorySelectionId, checkAndGetToken } from '../redux/reducers';
 import { connect } from 'react-redux';
 import { getInventoryHosts } from '../api';
 import { EnhancedTable } from './EnhancedTable';
@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   box: {
     marginBottom: 10,
     display: 'flex',
@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
       marginLeft: 0,
     }
   },
-}));
+});
 
 const headCells = [
   { id: 'name', numeric: false, label: 'Friendly Name', disablePadding: true, orderable: true },
@@ -61,12 +61,14 @@ function InventorySelectionTable({ token, renewAccessToken, task, updateTaskWiza
 
   useEffect(() => {
     if (inventory.length === 0) {
-      checkTokenExpiry(token, renewAccessToken);
-      getInventoryHosts(token, inventorySelectionId, rowsPerPage, 0, []).then((response) => {
-        setInventory(response.results);
-        setCount(response.count);
-        setStepValid(checkStepValidity(task.filters.hosts));
+      checkAndGetToken(token, renewAccessToken).then((access_token) => {
+        getInventoryHosts(access_token, inventorySelectionId, rowsPerPage, 0, []).then((response) => {
+          setInventory(response.results);
+          setCount(response.count);
+          setStepValid(checkStepValidity(task.filters.hosts));
+        });
       });
+
     }
     // empty dependencies array, so it only runs on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps

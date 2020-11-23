@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getConfiguration, postConfiguration } from '../api';
 import { renewAccessToken } from '../redux/actions';
-import { getToken, checkTokenExpiry } from '../redux/reducers';
+import { getToken, checkAndGetToken } from '../redux/reducers';
 import { connect } from 'react-redux';
 import {
   Button, Checkbox, FormControl, FormControlLabel, InputLabel, Select, MenuItem, TextField
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ConfigurationForm({ token, renewAccessToken,  }) {
+function ConfigurationForm({ token, renewAccessToken, }) {
   let [loadState, setLoadState] = useState({ "notLoaded": true });
   let [loggingEnabled, setLoggingEnabled] = useState(false);
   let [loggingFormat, setLoggingFormat] = useState('');
@@ -41,15 +41,16 @@ function ConfigurationForm({ token, renewAccessToken,  }) {
 
   useEffect(() => {
     if (loadState.notLoaded) {
-      checkTokenExpiry(token, renewAccessToken);
-      getConfiguration(token).then((response) => {
-        setLoggingEnabled(response.logging.enabled);
-        setLoggingFormat(response.logging.format);
-        setLoggingLevel(response.logging.level);
-        setLoggingFile(response.logging.log_file);
-        setRunnerOptionsNumWorkers(response.runner.options.num_workers);
-        setRunnerPlugin(response.runner.plugin);
-        setLoadState(loadState.notLoaded = false);
+      checkAndGetToken(token, renewAccessToken).then((access_token) => {
+        getConfiguration(access_token).then((response) => {
+          setLoggingEnabled(response.logging.enabled);
+          setLoggingFormat(response.logging.format);
+          setLoggingLevel(response.logging.level);
+          setLoggingFile(response.logging.log_file);
+          setRunnerOptionsNumWorkers(response.runner.options.num_workers);
+          setRunnerPlugin(response.runner.plugin);
+          setLoadState(loadState.notLoaded = false);
+        });
       });
     }
   }, [

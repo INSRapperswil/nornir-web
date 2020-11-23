@@ -140,13 +140,9 @@ export function getToken(state) {
   return state.user.access_token;
 }
 
-
-export async function checkTokenExpiry(token, dispatchFunction) {
+export async function checkAndGetToken(token, dispatchFunction) {
   let decoded = jwt_decode(token);
   if (Date.now() > (decoded.exp * 1000)) {
-    console.log("Refreshing Token...")
-    // let new_token = await dispatchFunction();
-    // console.log(new_token);
     return await dispatchFunction();
   }
   return token;

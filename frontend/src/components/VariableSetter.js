@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Button, Checkbox, TextField, FormControlLabel,
 } from '@material-ui/core';
-import { getWizardTask, getToken } from '../redux/reducers';
+import { getWizardTask } from '../redux/reducers';
 import { updateTaskWizard } from '../redux/actions';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function VariableSetter({ token, renewAccessToken, task, updateTaskWizard, setStepValid }) {
+function VariableSetter({ task, updateTaskWizard, setStepValid }) {
   let [runNow, setRunNow] = useState(true);
   let [isTemplate, setIsTemplate] = useState(false);
   const classes = useStyles();
@@ -121,7 +121,6 @@ function VariableSetter({ token, renewAccessToken, task, updateTaskWizard, setSt
 const mapStateToProps = (state) => {
   return {
     task: getWizardTask(state),
-    token: getToken(state),
   };
 };
 const mapDispatchToProps = {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getInventoryList } from '../api';
 import { renewAccessToken, updateInventorySelection } from '../redux/actions';
-import { checkTokenExpiry, getInventorySelectionId, getToken } from '../redux/reducers';
+import { checkAndGetToken, getInventorySelectionId, getToken } from '../redux/reducers';
 import { connect } from 'react-redux';
 import {
   FormControl, InputLabel, MenuItem, Select
@@ -13,8 +13,9 @@ function InventorySelector({ token, renewAccessToken, inventory, onInventoryChan
 
   useEffect(() => {
     if (inventoryList[0].notLoaded) {
-      checkTokenExpiry(token, renewAccessToken);
-      getInventoryList(token).then((response) => setInventoryList(response.results));
+      checkAndGetToken(token, renewAccessToken).then((access_token) => {
+        getInventoryList(access_token).then((response) => setInventoryList(response.results));
+      });
     }
   }, [inventoryList, setInventoryList, token, renewAccessToken]);
 

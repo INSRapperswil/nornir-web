@@ -80,7 +80,6 @@ export function authenticate(username, password) {
         sessionStorage.setItem('refresh_token', result.refresh);
         sessionStorage.setItem('access_token', result.access);
         let user = buildUserState(result.refresh, result.access);
-        console.log({ ...getState().user, ...user })
         dispatch({ type: "FETCH_USER_SUCCEEDED", user: { ...getState().user, ...user } });
       })
       .catch((error) => dispatch({ type: "FETCH_USER_FAILED", error }));
@@ -98,7 +97,6 @@ export function renewAccessToken() {
         sessionStorage.setItem('access_token', access_token);
         let user = buildUserState(getState().user.refresh_token, access_token)
         dispatch({ type: "REFRESH_TOKEN_SUCCEEDED", user: { ...getState().user, ...user } });
-        console.log(access_token)
         return access_token;
       })
       .catch((error) => dispatch({ type: "REFRESH_TOKEN_FAILED", error }));

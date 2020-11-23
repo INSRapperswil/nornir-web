@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getTaskDetails } from '../api';
-import { checkTokenExpiry, getToken } from '../redux/reducers';
+import { checkAndGetToken, getToken } from '../redux/reducers';
 import { renewAccessToken } from '../redux/actions'
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
@@ -30,10 +30,11 @@ function TaskDetail({ token, renewAccessToken, taskId }) {
 
   useEffect(() => {
     if (task.length === 0) {
-      checkTokenExpiry(token, renewAccessToken);
-      getTaskDetails(token, taskId).then((response) => {
-        setTask(response);
-        setIsLoading(false);
+      checkAndGetToken(token, renewAccessToken).then((access_token) => {
+        getTaskDetails(access_token, taskId).then((response) => {
+          setTask(response);
+          setIsLoading(false);
+        });
       });
     }
   }, [task, setTask, token, taskId, renewAccessToken]);
@@ -83,8 +84,8 @@ function TaskDetail({ token, renewAccessToken, taskId }) {
     <React.Fragment>
       <Typography variant="h5" gutterBottom component="div">
         Details
-        <Button variant="contained" color="primary" onClick={onRefresh} size="small" style={{ marginLeft: 20 }} disabled={ isLoading }>
-          <RefreshIcon/><span style={{ marginLeft: 3 }}>Refresh</span>
+        <Button variant="contained" color="primary" onClick={onRefresh} size="small" style={{ marginLeft: 20 }} disabled={isLoading}>
+          <RefreshIcon /><span style={{ marginLeft: 3 }}>Refresh</span>
         </Button>
       </Typography>
       <DetailTable detailObject={task} />

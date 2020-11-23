@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { updateTaskWizard, renewAccessToken } from '../redux/actions';
-import { getWizardTask, getToken, checkTokenExpiry } from '../redux/reducers';
+import { getWizardTask, getToken, checkAndGetToken } from '../redux/reducers';
 import { getJobTemplates } from '../api';
 import {
   RadioGroup, Radio,
@@ -63,7 +63,7 @@ function JobTemplatesSelectionTable({ token, renewAccessToken, task, updateTaskW
 
   useEffect(() => {
     if (templates.length === 0) {
-      checkTokenExpiry(token, renewAccessToken).then((access_token) => {
+      checkAndGetToken(token, renewAccessToken).then((access_token) => {
         getJobTemplates(access_token, rowsPerPage, 0).then((response) => {
           setTemplates(response.results);
           setCount(response.count);
