@@ -141,12 +141,15 @@ export function getToken(state) {
 }
 
 
-export function checkTokenExpiry(token, dispatchFunction) {
+export async function checkTokenExpiry(token, dispatchFunction) {
   let decoded = jwt_decode(token);
   if (Date.now() > (decoded.exp * 1000)) {
     console.log("Refreshing Token...")
-    dispatchFunction();
+    // let new_token = await dispatchFunction();
+    // console.log(new_token);
+    return await dispatchFunction();
   }
+  return token;
 }
 
 export function getIsAuthenticated(state) {

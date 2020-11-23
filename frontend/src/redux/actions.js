@@ -80,6 +80,7 @@ export function authenticate(username, password) {
         sessionStorage.setItem('refresh_token', result.refresh);
         sessionStorage.setItem('access_token', result.access);
         let user = buildUserState(result.refresh, result.access);
+        console.log({ ...getState().user, ...user })
         dispatch({ type: "FETCH_USER_SUCCEEDED", user: { ...getState().user, ...user } });
       })
       .catch((error) => dispatch({ type: "FETCH_USER_FAILED", error }));
@@ -88,16 +89,19 @@ export function authenticate(username, password) {
 
 //TODO: Autoupdate working, but update is late
 export function renewAccessToken() {
-  return async (dispatch, getState) => {
+  return (dispatch, getState) => {
     dispatch({ type: "REFRESH_TOKEN_STARTED" });
     let refreshToken = getState().user.refresh_token;
-    return await api.renewAccessToken(refreshToken)
+    return api.renewAccessToken(refreshToken)
       .then((result) => {
-        let new_access_token = result.access;
-        sessionStorage.setItem('access_token', new_access_token);
-        dispatch({ type: "REFRESH_TOKEN_SUCCEEDED", user: { ...getState().user.access_token, new_access_token } });
+        let access_token = result.access;
+        sessionStorage.setItem('access_token', access_token);
+        let user = buildUserState(getState().user.refresh_token, access_token)
+        dispatch({ type: "REFRESH_TOKEN_SUCCEEDED", user: { ...getState().user, ...user } });
+        console.log(access_token)
+        return access_token;
       })
-      .catch((error) => dispatch({type: "REFRESH_TOKEN_FAILED", error}));
+      .catch((error) => dispatch({ type: "REFRESH_TOKEN_FAILED", error }));
   }
 }
 

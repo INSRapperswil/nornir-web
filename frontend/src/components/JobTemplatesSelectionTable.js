@@ -63,11 +63,12 @@ function JobTemplatesSelectionTable({ token, renewAccessToken, task, updateTaskW
 
   useEffect(() => {
     if (templates.length === 0) {
-      checkTokenExpiry(token, renewAccessToken);
-      getJobTemplates(token, rowsPerPage, 0).then((response) => {
-        setTemplates(response.results);
-        setCount(response.count);
-        setStepValid(task.template.id !== 0);
+      checkTokenExpiry(token, renewAccessToken).then((access_token) => {
+        getJobTemplates(access_token, rowsPerPage, 0).then((response) => {
+          setTemplates(response.results);
+          setCount(response.count);
+          setStepValid(task.template.id !== 0);
+        })
       });
     }
     // empty dependencies array, so it only runs on mount.

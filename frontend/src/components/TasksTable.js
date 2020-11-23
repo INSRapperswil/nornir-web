@@ -83,12 +83,14 @@ function TasksTable({ token, renewAccessToken, setRerunTask, onlyTemplates }) {
 
   useEffect(() => {
     if (tasks.length === 0) {
-      checkTokenExpiry(token, renewAccessToken);
-      getTasks(token, rowsPerPage, 0, aggregateFilters()).then((response) => {
-        setTasks(response.results);
-        setCount(response.count);
-        setIsLoading(false);
-      });
+      checkTokenExpiry(token, renewAccessToken).then((access_token) => {
+        getTasks(access_token, rowsPerPage, 0, aggregateFilters()).then((response) => {
+          setTasks(response.results);
+          setCount(response.count);
+          setIsLoading(false);
+        });
+      })
+
     }
     // empty dependencies array, so it only runs on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
