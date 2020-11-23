@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
   Box, Collapse, IconButton, Paper, Tooltip, Grid,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField,
-  Button, Select, MenuItem, InputLabel, FormControl,
+  Button, Select, MenuItem, InputLabel, FormControl, Dialog, DialogTitle, DialogActions,
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -68,6 +68,8 @@ function SelectStatus({ defaultValue }) {
 
 function TasksTable({ token, setRerunTask, onlyTemplates }) {
   let [tasks, setTasks] = useState([]);
+  let [abortConfirmationOpen, setAbortConfirmationOpen] = useState(false);
+  let [taskToAbort, setTaskToAbort] = useState({});
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
   let [rowsPerPage, setRowsPerPage] = useState(25);
@@ -142,8 +144,17 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
     history.push('/wizard?step=2')
   };
 
-  const handleAbortTask = (e, task) => {
-    abortTask(token, task.id).then((result) => {
+  const handleAbortConfirmation = (e, task) => {
+    setTaskToAbort(task);
+    setAbortConfirmationOpen(true);
+  };
+  const handleCancelAbort = (e) => {
+    setTaskToAbort({});
+    setAbortConfirmationOpen(false);
+  };
+  const handleAbortTask = (e) => {
+    setAbortConfirmationOpen(false);
+    abortTask(token, taskToAbort.id).then((result) => {
       let updatedTasks = tasks.slice();
       const index = updatedTasks.findIndex((task) => task.id === result.id);
       updatedTasks[index] = result;
@@ -178,7 +189,7 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
             {
               [1, 2].includes(row.status) ?
               <Tooltip title="Abort Task execution">
-                <IconButton onClick={(e) => handleAbortTask(e, row)}>
+                <IconButton onClick={(e) => handleAbortConfirmation(e, row)}>
                   <CancelIcon/>
                 </IconButton>
               </Tooltip> : null
@@ -210,7 +221,7 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
           </TableCell>
         </TableRow>
         <TableRow className={classes.detail}>
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
             <Collapse in={open} timeout="auto" unmountOnExit style={{ paddingTop: 15, paddingBottom: 30 }}>
               <Box margin={1}>
                 <TaskDetail taskId={row.id} />
@@ -289,6 +300,16 @@ function TasksTable({ token, setRerunTask, onlyTemplates }) {
           onChangeRowsPerPage={handleRowsPerPage}
           component="div" />
       </TableContainer>
+      <Dialog
+        open={abortConfirmationOpen}
+        onClose={handleCancelAbort}
+      >
+        <DialogTitle>Do you want to abort this task?</DialogTitle>
+        <DialogActions>
+          <Button onClick={handleCancelAbort}>Cancel</Button>
+          <Button onClick={handleAbortTask}>Abort</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
