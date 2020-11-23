@@ -1,9 +1,10 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from api.models import Task, JobTemplate, Inventory
+from drf_dynamic_fields import DynamicFieldsMixin
 
 
-class TaskSerializer(serializers.ModelSerializer):
+class TaskSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     created_name = serializers.ReadOnlyField(source='created_by.username')
     detail = serializers.HyperlinkedIdentityField(view_name='task-detail', read_only=True)
     template_name = serializers.ReadOnlyField(source='template.name')

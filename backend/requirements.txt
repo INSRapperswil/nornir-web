@@ -1,5 +1,6 @@
 celery[redis]~=5.0.1
 daphne~=2.5.0
+drf-dynamic-fields~=0.3.1
 Django~=3.1.2
 djangorestframework~=3.12.1
 django-cors-headers~=3.5.0
