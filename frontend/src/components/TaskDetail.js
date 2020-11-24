@@ -82,7 +82,7 @@ function TaskDetail({ checkAndGetToken, taskId }) {
     return (
       typeof hosts === "undefined" ? null :
         <React.Fragment>
-          <Typography variant="h5" gutterBottom component="div">Result</Typography>
+          <Typography variant="h6" gutterBottom component="div">Result</Typography>
           <p>Status: {failed ? "FAILED" : "SUCCESS"}</p>
           {Object.values(hosts).map((host) => (
             <React.Fragment key={host.name}>
@@ -108,12 +108,13 @@ function TaskDetail({ checkAndGetToken, taskId }) {
   return (
     <React.Fragment>
       <Typography variant="h5" gutterBottom component="div">
-        Details
+        Task Details
         <Button variant="contained" color="primary" onClick={onRefresh} size="small" style={{ marginLeft: 20 }} disabled={isLoading}>
           <RefreshIcon /><span style={{ marginLeft: 3 }}>Refresh</span>
         </Button>
       </Typography>
       <Result result={task["result"]} />
+      <Typography variant="h6" gutterBottom component="div">Execution Parameters</Typography>
       <DetailTable detailObject={task} />
     </React.Fragment>
   );
