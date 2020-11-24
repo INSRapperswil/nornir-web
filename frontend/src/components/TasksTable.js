@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { getTasks } from '../api';
+import { getTasks, abortTask } from '../api';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  Box, Collapse, IconButton, Paper, Tooltip,
+  Box, Collapse, IconButton, Paper, Tooltip, Grid,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField,
-  Button, Select, MenuItem, InputLabel, FormControl,
+  Button, Select, MenuItem, InputLabel, FormControl, Dialog, DialogTitle, DialogActions,
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import RepeatIcon from '@material-ui/icons/Repeat';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
-import { setRerunTask, checkAndGetToken } from '../redux/actions';
+import CancelIcon from '@material-ui/icons/Cancel';
+import { checkAndGetToken, setRerunTask } from '../redux/actions';
 import { connect } from 'react-redux';
 import TaskDetail from './TaskDetail';
 import {
@@ -19,6 +20,7 @@ import {
 } from '../helperFunctions';
 import FilterDialog from './FilterDialog';
 import { useHistory } from 'react-router-dom';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -33,7 +35,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.action.hover,
   },
   box: {
-    marginBottom: 20,
+    marginBottom: 10,
     display: 'flex',
     alignItems: 'center',
     '& > *': {
@@ -42,6 +44,12 @@ const useStyles = makeStyles(theme => ({
       marginTop: 5,
       marginLeft: 0,
     },
+  },
+  filters: {
+    '& > *:last-child': {
+      marginRight: 0,
+    },
+    justifyContent: 'flex-end',
   },
 }));
 
@@ -60,21 +68,29 @@ function SelectStatus({ defaultValue }) {
 
 function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
   let [tasks, setTasks] = useState([]);
+  let [abortConfirmationOpen, setAbortConfirmationOpen] = useState(false);
+  let [taskToAbort, setTaskToAbort] = useState({});
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
   let [rowsPerPage, setRowsPerPage] = useState(25);
   let [search, setSearch] = useState('');
   let [orderBy, setOrderBy] = useState('');
   let [isLoading, setIsLoading] = useState(true);
-  let [filters, setFilters] = useState([
-    { label: 'Template Name', name: 'template__name', value: '' },
-    { label: 'Inventory Name', name: 'inventory__name', value: '' },
-    { label: 'Creator', name: 'created_by__username', value: '' },
-    { label: 'Status', name: 'status', value: '', component: (defaultValue) => <SelectStatus defaultValue={defaultValue} /> },
-  ]);
+  const getDefaultFilters = () => {
+    return [
+      { label: 'Template Name', name: 'template__name', value: '' },
+      { label: 'Inventory Name', name: 'inventory__name', value: '' },
+      { label: 'Creator', name: 'created_by__username', value: '' },
+      {
+        label: 'Status', name: 'status', value: '',
+        component: (defaultValue) => <SelectStatus defaultValue={defaultValue} />
+      },
+    ];
+  };
+  let [filters, setFilters] = useState(getDefaultFilters());
   const history = useHistory();
 
-  const aggregateFilters = () => {
+  const aggregateFilters = (filters) => {
     let f = Object.assign([], filters);
     f.push({ name: 'is_template', value: (onlyTemplates ? 'true' : 'false') });
     return f;
@@ -101,23 +117,32 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
     const offset = page * pageSize;
     setIsLoading(true);
     checkAndGetToken().then((token) => {
-      getTasks(token, pageSize, offset, aggregateFilters(), search, order).then((response) => {
+      getTasks(token, pageSize, offset, aggregateFilters(filters), search, order).then((response) => {
         setTasks(response.results);
         setCount(response.count);
         setIsLoading(false);
       });
-    })
-
-    setPage(page);
+      setPage(page);
+    }
+    );
   };
 
   const handleSearch = (event) => {
     fetchAndSetTasks(0, rowsPerPage, filters, search, orderBy);
   };
 
-  const handleFilterChange = (newFilters) => {
+  const handleFilterSubmit = (newFilters) => {
+    setPage(0);
     setFilters(newFilters);
     fetchAndSetTasks(0, rowsPerPage, newFilters, search, orderBy);
+  };
+
+  const handleClearSearchFilter = (event) => {
+    const newSearch = '';
+    const newFilters = getDefaultFilters();
+    setSearch(newSearch);
+    setFilters(newFilters);
+    fetchAndSetTasks(page, rowsPerPage, newFilters, newSearch, orderBy);
   };
 
   const handleChangePage = (event, requestedPage) => {
@@ -139,6 +164,26 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
     setRerunTask(task);
     history.push('/wizard?step=2')
   };
+
+  const handleAbortConfirmation = (e, task) => {
+    setTaskToAbort(task);
+    setAbortConfirmationOpen(true);
+  };
+  const handleCancelAbort = (e) => {
+    setTaskToAbort({});
+    setAbortConfirmationOpen(false);
+  };
+  const handleAbortTask = (e) => {
+    setAbortConfirmationOpen(false);
+    checkAndGetToken().then((token) => {
+      abortTask(token, taskToAbort.id).then((result) => {
+        let updatedTasks = tasks.slice();
+        const index = updatedTasks.findIndex((task) => task.id === result.id);
+        updatedTasks[index] = result;
+        setTasks(updatedTasks);
+      });
+    });
+  }
 
   function Row(props) {
     const { row } = props;
@@ -165,6 +210,16 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
           <TableCell>{row.template_name}</TableCell>
           <TableCell>
             {
+              [1, 2].includes(row.status) ?
+                <Tooltip title="Abort Task execution">
+                  <IconButton onClick={(e) => handleAbortConfirmation(e, row)}>
+                    <CancelIcon />
+                  </IconButton>
+                </Tooltip> : null
+            }
+          </TableCell>
+          <TableCell>
+            {
               onlyTemplates ?
                 <Tooltip title="Run Task">
                   <IconButton onClick={(e) => handleReRun(e, row)}>
@@ -181,12 +236,15 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
           </TableCell>
           <TableCell align="right">
             <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              {
+                open ? <Tooltip title="Close Details"><KeyboardArrowUpIcon /></Tooltip> :
+                  <Tooltip title="Show Details"><KeyboardArrowDownIcon /></Tooltip>
+              }
             </IconButton>
           </TableCell>
         </TableRow>
         <TableRow className={classes.detail}>
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
             <Collapse in={open} timeout="auto" unmountOnExit style={{ paddingTop: 15, paddingBottom: 30 }}>
               <Box margin={1}>
                 <TaskDetail taskId={row.id} />
@@ -207,8 +265,9 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
     { label: 'Finished', name: 'date_finished', orderable: true, hiddenForTaskTemplates: true },
     { label: 'Creator', name: 'creator' },
     { label: 'Template', name: 'template' },
-    { label: '', name: '' },
-    { label: '', name: '' },
+    { label: 'Abort Task', name: '' },
+    { label: (onlyTemplates ? 'Run Task' : 'Rerun Task'), name: '' },
+    { label: 'Detail View', name: '' },
   ];
 
   const handleSortChange = (event, name) => {
@@ -219,19 +278,29 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
 
   return (
     <div style={{ marginBottom: 20 }}>
-      <Box className={classes.box}>
-        <TextField
-          label="Search Field"
-          variant="outlined"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <Button onClick={handleSearch} variant="outlined">Search</Button>
-        <FilterDialog filters={filters} onFilterChange={handleFilterChange} />
-        <Button variant="contained" color="primary" onClick={onRefresh} disabled={isLoading}>
-          <RefreshIcon /><span style={{ marginLeft: 3 }}>Refresh</span>
-        </Button>
-      </Box>
+      <Grid container>
+        <Grid item className={classes.box} xs={6}>
+          <Button variant="contained" color="primary" onClick={onRefresh} disabled={isLoading}>
+            <RefreshIcon /><span style={{ marginLeft: 3 }}>Refresh</span>
+          </Button>
+        </Grid>
+        <Grid item className={`${classes.box} ${classes.filters}`} xs={6}>
+          <Tooltip title="Clear Search and Filters">
+            <Button variant="outlined" onClick={handleClearSearchFilter}>
+              <HighlightOffIcon />
+            </Button>
+          </Tooltip>
+          <FilterDialog filters={filters} setFilters={setFilters} onFilterSubmit={handleFilterSubmit} />
+          <Button onClick={handleSearch} variant="outlined">Search</Button>
+          <TextField
+            label="Search Field"
+            variant="outlined"
+            value={search}
+            onKeyPress={(e) => e.key === 'Enter' ? handleSearch(e) : null}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </Grid>
+      </Grid>
       <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
@@ -247,7 +316,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
           </TableHead>
           <TableBody>
             {tasks.map((value) => (
-              <Row key={value.id} row={value} />
+              <Row key={`${value.id}-${value.status}`} row={value} />
             ))}
           </TableBody>
         </Table>
@@ -260,7 +329,17 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
           onChangeRowsPerPage={handleRowsPerPage}
           component="div" />
       </TableContainer>
-    </div>
+      <Dialog
+        open={abortConfirmationOpen}
+        onClose={handleCancelAbort}
+      >
+        <DialogTitle>Do you want to abort this task?</DialogTitle>
+        <DialogActions>
+          <Button onClick={handleCancelAbort}>Cancel</Button>
+          <Button onClick={handleAbortTask}>Abort</Button>
+        </DialogActions>
+      </Dialog>
+    </div >
   );
 }
 

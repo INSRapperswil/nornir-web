@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useImperativeHandle } from 'react';
 import {
-  Button, Checkbox, TextField, FormControlLabel,
+  Checkbox, TextField, FormControlLabel,
 } from '@material-ui/core';
 import { getWizardTask } from '../redux/reducers';
 import { updateTaskWizard } from '../redux/actions';
@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: 'wrap',
     flexDirection: 'column',
     alignItems: 'flex-start',
+    marginTop: 30,
     marginBottom: 10,
   },
   textField: {
@@ -22,37 +23,43 @@ const useStyles = makeStyles((theme) => ({
   alert: {
     marginTop: theme.spacing(1),
     width: '50ch',
-  }
+  },
 }));
 
-function VariableSetter({ task, updateTaskWizard, setStepValid }) {
+function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
   let [runNow, setRunNow] = useState(true);
   let [isTemplate, setIsTemplate] = useState(false);
+  let [name, setName] = useState(task.name);
   const classes = useStyles();
+  let [form, setForm] = useState({});
 
   useEffect(() => {
-    setStepValid(task.name !== '' && typeof task.variables === 'object' && !(task.variables instanceof Array) );
-  }, [task, setStepValid]);
+    setStepValid(name !== '');
+  }, [name, setStepValid]);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const target = event.target;
+  const handleFormChange = (event) => {
+    form[event.target.id] = event.target.value;
+    setForm([ { [event.target.id]: event.target.value } ]);
+  };
+
+  const handleSubmit = () => {
     let taskAttr = {
-      name: target['name'].value,
+      name: name,
       date_scheduled: '',
       variables: {},
       is_template: isTemplate,
     };
     for (let variable of task.template.variables) {
-      taskAttr.variables[variable] = target[variable].value;
+      taskAttr.variables[variable] = form[variable].value;
     }
     if(!runNow) {
-      const scheduledDate = new Date(target['scheduled-date'].value + 'T' + target['scheduled-time'].value);
+      const scheduledDate = new Date(form['scheduled-date'].value + 'T' + form['scheduled-time'].value);
       taskAttr.date_scheduled = scheduledDate.toISOString();
     }
     updateTaskWizard(taskAttr);
     setStepValid(taskAttr.name !== '');
   };
+  useImperativeHandle(onNext, () => { return { onNext: handleSubmit }});
 
   const handleCheckedChange = (event) => setRunNow(event.target.checked);
   const getDefaultDate = () => {
@@ -70,18 +77,19 @@ function VariableSetter({ task, updateTaskWizard, setStepValid }) {
 
   return (
     <div id="variable-setter">
-      <h2>Set Variables</h2>
-      <form className={classes.root} onSubmit={handleSubmit}>
+      <form className={classes.root} onSubmit={(e) => e.preventDefault()} onChange={handleFormChange}>
         <TextField
           id="name"
           required
-          defaultValue={task.name}
-          label="Name"
+          value={name}
+          label="Task Name"
+          onChange={(event) => setName(event.target.value)}
           className={classes.textField}
           variant="outlined"/>
         <FormControlLabel
           control={<Checkbox name="is-template" id="is-template" checked={isTemplate} onChange={handleIsTemplateChange}/>}
           label="Save Task as Template"/>
+        <h3>Set Variables</h3>
         <FormControlLabel
           control={<Checkbox name="run-now" id="run-now" checked={runNow} onChange={handleCheckedChange}/>}
           disabled={isTemplate}
@@ -112,7 +120,6 @@ function VariableSetter({ task, updateTaskWizard, setStepValid }) {
               label={variable}/>
           }) : ''
         }
-        <Button type="submit" variant="contained">Save</Button>
       </form>
     </div>
   );

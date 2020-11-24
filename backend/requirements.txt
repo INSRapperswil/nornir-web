@@ -1,5 +1,6 @@
 celery[redis]~=5.0.1
 daphne~=2.5.0
+drf-dynamic-fields~=0.3.1
 Django~=3.1.2
 djangorestframework~=3.12.1
 djangorestframework-simplejwt~=4.6.0
@@ -9,6 +10,7 @@ dj-database-url~=0.5.0
 mixer~=6.1.3
 nornir-netmiko~=0.1.1
 nornir~=3.0.0
+nornir_napalm~=0.1.1
 nornir-utils~=0.1.0
 psycopg2-binary~=2.8.6
 pytest~=6.1.1

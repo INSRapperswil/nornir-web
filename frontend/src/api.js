@@ -11,7 +11,8 @@ function createFilterString(filters) {
 }
 
 export function getTasks(token, limit = 25, offset = 0, filters = [], search = '', ordering = '') {
-  return getAuthenticatedJson(`/api/tasks/?limit=${limit}&offset=${offset}&ordering=${ordering}&search=${search}${createFilterString(filters)}`, token)
+  const omit = 'detail,variables,result_host_selection,filters,result,inventory,inventory_name';
+  return getAuthenticatedJson(`/api/tasks/?limit=${limit}&offset=${offset}&ordering=${ordering}&search=${search}${createFilterString(filters)}&omit=${omit}`, token)
     .then(parseJson);
 }
 
@@ -60,6 +61,10 @@ export function runTaskAsync(token, id) {
   return postAuthenticatedJson(`/api/tasks/${id}/run_async/`, token);
 }
 
+export function abortTask(token, id) {
+  return putAuthenticatedJson(`/api/tasks/${id}/abort/`, token).then(parseJson);
+}
+
 export function getConfiguration(token) {
   return getAuthenticatedJson(`/api/configuration/`, token).then(parseJson);
 }
@@ -95,6 +100,18 @@ function postAuthenticatedJson(endpoint, token, params) {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    body: JSON.stringify(params)
+  }).then(checkStatus);
+}
+
+function putAuthenticatedJson(endpoint, token, params) {
+  return fetch(`${backend}${endpoint}`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Token ${token}`,
       "Content-Type": "application/json",
       "Accept": "application/json"
     },

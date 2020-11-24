@@ -64,7 +64,7 @@ function user(state = initialUserFunction(), action) {
   }
 }
 
-const initialTaskWizardState = () => {
+export const initialTaskWizardState = () => {
   return {
     task: {
       name: '',
@@ -88,6 +88,8 @@ function taskWizard(state = initialTaskWizardState(), action) {
       return { ...initialTaskWizardState(), lastCreatedTaskId: action.lastCreatedTaskId };
     case "UPDATE_TASK_WIZARD":
       return { ...state, isLoading: false, task: action.task };
+    case "CLEAR_TASK_WIZARD":
+      return initialTaskWizardState();
     case "POST_TASK_WIZARD_FAILED":
       return { ...state, isLoading: false, error: action.error };
     default:

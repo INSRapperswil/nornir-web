@@ -44,6 +44,12 @@ export function updateTaskWizard(task) {
   };
 }
 
+export function clearTaskWizard() {
+  return (dispatch, getState) => {
+    dispatch({ type: "CLEAR_TASK_WIZARD" });
+  }
+}
+
 function getRerunName(name) {
   const num = parseInt(name.replace(/(^\d+)(.+$)/i, '$1'));
   if (num) {

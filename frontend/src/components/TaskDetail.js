@@ -16,6 +16,17 @@ const useStyles = makeStyles({
     color: "white",
     padding: 16,
   },
+  collapsed: {
+    overflowY: "hidden",
+    maxHeight: 240,
+    '&::before': {
+      textAlign: "center",
+      content: '"Double click to expand full result"',
+      display: 'block',
+      height: 30,
+    },
+    background: "linear-gradient(0deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,1) 25%)"
+  },
   codeLine:
   {
     display: "inline-block",
@@ -50,6 +61,15 @@ function TaskDetail({ checkAndGetToken, taskId }) {
     });
   };
 
+  const handleExpansion = (event) => {
+    event.target.expanded = !event.target.expanded;
+    if (event.target.expanded) {
+      event.target.className = classes.code;
+    } else {
+      event.target.className = classes.code + ' ' + classes.collapsed;
+    }
+  };
+
   function Result(props) {
     const { result } = props;
     let failed, hosts;
@@ -67,13 +87,17 @@ function TaskDetail({ checkAndGetToken, taskId }) {
           {Object.values(hosts).map((host) => (
             <React.Fragment key={host.name}>
               <Typography variant="h6" gutterBottom component="div">{host["name"]} / {host["hostname"]}</Typography>
-              <code className={classes.code}>
-                {host["result"].map((value) => {
-                  return (
-                    <span className={classes.codeLine} key={value}>
-                      {beautifyJson(value)}
-                    </span>)
-                })}
+              <code className={classes.code + ' ' + classes.collapsed} onDoubleClick={handleExpansion}>
+                {Array.isArray(host["result"]) ?
+                  host["result"].map((value) => {
+                    return (
+                      <span className={classes.codeLine} key={value}>
+                        {beautifyJson(value)}
+                      </span>)
+                  })
+                  :
+                  beautifyJson(host["result"])
+                }
               </code>
             </React.Fragment>
           ))}
@@ -89,8 +113,8 @@ function TaskDetail({ checkAndGetToken, taskId }) {
           <RefreshIcon /><span style={{ marginLeft: 3 }}>Refresh</span>
         </Button>
       </Typography>
-      <DetailTable detailObject={task} />
       <Result result={task["result"]} />
+      <DetailTable detailObject={task} />
     </React.Fragment>
   );
 }
