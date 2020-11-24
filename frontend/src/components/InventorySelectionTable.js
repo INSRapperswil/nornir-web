@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getWizardTask, getToken, getInventorySelectionId } from '../redux/reducers';
-import { updateTaskWizard, clearTaskWizard } from '../redux/actions';
+import { checkAndGetToken, clearTaskWizard, updateTaskWizard } from '../redux/actions';
+import { getWizardTask, getInventorySelectionId } from '../redux/reducers';
 import { connect } from 'react-redux';
 import { getInventoryHosts } from '../api';
 import { EnhancedTable } from './EnhancedTable';
@@ -14,7 +14,7 @@ import {
 import { makeStyles } from '@material-ui/styles';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   box: {
     marginBottom: 10,
     display: 'flex',
@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     },
     justifyContent: 'flex-end',
   }
-}));
+});
 
 const headCells = [
   { id: 'name', numeric: false, label: 'Friendly Name', disablePadding: true, orderable: true },
@@ -46,7 +46,7 @@ export function checkStepValidity(filters) {
   return (filters !== undefined && filters.length > 0);
 }
 
-function InventorySelectionTable({ token, task, updateTaskWizard, clearTaskWizard, setStepValid, inventorySelectionId }) {
+function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, clearTaskWizard, setStepValid, inventorySelectionId }) {
   let [inventory, setInventory] = useState([]);
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
@@ -71,11 +71,14 @@ function InventorySelectionTable({ token, task, updateTaskWizard, clearTaskWizar
 
   useEffect(() => {
     if (inventory.length === 0) {
-      getInventoryHosts(token, inventorySelectionId, rowsPerPage, 0, []).then((response) => {
-        setInventory(response.results);
-        setCount(response.count);
-        setStepValid(checkStepValidity(task.filters.hosts));
+      checkAndGetToken().then((token) => {
+        getInventoryHosts(token, inventorySelectionId, rowsPerPage, 0, []).then((response) => {
+          setInventory(response.results);
+          setCount(response.count);
+          setStepValid(checkStepValidity(task.filters.hosts));
+        });
       });
+
     }
     // empty dependencies array, so it only runs on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,10 +86,12 @@ function InventorySelectionTable({ token, task, updateTaskWizard, clearTaskWizar
 
   const fetchAndSetHosts = (page, pageSize, _filters = filters, _search = search, _orderBy = orderBy) => {
     const offset = pageSize * page;
-    getInventoryHosts(token, inventorySelectionId, pageSize, offset, _filters, _search, _orderBy).then((response) => {
-      setInventory(response.results);
-      setCount(response.count);
-    })
+    checkAndGetToken().then((token) => {
+      getInventoryHosts(token, inventorySelectionId, pageSize, offset, _filters, _search, _orderBy).then((response) => {
+        setInventory(response.results);
+        setCount(response.count);
+      });
+    });
   };
 
   const handleSelectionChange = (params) => {
@@ -101,9 +106,11 @@ function InventorySelectionTable({ token, task, updateTaskWizard, clearTaskWizar
 
   const handleInventoryChange = (inventoryId) => {
     clearTaskWizard();
-    getInventoryHosts(token, inventoryId, rowsPerPage, 0).then((response) => {
-      setInventory(response.results);
-      setCount(response.count);
+    checkAndGetToken().then((token) => {
+      getInventoryHosts(token, inventoryId, rowsPerPage, 0).then((response) => {
+        setInventory(response.results);
+        setCount(response.count);
+      });
     });
     setPage(0);
   };
@@ -184,10 +191,10 @@ const mapStateToProps = (state) => {
   return {
     inventorySelectionId: getInventorySelectionId(state),
     task: getWizardTask(state),
-    token: getToken(state),
   };
 };
 const mapDispatchToProps = {
+  checkAndGetToken,
   updateTaskWizard,
   clearTaskWizard,
 };

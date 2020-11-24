@@ -73,19 +73,23 @@ export function postConfiguration(token, configuration) {
   return postAuthenticatedJson(`/api/configuration/`, token, configuration).then(parseJson);
 }
 
-export function authenticate(username, password) {
-  return postJson('/api-token-auth/', { username, password }).then(parseJson);
-}
-
 export function getUser(id, token) {
   return getAuthenticatedJson(`/api/users/${id}/`, token).then(parseJson);
+}
+
+export function authenticate(username, password) {
+  return postJson('/api/token/', { username, password }).then(parseJson);
+}
+
+export function renewAccessToken(refreshToken) {
+  return postJson('/api/token/refresh/', { 'refresh': refreshToken }).then(parseJson);
 }
 
 function getAuthenticatedJson(endpoint, token) {
   return fetch(`${backend}${endpoint}`, {
     method: "GET",
     headers: {
-      Authorization: `Token ${token}`,
+      Authorization: `Bearer ${token}`,
       Accept: "application/json"
     }
   }).then(checkStatus);
@@ -95,7 +99,7 @@ function postAuthenticatedJson(endpoint, token, params) {
   return fetch(`${backend}${endpoint}`, {
     method: "POST",
     headers: {
-      Authorization: `Token ${token}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
       "Accept": "application/json"
     },
@@ -107,7 +111,7 @@ function putAuthenticatedJson(endpoint, token, params) {
   return fetch(`${backend}${endpoint}`, {
     method: "PUT",
     headers: {
-      Authorization: `Token ${token}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
       "Accept": "application/json"
     },

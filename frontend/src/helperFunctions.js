@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Table, TableHead, TableRow, TableCell, TableBody, TableSortLabel
 } from '@material-ui/core';
+import jwt_decode from "jwt-decode";
 
 const beautifulKeys = {
   "created_name": "Created By",
@@ -56,6 +57,21 @@ export function beautifyKey(key) {
     return beautifulKeys[key];
   }
   return key;
+}
+
+export function buildUserState(refreshToken, accessToken) {
+  let decodedRefreshToken = jwt_decode(refreshToken);
+  let decodedAccessToken = jwt_decode(accessToken);
+  let user = {
+    'user_id': decodedRefreshToken.user_id,
+    'refresh_token': refreshToken,
+    'refresh_expiry': decodedRefreshToken.exp,
+    'access_token': accessToken,
+    'access_expiry': decodedAccessToken.exp,
+    'username': decodedRefreshToken.username,
+    'groups': decodedRefreshToken.groups,
+  }
+  return user;
 }
 
 export function objectToTable(data) {

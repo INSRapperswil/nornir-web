@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { updateTaskWizard } from '../redux/actions';
-import { getWizardTask, getToken } from '../redux/reducers';
+import { updateTaskWizard, checkAndGetToken } from '../redux/actions';
+import { getWizardTask } from '../redux/reducers';
 import { getJobTemplates } from '../api';
 import {
   RadioGroup, Radio, Tooltip, Grid,
   Table, TableHead, TableBody, TableContainer, TableRow, TableCell, TablePagination,
-  Paper, Box, Typography, Collapse, IconButton, FormControlLabel, Button, TextField, 
+  Paper, Box, Typography, Collapse, IconButton, FormControlLabel, Button, TextField,
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -51,7 +51,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepValid }) {
+function JobTemplatesSelectionTable({ checkAndGetToken, task, updateTaskWizard, setStepValid }) {
   let [templates, setTemplates] = useState([]);
   let [openRow, setOpenRow] = useState(-1);
   let [count, setCount] = useState(0);
@@ -73,14 +73,16 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
 
   useEffect(() => {
     if (templates.length === 0) {
-      getJobTemplates(token, rowsPerPage, 0).then((response) => {
-        setTemplates(response.results);
-        setCount(response.count);
-        setStepValid(task.template.id !== 0);
+      checkAndGetToken().then((token) => {
+        getJobTemplates(token, rowsPerPage, 0).then((response) => {
+          setTemplates(response.results);
+          setCount(response.count);
+          setStepValid(task.template.id !== 0);
+        })
       });
     }
-  // empty dependencies array, so it only runs on mount.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // empty dependencies array, so it only runs on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
@@ -138,12 +140,15 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     )
   }
 
-  const fetchAndSetTemplates = (page, pageSize, _filters=filters, _search=search, _orderBy=orderBy) => {
+  const fetchAndSetTemplates = (page, pageSize, _filters = filters, _search = search, _orderBy = orderBy) => {
     const offset = page * pageSize;
-    getJobTemplates(token, pageSize, offset, _filters, _search, _orderBy).then((response) => {
-      setTemplates(response.results);
-      setCount(response.count);
+    checkAndGetToken().then((token) => {
+      getJobTemplates(token, pageSize, offset, _filters, _search, _orderBy).then((response) => {
+        setTemplates(response.results);
+        setCount(response.count);
+      });
     });
+
   }
 
   const handleChangePage = (event, requestedPage) => {
@@ -217,8 +222,8 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
           <Table aria-label="templates table">
             <TableHead>
               <TableRow>
-                { headCells.map((cell, index) => {
-                  return <SortableTableHead cell={cell} key={index} orderBy={orderBy} onSortChange={handleSortChange}/>
+                {headCells.map((cell, index) => {
+                  return <SortableTableHead cell={cell} key={index} orderBy={orderBy} onSortChange={handleSortChange} />
                 })}
               </TableRow>
             </TableHead>
@@ -245,10 +250,10 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
 const mapStateToProps = (state) => {
   return {
     task: getWizardTask(state),
-    token: getToken(state),
   };
 };
 const mapDispatchToProps = {
+  checkAndGetToken,
   updateTaskWizard,
 };
 

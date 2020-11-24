@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { getJobTemplateDetails } from '../api';
-import { getToken } from '../redux/reducers';
+import { checkAndGetToken } from '../redux/actions';
 import { connect } from 'react-redux';
 import DetailTable from './DetailTable';
 
-function JobTemplateDetail({ token, jobTemplateId }) {
+function JobTemplateDetail({ checkAndGetToken, jobTemplateId }) {
   let [jobTemplate, setJobTemplate] = useState([]);
 
   useEffect(() => {
     if (jobTemplate.length === 0) {
-      getJobTemplateDetails(token, jobTemplateId).then((response) => setJobTemplate(response))
+      checkAndGetToken().then((token) => {
+        getJobTemplateDetails(token, jobTemplateId).then((response) => setJobTemplate(response))
+      });
     }
-  }, [jobTemplate, setJobTemplate, token, jobTemplateId]);
+  }, [checkAndGetToken, jobTemplate, setJobTemplate, jobTemplateId]);
 
   return (
     <DetailTable detailObject={jobTemplate} />
@@ -19,9 +21,11 @@ function JobTemplateDetail({ token, jobTemplateId }) {
 }
 
 const mapStateToProps = (state) => {
-  return {
-    token: getToken(state),
-  };
+  return {};
 };
 
-export default connect(mapStateToProps)(JobTemplateDetail);
+const mapDispatchToProps = {
+  checkAndGetToken,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(JobTemplateDetail);

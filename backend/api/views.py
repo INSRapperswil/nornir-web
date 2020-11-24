@@ -5,10 +5,12 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from api.models import Task, JobTemplate, Inventory, Configuration
 from api.permissions import ConfigurationPermission
-from api.serializers import TaskSerializer, JobTemplateSerializer, InventorySerializer, UserSerializer
+from api.serializers import TaskSerializer, JobTemplateSerializer, InventorySerializer, UserSerializer, \
+    EnhancedTokenObtainPairSerializer
 from api.inventory_helpers import InventoryPagination, InventoryOrdering
 
 
@@ -123,3 +125,7 @@ class ConfigurationView(viewsets.ViewSet):
     def create(self, request, format=None):
         configuration = Configuration.set(request.data)
         return Response(configuration)
+
+
+class EnhancedTokenObtainPairView(TokenObtainPairView):
+    serializer_class = EnhancedTokenObtainPairSerializer

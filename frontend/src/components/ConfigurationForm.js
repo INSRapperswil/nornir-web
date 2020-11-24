@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getConfiguration, postConfiguration } from '../api';
-import { getToken } from '../redux/reducers';
+import { checkAndGetToken } from '../redux/actions';
 import { connect } from 'react-redux';
 import {
   Button, Checkbox, FormControl, FormControlLabel, InputLabel, Select, MenuItem, TextField
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ConfigurationForm({ token }) {
+function ConfigurationForm({ checkAndGetToken }) {
   let [loadState, setLoadState] = useState({ "notLoaded": true });
   let [loggingEnabled, setLoggingEnabled] = useState(false);
   let [loggingFormat, setLoggingFormat] = useState('');
@@ -40,18 +40,20 @@ function ConfigurationForm({ token }) {
 
   useEffect(() => {
     if (loadState.notLoaded) {
-      getConfiguration(token).then((response) => {
-        setLoggingEnabled(response.logging.enabled);
-        setLoggingFormat(response.logging.format);
-        setLoggingLevel(response.logging.level);
-        setLoggingFile(response.logging.log_file);
-        setRunnerOptionsNumWorkers(response.runner.options.num_workers);
-        setRunnerPlugin(response.runner.plugin);
-        setLoadState(loadState.notLoaded = false);
+      checkAndGetToken().then((token) => {
+        getConfiguration(token).then((response) => {
+          setLoggingEnabled(response.logging.enabled);
+          setLoggingFormat(response.logging.format);
+          setLoggingLevel(response.logging.level);
+          setLoggingFile(response.logging.log_file);
+          setRunnerOptionsNumWorkers(response.runner.options.num_workers);
+          setRunnerPlugin(response.runner.plugin);
+          setLoadState(loadState.notLoaded = false);
+        });
       });
     }
   }, [
-    token,
+    checkAndGetToken,
     loadState, setLoadState,
     loggingEnabled, setLoggingEnabled,
     loggingFormat, setLoggingFormat,
@@ -79,7 +81,9 @@ function ConfigurationForm({ token }) {
         "plugin": runnerPlugin,
       },
     };
-    postConfiguration(token, configuration);
+    checkAndGetToken().then((token) => {
+      postConfiguration(token, configuration);
+    });
   }
 
   return (loadState.notLoaded === true ?
@@ -113,9 +117,11 @@ function ConfigurationForm({ token }) {
 }
 
 const mapStateToProps = (state) => {
-  return {
-    token: getToken(state),
-  };
+  return {};
 };
 
-export default connect(mapStateToProps)(ConfigurationForm);
+const mapDispatchToProps = {
+  checkAndGetToken,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ConfigurationForm);

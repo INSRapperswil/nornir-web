@@ -2,7 +2,7 @@ import React, { useState, useEffect, useImperativeHandle } from 'react';
 import {
   Checkbox, TextField, FormControlLabel,
 } from '@material-ui/core';
-import { getWizardTask, getToken } from '../redux/reducers';
+import { getWizardTask } from '../redux/reducers';
 import { updateTaskWizard } from '../redux/actions';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function VariableSetter({ token, task, updateTaskWizard, setStepValid, onNext }) {
+function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
   let [runNow, setRunNow] = useState(true);
   let [isTemplate, setIsTemplate] = useState(false);
   let [name, setName] = useState(task.name);
@@ -88,7 +88,7 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid, onNext })
           variant="outlined"/>
         <FormControlLabel
           control={<Checkbox name="is-template" id="is-template" checked={isTemplate} onChange={handleIsTemplateChange}/>}
-          label="Save Task as Template"/>
+          label="Save as Preconfigured Task"/>
         <h3>Set Variables</h3>
         <FormControlLabel
           control={<Checkbox name="run-now" id="run-now" checked={runNow} onChange={handleCheckedChange}/>}
@@ -128,7 +128,6 @@ function VariableSetter({ token, task, updateTaskWizard, setStepValid, onNext })
 const mapStateToProps = (state) => {
   return {
     task: getWizardTask(state),
-    token: getToken(state),
   };
 };
 const mapDispatchToProps = {

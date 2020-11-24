@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getTaskDetails } from '../api';
-import { getToken } from '../redux/reducers';
+import { checkAndGetToken } from '../redux/actions'
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { Button, Typography } from '@material-ui/core';
@@ -34,26 +34,30 @@ const useStyles = makeStyles({
   },
 });
 
-function TaskDetail({ token, taskId }) {
+function TaskDetail({ checkAndGetToken, taskId }) {
   let [task, setTask] = useState([]);
   let [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (task.length === 0) {
-      getTaskDetails(token, taskId).then((response) => {
-        setTask(response);
-        setIsLoading(false);
+      checkAndGetToken().then((token) => {
+        getTaskDetails(token, taskId).then((response) => {
+          setTask(response);
+          setIsLoading(false);
+        });
       });
     }
-  }, [task, setTask, token, taskId]);
+  }, [checkAndGetToken, task, setTask, taskId]);
 
   const classes = useStyles();
 
   const onRefresh = () => {
     setIsLoading(true);
-    getTaskDetails(token, taskId).then((response) => {
-      setTask(response);
-      setIsLoading(false);
+    checkAndGetToken().then((token) => {
+      getTaskDetails(token, taskId).then((response) => {
+        setTask(response);
+        setIsLoading(false);
+      });
     });
   };
 
@@ -116,9 +120,10 @@ function TaskDetail({ token, taskId }) {
 }
 
 const mapStateToProps = (state) => {
-  return {
-    token: getToken(state),
-  };
+  return {};
+};
+const mapDispatchToProps = {
+  checkAndGetToken,
 };
 
-export default connect(mapStateToProps)(TaskDetail);
+export default connect(mapStateToProps, mapDispatchToProps)(TaskDetail);

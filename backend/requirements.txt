@@ -3,6 +3,7 @@ daphne~=2.5.0
 drf-dynamic-fields~=0.3.1
 Django~=3.1.2
 djangorestframework~=3.12.1
+djangorestframework-simplejwt~=4.6.0
 django-cors-headers~=3.5.0
 django-filter~=2.4.0
 dj-database-url~=0.5.0

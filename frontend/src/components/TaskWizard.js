@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { getWizardTask, getToken } from '../redux/reducers';
-import { updateTaskWizard, postTaskWizard, clearTaskWizard } from '../redux/actions';
+import { getWizardTask } from '../redux/reducers';
+import { checkAndGetToken, updateTaskWizard, postTaskWizard, clearTaskWizard } from '../redux/actions';
 import { Stepper, Step, StepLabel, Button } from '@material-ui/core';
 import { runTask, runTaskAsync } from '../api';
 import TaskDetail from './TaskDetail';
 import { useHistory } from 'react-router-dom';
 
-function TaskWizard({ task, steps, postTaskWizard, clearTaskWizard, token, entryStep }) {
+function TaskWizard({ checkAndGetToken, task, steps, postTaskWizard, clearTaskWizard, entryStep }) {
   const initiallyValid = () => {
     const step = parseInt(entryStep);
     let isValid = false;
@@ -42,16 +42,18 @@ function TaskWizard({ task, steps, postTaskWizard, clearTaskWizard, token, entry
 
   const handleFinish = (event) => {
     postTaskWizard().then(result => {
-      setCreatedTaskId(result.id);
-      if(result.is_template) {
-        history.push('/task-templates');
-      } else {
-        if(result.date_scheduled) {
-          runTaskAsync(token, result.id)
+      checkAndGetToken().then((token) => {
+        setCreatedTaskId(result.id);
+        if (result.is_template) {
+          history.push('/preconfigured-tasks');
         } else {
-          runTask(token, result.id);
+          if (result.date_scheduled) {
+            runTaskAsync(token, result.id)
+          } else {
+            runTask(token, result.id);
+          }
         }
-      }
+      });
     })
     handleNext(event);
   };
@@ -63,12 +65,12 @@ function TaskWizard({ task, steps, postTaskWizard, clearTaskWizard, token, entry
     setActiveStep(activeStep + 1);
   };
   const handleBack = (event) => {
-    if(activeStep > 0) {
+    if (activeStep > 0) {
       setActiveStep(activeStep - 1);
     }
   };
   const getCreatedTask = () => {
-    return (createdTaskId > 0) ? <TaskDetail taskId={createdTaskId}/> : '';
+    return (createdTaskId > 0) ? <TaskDetail taskId={createdTaskId} /> : '';
   }
 
   return (
@@ -94,10 +96,10 @@ function TaskWizard({ task, steps, postTaskWizard, clearTaskWizard, token, entry
 const mapStateToProps = (state) => {
   return {
     task: getWizardTask(state),
-    token: getToken(state),
   };
 };
 const mapDispatchToProps = {
+  checkAndGetToken,
   updateTaskWizard,
   postTaskWizard,
   clearTaskWizard,
