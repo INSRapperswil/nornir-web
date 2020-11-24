@@ -38,8 +38,12 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
   }, [name, setStepValid]);
 
   const handleFormChange = (event) => {
+    if (!form['scheduled-date'] && !form['scheduled-time']) {
+      form['scheduled-date'] = getDefaultDate();
+      form['scheduled-time'] = getDefaultTime();
+    }
     form[event.target.id] = event.target.value;
-    setForm([ { [event.target.id]: event.target.value } ]);
+    setForm(form);
   };
 
   const handleSubmit = () => {
@@ -52,14 +56,14 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
     for (let variable of task.template.variables) {
       taskAttr.variables[variable] = form[variable].value;
     }
-    if(!runNow) {
-      const scheduledDate = new Date(form['scheduled-date'].value + 'T' + form['scheduled-time'].value);
+    if (!runNow) {
+      const scheduledDate = new Date(form['scheduled-date'] + 'T' + form['scheduled-time']);
       taskAttr.date_scheduled = scheduledDate.toISOString();
     }
     updateTaskWizard(taskAttr);
     setStepValid(taskAttr.name !== '');
   };
-  useImperativeHandle(onNext, () => { return { onNext: handleSubmit }});
+  useImperativeHandle(onNext, () => { return { onNext: handleSubmit } });
 
   const handleCheckedChange = (event) => setRunNow(event.target.checked);
   const getDefaultDate = () => {
@@ -85,15 +89,15 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
           label="Task Name"
           onChange={(event) => setName(event.target.value)}
           className={classes.textField}
-          variant="outlined"/>
+          variant="outlined" />
         <FormControlLabel
-          control={<Checkbox name="is-template" id="is-template" checked={isTemplate} onChange={handleIsTemplateChange}/>}
-          label="Save as Preconfigured Task"/>
+          control={<Checkbox name="is-template" id="is-template" checked={isTemplate} onChange={handleIsTemplateChange} />}
+          label="Save as Preconfigured Task" />
         <h3>Set Variables</h3>
         <FormControlLabel
-          control={<Checkbox name="run-now" id="run-now" checked={runNow} onChange={handleCheckedChange}/>}
+          control={<Checkbox name="run-now" id="run-now" checked={runNow} onChange={handleCheckedChange} />}
           disabled={isTemplate}
-          label="Run Task Now"/>
+          label="Run Task Now" />
         <TextField
           id="scheduled-date"
           type="date"
@@ -101,7 +105,7 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
           defaultValue={getDefaultDate()}
           disabled={runNow || isTemplate}
           variant="outlined"
-          label="Date Scheduled"/>
+          label="Date Scheduled" />
         <TextField
           id="scheduled-time"
           type="time"
@@ -109,7 +113,7 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
           defaultValue={getDefaultTime()}
           disabled={runNow || isTemplate}
           variant="outlined"
-          label="Time Scheduled"/>
+          label="Time Scheduled" />
         {
           Array.isArray(task.template.variables) ? task.template.variables.map((variable) => {
             return <TextField
@@ -117,7 +121,7 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
               id={variable}
               className={classes.textField}
               variant="outlined"
-              label={variable}/>
+              label={variable} />
           }) : ''
         }
       </form>
