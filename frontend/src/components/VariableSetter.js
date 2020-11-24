@@ -88,7 +88,7 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
           variant="outlined"/>
         <FormControlLabel
           control={<Checkbox name="is-template" id="is-template" checked={isTemplate} onChange={handleIsTemplateChange}/>}
-          label="Save Task as Template"/>
+          label="Save as Preconfigured Task"/>
         <h3>Set Variables</h3>
         <FormControlLabel
           control={<Checkbox name="run-now" id="run-now" checked={runNow} onChange={handleCheckedChange}/>}

@@ -45,7 +45,7 @@ function TaskWizard({ checkAndGetToken, task, steps, postTaskWizard, clearTaskWi
       checkAndGetToken().then((token) => {
         setCreatedTaskId(result.id);
         if (result.is_template) {
-          history.push('/task-templates');
+          history.push('/preconfigured-tasks');
         } else {
           if (result.date_scheduled) {
             runTaskAsync(token, result.id)
