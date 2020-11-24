@@ -77,11 +77,11 @@ function InventorySelectionTable({ token, task, updateTaskWizard, clearTaskWizar
         setStepValid(checkStepValidity(task.filters.hosts));
       });
     }
-  // empty dependencies array, so it only runs on mount.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // empty dependencies array, so it only runs on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchAndSetHosts = (page, pageSize, _filters=filters, _search=search, _orderBy=orderBy) => {
+  const fetchAndSetHosts = (page, pageSize, _filters = filters, _search = search, _orderBy = orderBy) => {
     const offset = pageSize * page;
     getInventoryHosts(token, inventorySelectionId, pageSize, offset, _filters, _search, _orderBy).then((response) => {
       setInventory(response.results);
@@ -143,16 +143,16 @@ function InventorySelectionTable({ token, task, updateTaskWizard, clearTaskWizar
   return (
     <div id="inventory-selection-table" style={{ marginBottom: 20, marginTop: 10, }}>
       <Grid container>
-        <Grid item className={ classes.box } xs={6}>
+        <Grid item className={classes.box} xs={6}>
           <InventorySelector onInventoryChange={handleInventoryChange} />
         </Grid>
         <Grid item className={`${classes.box} ${classes.filters}`} xs={6}>
           <Tooltip title="Clear Search and Filters">
             <Button variant="outlined" onClick={handleClearSearchFilter}>
-              <HighlightOffIcon/>
+              <HighlightOffIcon />
             </Button>
           </Tooltip>
-          <FilterDialog filters={filters} onFilterSubmit={handleFilterSubmit}/>
+          <FilterDialog filters={filters} onFilterSubmit={handleFilterSubmit} />
           <Button onClick={handleSearch} variant="outlined">Search</Button>
           <TextField
             label="Search Field"

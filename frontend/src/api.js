@@ -3,24 +3,24 @@ const backend = "http://localhost:8000";
 function createFilterString(filters) {
   let filterString = '';
   for (let filter of filters) {
-    if(filter.value) {
+    if (filter.value) {
       filterString += `&${filter.name}=${filter.value}`;
     }
   }
   return filterString;
 }
 
-export function getTasks(token, limit=25, offset=0, filters=[], search='', ordering='') {
+export function getTasks(token, limit = 25, offset = 0, filters = [], search = '', ordering = '') {
   const omit = 'detail,variables,result_host_selection,filters,result,inventory,inventory_name';
   return getAuthenticatedJson(`/api/tasks/?limit=${limit}&offset=${offset}&ordering=${ordering}&search=${search}${createFilterString(filters)}&omit=${omit}`, token)
-          .then(parseJson);
+    .then(parseJson);
 }
 
 export function getTaskDetails(token, taskId) {
   return getAuthenticatedJson(`/api/tasks/${taskId}/`, token).then(parseJson);
 }
 
-export function getJobTemplates(token, limit=25, offset=0, filters=[], search='', ordering='') {
+export function getJobTemplates(token, limit = 25, offset = 0, filters = [], search = '', ordering = '') {
   return getAuthenticatedJson(`/api/templates/?limit=${limit}&offset=${offset}&ordering=${ordering}&search=${search}${createFilterString(filters)}`, token).then(parseJson);
 }
 
@@ -32,7 +32,7 @@ export function getInventoryList(token) {
   return getAuthenticatedJson(`/api/inventories/`, token).then(parseJson);
 }
 
-export function getInventoryHosts(token, inventoryId, limit=25, offset=0, filters=[], search='', ordering='') {
+export function getInventoryHosts(token, inventoryId, limit = 25, offset = 0, filters = [], search = '', ordering = '') {
   const url = `/api/inventories/${inventoryId}/hosts/?limit=${limit}&offset=${offset}&ordering=${ordering}&search=${search}${createFilterString(filters)}`;
   return getAuthenticatedJson(url, token).then(parseJson);
 }
