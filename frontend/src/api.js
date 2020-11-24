@@ -111,7 +111,7 @@ function putAuthenticatedJson(endpoint, token, params) {
   return fetch(`${backend}${endpoint}`, {
     method: "PUT",
     headers: {
-      Authorization: `Token ${token}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
       "Accept": "application/json"
     },
