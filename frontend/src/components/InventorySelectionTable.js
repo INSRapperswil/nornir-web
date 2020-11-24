@@ -183,7 +183,7 @@ function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, cle
         selected={task.filters.hosts}
         setSelected={handleSelectionChange}
         detailComponentFunction={detailComponentFunction} />
-    </div >
+    </div>
   );
 }
 

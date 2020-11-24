@@ -339,7 +339,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
           <Button onClick={handleAbortTask}>Abort</Button>
         </DialogActions>
       </Dialog>
-    </div >
+    </div>
   );
 }
 
