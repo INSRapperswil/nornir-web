@@ -1,7 +1,7 @@
 import yaml
 from nornir import InitNornir
 from nornir.core.inventory import Host
-from nornir.core.task import AggregatedResult
+from nornir.core.task import AggregatedResult, Result, MultiResult
 from nornir.core.filter import F
 from pathlib import Path
 
@@ -72,7 +72,7 @@ class NornirHandler:
         jd = JobDiscovery(job_template.get_package_path())
         params_copy['task'] = jd.get_job_function(job_template.file_name, job_template.function_name)
         result = selection.run(**params_copy)
-        return self.format_result(result)
+        return self.serialize_result(result)
 
     @staticmethod
     def get_job_template_definitions(package_path=None):
@@ -104,38 +104,32 @@ class NornirHandler:
         return host
 
     @staticmethod
-    def format_result(aggregated_result: AggregatedResult) -> dict:
+    def serialize_result(aggregated_result: AggregatedResult) -> dict:
         try:
             result = {
                 'failed': aggregated_result.failed,
                 'hosts': []
             }
 
-            for host_results in aggregated_result:
+            for hostname, host_results in sorted(aggregated_result.items()):
                 host_dict = {
-                    'hostname': aggregated_result[host_results].host.hostname,
-                    'name': aggregated_result[host_results].host.name,
-                    'failed': aggregated_result[host_results].failed,
-                    'result': aggregated_result[host_results].result[0].result if not aggregated_result[
-                        host_results].failed else f'{aggregated_result[host_results][1].exception}'
+                    'hostname': host_results.host.hostname,
+                    'name': host_results.host.name,
+                    'failed': host_results.failed,
+                    # 'result': aggregated_result[host_results].result[0].result if not aggregated_result[
+                    #     host_results].failed else f'{aggregated_result[host_results][1].exception}'
+                    'result': []
                 }
+                if isinstance(host_results, MultiResult):
+                    for r in host_results.result[1:]:
+                        host_dict['result'].append(r)
+                elif isinstance(host_results, Result):
+                    host_dict['result'].append(host_results.result)
                 result['hosts'].append(host_dict)
 
             return result
         except:
-            result = {
-                'failed': True,
-                'hosts': []
-            }
-            for host_results in aggregated_result:
-                host_dict = {
-                    'hostname': aggregated_result[host_results].host.hostname,
-                    'name': aggregated_result[host_results].host.name,
-                    'failed': aggregated_result[host_results].failed,
-                    'result': 'Exception thrown, please check backend log'
-                }
-                result['hosts'].append(host_dict)
-            return result
+            return {'exception': 'Exception thrown, please check backend log'}
 
     @staticmethod
     def get_configuration() -> dict:
