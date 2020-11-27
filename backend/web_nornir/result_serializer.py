@@ -18,18 +18,18 @@ def serialize_result(aggregated_result: AggregatedResult) -> dict:
             attr = f'{"exception" if host_result.failed else "result"}'
 
             if isinstance(host_result, MultiResult):
-                host_dict['result'].append(_apply_formatting(host_result[0], attr))
+                host_dict['result'].append(_get_formatted_result(host_result[0], attr))
                 for r in host_result[1:]:
-                    host_dict['result'].append(_apply_formatting(r, attr))
+                    host_dict['result'].append(_get_formatted_result(r, attr))
             elif isinstance(host_result, Result):
-                host_dict['result'].append(_apply_formatting(host_result, attr))
+                host_dict['result'].append(_get_formatted_result(host_result, attr))
             result['hosts'].append(host_dict)
         return result
     except:
         return {'exception': 'Exception thrown, please check backend log'}
 
 
-def _apply_formatting(result: Result, attr: str):
+def _get_formatted_result(result: Result, attr: str):
     x = getattr(result, attr)
     if isinstance(x, dict) or isinstance(x, list) and not isinstance(x, MultiResult):
         return x
