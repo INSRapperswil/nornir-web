@@ -41,14 +41,17 @@ export function beautifyDate(isoDate) {
 }
 
 export function beautifyJson(jsonString) {
-  let string = JSON.stringify(jsonString);
+  let string = JSON.stringify(jsonString, null, 2);
   string = string.replace(/"/g, "");
   string = string.replace(/:/g, ": ");
   string = string.replace(/,/g, ", ");
   string = string.replace(/\[/g, "");
   string = string.replace(/\]/g, "");
   string = string.replace(/{/g, "");
-  string = string.replace(/}/g, "\n");
+  string = string.replace(/}/g, "");
+  string = string.replace(/\\/g, "");
+  string = string.replace(/\s+\n/g, "");
+  string = string.replace(/ {2},/g, "");
   return string;
 }
 
