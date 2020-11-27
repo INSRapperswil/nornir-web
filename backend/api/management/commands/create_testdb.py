@@ -47,7 +47,7 @@ class Command(BaseCommand):
                                           file_name='get_interfaces.py', created_by_id=1)
         models.JobTemplate.objects.create(name='Ping Device',
                                           description='Pings a chosen network device and reports if reachable',
-                                          file_name='ping.py', variables='["target"]', created_by_id=1)
+                                          file_name='ping.py', variables=['target'], created_by_id=1)
         models.JobTemplate.objects.create(name='Get Configuration', description='Gets all configuration from device',
                                           file_name='get_configuration.py', created_by_id=1)
 

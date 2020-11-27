@@ -59,7 +59,7 @@ expected_jobtemplate_list = {
                  'id': 4,
                  'name': 'Ping Device',
                  'package_path': '/web_nornir/job_templates/',
-                 'variables': '["target"]'},
+                 'variables': ['target']},
                 {'created_by': 1,
                  'created_name': 'thomastest',
                  'description': 'Gets all configuration from device',
