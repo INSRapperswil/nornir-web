@@ -38,8 +38,10 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
   }, [name, setStepValid]);
 
   const handleFormChange = (event) => {
-    if (!form['scheduled-date'] && !form['scheduled-time']) {
+    if(!form['scheduled-date'] && form['scheduled-time']) {
       form['scheduled-date'] = getDefaultDate();
+    }
+    if (!form['scheduled-time'] && form['scheduled-date']) {
       form['scheduled-time'] = getDefaultTime();
     }
     form[event.target.id] = event.target.value;
@@ -54,7 +56,7 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
       is_template: isTemplate,
     };
     for (let variable of task.template.variables) {
-      taskAttr.variables[variable] = form[variable].value;
+      taskAttr.variables[variable] = form[variable];
     }
     if (!runNow) {
       const scheduledDate = new Date(form['scheduled-date'] + 'T' + form['scheduled-time']);
