@@ -108,6 +108,10 @@ export function checkAndGetToken() {
 
 export function renewAccessToken() {
   return (dispatch, getState) => {
+    if (Date.now() > getState().user.refresh_expiry * 1000) {
+      console.log("Session expired, logging out...");
+      throw dispatch(logout());
+    }
     dispatch({ type: "REFRESH_TOKEN_STARTED" });
     let refreshToken = getState().user.refresh_token;
     return api.renewAccessToken(refreshToken)
