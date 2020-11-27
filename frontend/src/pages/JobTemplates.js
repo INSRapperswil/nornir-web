@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import JobTemplatesSelectionTable from '../components/JobTemplatesSelectionTable';
 import { Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { hasNetadminPermissions } from '../redux/reducers';
 
 
-function JobTemplates() {
+function JobTemplates({ hasPermission }) {
   let [stepValid, setStepValid] = useState(false);
   const history = useHistory();
 
@@ -17,14 +19,21 @@ function JobTemplates() {
       <h1>Job Templates</h1>
       <Button
         onClick={handleRunOnSelection}
-        disabled={!stepValid}
+        disabled={!stepValid || !hasPermission}
         variant="contained"
         color="primary">
-          Run on Selection
+        Create Task with Selection
       </Button>
-      <JobTemplatesSelectionTable style={{ marginTop: 10 }} setStepValid={setStepValid}/>
+      <JobTemplatesSelectionTable style={{ marginTop: 10 }} setStepValid={setStepValid} />
     </div>
   );
 }
 
-export default JobTemplates;
+const mapStateToProps = (state) => {
+  return {
+    hasPermission: hasNetadminPermissions(state),
+  };
+}
+
+
+export default connect(mapStateToProps)(JobTemplates);

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import InventorySelectionTable from '../components/InventorySelectionTable';
 import { Button, Badge } from '@material-ui/core';
-import { getWizardTask } from '../redux/reducers';
+import { getWizardTask, hasNetadminPermissions } from '../redux/reducers';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-function Inventory({ task }) {
+function Inventory({ hasPermission, task }) {
   let [stepValid, setStepValid] = useState(false);
   const history = useHistory();
 
@@ -19,13 +19,13 @@ function Inventory({ task }) {
       <Badge badgeContent={task.filters.hosts.length} color="secondary">
         <Button
           onClick={handleRunOnSelection}
-          disabled={!stepValid}
+          disabled={!stepValid || !hasPermission}
           variant="contained"
           color="primary">
-            Create Task with Selection
+          Create Task with Selection
         </Button>
       </Badge>
-      <InventorySelectionTable setStepValid={setStepValid}/>
+      <InventorySelectionTable setStepValid={setStepValid} />
     </div>
   );
 }
@@ -33,6 +33,7 @@ function Inventory({ task }) {
 const mapStateToProps = (state) => {
   return {
     task: getWizardTask(state),
+    hasPermission: hasNetadminPermissions(state),
   };
 }
 

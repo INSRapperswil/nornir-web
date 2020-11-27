@@ -21,6 +21,7 @@ import {
 import FilterDialog from './FilterDialog';
 import { useHistory } from 'react-router-dom';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import { hasNetadminPermissions } from '../redux/reducers';
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -66,7 +67,7 @@ function SelectStatus({ defaultValue }) {
   );
 }
 
-function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
+function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermission }) {
   let [tasks, setTasks] = useState([]);
   let [abortConfirmationOpen, setAbortConfirmationOpen] = useState(false);
   let [taskToAbort, setTaskToAbort] = useState({});
@@ -222,13 +223,13 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
             {
               onlyTemplates ?
                 <Tooltip title="Run Task">
-                  <IconButton onClick={(e) => handleReRun(e, row)}>
+                  <IconButton onClick={(e) => handleReRun(e, row)} disabled={!hasPermission}>
                     <PlayCircleOutlineIcon color="primary" />
                   </IconButton>
                 </Tooltip>
                 :
                 <Tooltip title="Re-Run Task">
-                  <IconButton onClick={(e) => handleReRun(e, row)}>
+                  <IconButton onClick={(e) => handleReRun(e, row)} disabled={!hasPermission}>
                     <RepeatIcon />
                   </IconButton>
                 </Tooltip>
@@ -344,7 +345,9 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
 }
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+    hasPermission: hasNetadminPermissions(state),
+  };
 };
 
 const mapDispatchToProps = {

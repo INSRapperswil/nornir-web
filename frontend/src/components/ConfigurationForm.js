@@ -7,6 +7,7 @@ import {
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
+import { hasSuperuserPermission } from '../redux/reducers';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ConfigurationForm({ checkAndGetToken }) {
+function ConfigurationForm({ checkAndGetToken, hasPermission }) {
   let [loadState, setLoadState] = useState({ "notLoaded": true });
   let [loggingEnabled, setLoggingEnabled] = useState(false);
   let [loggingFormat, setLoggingFormat] = useState('');
@@ -42,13 +43,13 @@ function ConfigurationForm({ checkAndGetToken }) {
     if (loadState.notLoaded) {
       checkAndGetToken().then((token) => {
         getConfiguration(token).then((response) => {
+          setLoadState(loadState.notLoaded = false);
           setLoggingEnabled(response.logging.enabled);
           setLoggingFormat(response.logging.format);
           setLoggingLevel(response.logging.level);
           setLoggingFile(response.logging.log_file);
           setRunnerOptionsNumWorkers(response.runner.options.num_workers);
           setRunnerPlugin(response.runner.plugin);
-          setLoadState(loadState.notLoaded = false);
         });
       });
     }
@@ -92,11 +93,11 @@ function ConfigurationForm({ checkAndGetToken }) {
     <React.Fragment>
       <form noValidate className={classes.root} onSubmit={updateConfigurationHandler}>
         <h2>Logging</h2>
-        <FormControlLabel control={<Checkbox checked={loggingEnabled} onChange={(e) => setLoggingEnabled(e.target.checked)} name="loggingEnabled" />} label="Logging Enabled" />
-        <TextField id="loggingFormat" variant="outlined" className={[classes.textField, classes.loggingFormat].join(' ')} label="Logging Format" value={loggingFormat} onChange={(e) => setLoggingFormat(e.target.value)} />
+        <FormControlLabel control={<Checkbox checked={loggingEnabled} onChange={(e) => setLoggingEnabled(e.target.checked)} name="loggingEnabled" disabled={!hasPermission} />} label="Logging Enabled" />
+        <TextField id="loggingFormat" variant="outlined" className={[classes.textField, classes.loggingFormat].join(' ')} value={loggingFormat} disabled={!hasPermission} label="Logging Format" onChange={(e) => setLoggingFormat(e.target.value)} />
         <FormControl variant="outlined" className={classes.textField}>
           <InputLabel id="loggingLevel-label">Logging Label</InputLabel>
-          <Select labelId="loggingLevel-label" id="loggingLevel" onChange={(e) => setLoggingLevel(e.target.value)} value={loggingLevel} label="Logging Level">
+          <Select labelId="loggingLevel-label" id="loggingLevel" onChange={(e) => setLoggingLevel(e.target.value)} value={loggingLevel} disabled={!hasPermission} label="Logging Level">
             <MenuItem value="DEBUG">DEBUG</MenuItem>
             <MenuItem value="INFO">INFO</MenuItem>
             <MenuItem value="WARNING">WARNING</MenuItem>
@@ -104,20 +105,22 @@ function ConfigurationForm({ checkAndGetToken }) {
             <MenuItem value="CRITICAL">CRITICAL</MenuItem>
           </Select>
         </FormControl>
-        <TextField id="loggingFile" variant="outlined" className={classes.textField} label="Log File" value={loggingFile} onChange={(e) => setLoggingFile(e.target.value)} />
+        <TextField id="loggingFile" variant="outlined" className={classes.textField} label="Log File" value={loggingFile} disabled={!hasPermission} onChange={(e) => setLoggingFile(e.target.value)} />
 
         <h2>Runner options</h2>
-        <TextField id="runnerOptionsNumWorkers" variant="outlined" className={classes.textField} label="Number of Workers" value={runnerOptionsNumWorkers} onChange={(e) => setRunnerOptionsNumWorkers(e.target.value)} />
-        <TextField id="runnerPlugin" variant="outlined" className={classes.textField} label="Runner Plugin" value={runnerPlugin} onChange={(e) => setRunnerPlugin(e.target.value)} />
+        <TextField id="runnerOptionsNumWorkers" variant="outlined" className={classes.textField} label="Number of Workers" value={runnerOptionsNumWorkers} disabled={!hasPermission} onChange={(e) => setRunnerOptionsNumWorkers(e.target.value)} />
+        <TextField id="runnerPlugin" variant="outlined" className={classes.textField} label="Runner Plugin" value={runnerPlugin} disabled={!hasPermission} onChange={(e) => setRunnerPlugin(e.target.value)} />
 
-        <Button variant="contained" type="submit">Update Configuration</Button>
+        <Button variant="contained" type="submit" disabled={!hasPermission}>Update Configuration</Button>
       </form>
     </React.Fragment>
   );
 }
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+    hasPermission: hasSuperuserPermission(state),
+  };
 };
 
 const mapDispatchToProps = {
