@@ -5,7 +5,6 @@ import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { hasNetadminPermissions } from '../redux/reducers';
 
-
 function JobTemplates({ hasPermission }) {
   let [stepValid, setStepValid] = useState(false);
   const history = useHistory();
@@ -17,13 +16,15 @@ function JobTemplates({ hasPermission }) {
   return (
     <div id="job-templates">
       <h1>Job Templates</h1>
-      <Button
-        onClick={handleRunOnSelection}
-        disabled={!stepValid || !hasPermission}
-        variant="contained"
-        color="primary">
-        Create Task with Selection
+      {hasPermission ?
+        <Button
+          onClick={handleRunOnSelection}
+          disabled={!stepValid}
+          variant="contained"
+          color="primary">
+          Create Task with Selection
       </Button>
+        : null}
       <JobTemplatesSelectionTable style={{ marginTop: 10 }} setStepValid={setStepValid} />
     </div>
   );

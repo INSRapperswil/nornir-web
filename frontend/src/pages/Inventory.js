@@ -16,15 +16,17 @@ function Inventory({ hasPermission, task }) {
   return (
     <div id="inventory">
       <h1>Inventory</h1>
-      <Badge badgeContent={task.filters.hosts.length} color="secondary">
-        <Button
-          onClick={handleRunOnSelection}
-          disabled={!stepValid || !hasPermission}
-          variant="contained"
-          color="primary">
-          Create Task with Selection
+      {hasPermission ?
+        <Badge badgeContent={task.filters.hosts.length} color="secondary">
+          <Button
+            onClick={handleRunOnSelection}
+            disabled={!stepValid}
+            variant="contained"
+            color="primary">
+            Create Task with Selection
         </Button>
-      </Badge>
+        </Badge>
+        : null}
       <InventorySelectionTable setStepValid={setStepValid} />
     </div>
   );
