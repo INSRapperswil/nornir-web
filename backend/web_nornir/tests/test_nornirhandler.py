@@ -90,10 +90,11 @@ class TestNornirHandler:
 
     def test_execute_task_fails(self):
         nh = NornirHandler(host_file, group_file, default_file)
-        result = nh.execute_task(MockTemplate(file_name='ping.py'), {'name': 'Ping'}, {'hosts': ['unreachable.host']})
+        result = nh.execute_task(MockTemplate(file_name='ping.py'), {'name': 'Ping', 'target': '255.255.255.255'},
+                                 {'hosts': ['unreachable.host']})
         assert result == {'failed': True,
                           'hosts': [{'failed': True, 'hostname': '0.0.0.0', 'name': 'unreachable.host',
-                                     'result': 'Cannot connect to 0.0.0.0'}]}
+                                     'result': ['Subtask: napalm_ping (failed)\n', 'Cannot connect to 0.0.0.0']}]}
 
     def test_get_configuration(self):
         expected = {

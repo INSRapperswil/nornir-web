@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     maxHeight: 240,
     '&::before': {
       textAlign: "center",
-      content: '"Double click to expand full result"',
+      content: '"Double click here to expand full result"',
       display: 'block',
       height: 30,
     },
@@ -31,6 +31,7 @@ const useStyles = makeStyles({
   {
     display: "inline-block",
     width: "100%",
+    whiteSpace: "pre-wrap",
   },
 });
 
@@ -91,7 +92,7 @@ function TaskDetail({ checkAndGetToken, taskId }) {
                 {Array.isArray(host["result"]) ?
                   host["result"].map((value) => {
                     return (
-                      <span className={classes.codeLine} key={value}>
+                      <span className={classes.codeLine} onDoubleClick={(e) => e.stopPropagation()} key={value}>
                         {beautifyJson(value)}
                       </span>)
                   })
