@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getTasks, abortTask } from '../api';
+import { getTasks, abortTask, getTaskDetails } from '../api';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Box, Collapse, IconButton, Paper, Tooltip, Grid,
@@ -161,8 +161,12 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
   }
 
   const handleReRun = (e, task) => {
-    setRerunTask(task);
-    history.push('/wizard?step=2')
+    checkAndGetToken().then((token) => {
+      getTaskDetails(token, task.id).then((task) => {
+        setRerunTask(task);
+        history.push('/wizard?step=2')
+      })
+    })
   };
 
   const handleAbortConfirmation = (e, task) => {

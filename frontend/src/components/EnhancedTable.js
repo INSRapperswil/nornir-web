@@ -211,7 +211,7 @@ export default function EnhancedTable({
                           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={headCells.length + 2} className={classes.detail}>
                             <Collapse in={isItemOpen} timeout="auto" unmountOnExit style={{ paddingTop: 15, paddingBottom: 30 }}>
                               <Box margin={1}>
-                                <Typography variant="h6" gutterBottom component="div">Details</Typography>
+                                <Typography variant="h5" gutterBottom component="div">Details</Typography>
                                 {detailComponentFunction(row[selectionKey])}
                               </Box>
                             </Collapse>
