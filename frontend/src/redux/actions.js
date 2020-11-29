@@ -63,7 +63,6 @@ export function setRerunTask(task) {
     dispatch({ type: "SET_RERUN_TASK" });
     let variables = task.variables;
     delete variables.name;
-    variables = Object.entries(variables).map((entry) => { return { [entry[0]]: entry[1] }; });
     const newTask = {
       name: (task.is_template ? task.name : getRerunName(task.name)),
       date_scheduled: '',

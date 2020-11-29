@@ -17,7 +17,7 @@ function getSteps(fromTemplates) {
     {
       label: 'Select Template',
       component: (setStepValid, onNext) => <JobTemplatesSelectionTable setStepValid={setStepValid}/>,
-      initiallyValid: (task) => task.template.id !== 0,
+      initiallyValid: (task) => task.template.id > 0,
       completed: false,
     },
     {
