@@ -16,10 +16,10 @@ function TestStep({setStepValid, i}) {
   return (<h1>Component{i}</h1>)
 }
 
-const getSteps = (setStepValid) => {
+function getSteps() {
   let steps = [];
-  for (let i=0; i < 3; i++) {
-    steps.push({ label: 'Step' + i, component: <TestStep setStepValid={setStepValid} i={i}/>, completed: false });
+  for (let i = 0; i < 3; i++) {
+    steps.push({ label: 'Step' + i, component: (setStepValid) => <TestStep setStepValid={setStepValid} i={i} />, completed: false });
   }
   return steps;
 }
@@ -27,7 +27,7 @@ const getSteps = (setStepValid) => {
 test('renders learn react link', () => {
   const { getByText } = render(
     <Provider store={store}>
-      <TaskWizard getSteps={getSteps}/>
+      <TaskWizard steps={getSteps()}/>
     </Provider>
   );
   const next = getByText(/next/i).parentElement;
