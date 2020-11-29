@@ -3,6 +3,8 @@ Description=Frontend server for nornir webapp
 After=network.target
 
 [Service]
+User=ins
+Group=ins
 WorkingDirectory=/home/ins/web-app-nornir/frontend
 ExecStart=yarn serve -s build -l 3000
 Restart=always

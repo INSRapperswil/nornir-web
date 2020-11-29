@@ -14,16 +14,26 @@ function FinishTask({ task }) {
               <TableCell><strong>Name:</strong></TableCell>
               <TableCell>{task.name}</TableCell>
             </TableRow>
-            <TableRow>
-              <TableCell><strong>Scheduled:</strong></TableCell>
-              <TableCell>
-                { 
-                  task.date_scheduled ?
-                  <p>{new Date(task.date_scheduled).toLocaleString()}</p> :
-                  <p>run now</p>
-                }   
-              </TableCell>
-            </TableRow>
+            {
+              task.is_template ?
+              <TableRow>
+                <TableCell><strong>Is Template:</strong></TableCell>
+                <TableCell>
+                  <p>True</p>
+                </TableCell>
+              </TableRow>
+              :
+              <TableRow>
+                <TableCell><strong>Scheduled:</strong></TableCell>
+                <TableCell>
+                  { 
+                    task.date_scheduled ?
+                    <p>{new Date(task.date_scheduled).toLocaleString()}</p> :
+                    <p>run now</p>
+                  }   
+                </TableCell>
+              </TableRow>
+            }
             <TableRow>
               <TableCell><strong>Template:</strong></TableCell>
               <TableCell>{task.template.name}</TableCell>

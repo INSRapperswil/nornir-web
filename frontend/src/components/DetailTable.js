@@ -10,6 +10,7 @@ function renderDesiredDetails(detailObject, key) {
     case "created_by":
     case "detail":
     case "inventory":
+    case "is_template":
     case "result":
     case "template":
       return null;

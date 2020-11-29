@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
-  TablePagination, TableSortLabel,
+  TablePagination, TableSortLabel, Tooltip,
   Checkbox, Paper, Typography, Collapse, Box, IconButton,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -50,7 +50,7 @@ function EnhancedTableHead({
             {headCell.label}
           </TableCell>
         ))}
-        <TableCell></TableCell>
+        <TableCell align="right">Detail View</TableCell>
       </TableRow>
     </TableHead>
   );
@@ -196,7 +196,10 @@ export default function EnhancedTable({
                             size="small"
                             onClick={(event) => setOpen(event, row[selectionKey])}
                           >
-                            {isItemOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                            {
+                              isItemOpen ? <Tooltip title="Close Details"><KeyboardArrowUpIcon /></Tooltip> : 
+                              <Tooltip title="Show Details"><KeyboardArrowDownIcon /></Tooltip>
+                            }
                           </IconButton>
                         </TableCell>
                         : ''
@@ -208,7 +211,7 @@ export default function EnhancedTable({
                           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={headCells.length + 2} className={classes.detail}>
                             <Collapse in={isItemOpen} timeout="auto" unmountOnExit style={{ paddingTop: 15, paddingBottom: 30 }}>
                               <Box margin={1}>
-                                <Typography variant="h6" gutterBottom component="div">Details</Typography>
+                                <Typography variant="h5" gutterBottom component="div">Details</Typography>
                                 {detailComponentFunction(row[selectionKey])}
                               </Box>
                             </Collapse>

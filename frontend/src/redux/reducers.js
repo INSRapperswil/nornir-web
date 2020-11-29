@@ -1,4 +1,5 @@
 import { combineReducers } from "redux";
+import { buildUserState } from "../helperFunctions";
 
 const initialTasksState = {
   tasks: null,
@@ -20,8 +21,11 @@ function tasks(state = initialTasksState, action) {
 }
 
 const initialUser = {
-  id: 0,
-  token: '',
+  user_id: 0,
+  refresh_token: '',
+  refresh_expiry: '',
+  access_token: '',
+  access_expiry: '',
   username: '',
   groups: [],
   isLoading: false,
@@ -29,13 +33,16 @@ const initialUser = {
 };
 
 function initialUserFunction(state = initialUser) {
-  const token = sessionStorage.getItem("token")
-  if (token) {
-    return { ...state, token: token };
+  const refresh_token = sessionStorage.getItem("refresh_token")
+  const access_token = sessionStorage.getItem("access_token");
+  if (refresh_token && access_token) {
+    let user = buildUserState(refresh_token, access_token);
+    return { ...state, ...user };
   } else {
     return state;
   }
 }
+
 function user(state = initialUserFunction(), action) {
   switch (action.type) {
     case "FETCH_USER_STARTED":
@@ -44,14 +51,20 @@ function user(state = initialUserFunction(), action) {
       return { ...state, isLoading: false, ...action.user };
     case "FETCH_USER_FAILED":
       return { ...state, isLoading: false, error: action.error };
+    case "REFRESH_TOKEN_STARTED":
+      return { ...state, isLoading: true, error: null };
+    case "REFRESH_TOKEN_SUCCEEDED":
+      return { ...state, isLoading: false, ...action.user };
+    case "REFRESH_TOKEN_FAILED":
+      return { ...state, isLoading: false, error: action.error };
     case "LOGOUT":
-      return { ...state, token: '' };
+      return { ...state, refresh_token: '' };
     default:
       return state;
   }
 }
 
-const initialTaskWizardState = () => {
+export const initialTaskWizardState = () => {
   return {
     task: {
       name: '',
@@ -59,6 +72,7 @@ const initialTaskWizardState = () => {
       variables: {},
       filters: { hosts: [] },
       template: { id: 0, },
+      is_template: false,
     },
     lastCreatedTaskId: 0,
     isLoading: false,
@@ -74,6 +88,8 @@ function taskWizard(state = initialTaskWizardState(), action) {
       return { ...initialTaskWizardState(), lastCreatedTaskId: action.lastCreatedTaskId };
     case "UPDATE_TASK_WIZARD":
       return { ...state, isLoading: false, task: action.task };
+    case "CLEAR_TASK_WIZARD":
+      return initialTaskWizardState();
     case "POST_TASK_WIZARD_FAILED":
       return { ...state, isLoading: false, error: action.error };
     default:
@@ -121,14 +137,18 @@ export function getInventorySelectionId(state) {
   return state.inventorySelection.inventory;
 }
 
-export function getToken(state) {
-  return state.user.token;
-}
-
 export function getIsAuthenticated(state) {
-  return state.user.token !== '';
+  return state.user.refresh_token !== '';
 }
 
 export function getUser(state) {
   return state.user;
+}
+
+export function hasSuperuserPermission(state) {
+  return state.user.groups.includes('superuser');
+}
+
+export function hasNetadminPermissions(state) {
+  return state.user.groups.includes('superuser') || state.user.groups.includes('netadmin');
 }

@@ -15,7 +15,7 @@ expected_inventory_list = {
 }
 
 expected_jobtemplate_list = {
-    'count': 3,
+    'count': 5,
     'next': None,
     'previous': None,
     'results': [{'created_by': 1,
@@ -48,7 +48,29 @@ expected_jobtemplate_list = {
                  'id': 3,
                  'name': 'Get Interfaces',
                  'package_path': '/web_nornir/job_templates/',
-                 'variables': []}],
+                 'variables': []},
+                {'created_by': 1,
+                 'created_name': 'thomastest',
+                 'description': 'Pings a chosen network device and reports if '
+                                'reachable',
+                 'detail': 'http://testserver/api/templates/4/',
+                 'file_name': 'ping.py',
+                 'function_name': 'job_function',
+                 'id': 4,
+                 'name': 'Ping Device',
+                 'package_path': '/web_nornir/job_templates/',
+                 'variables': ['target']},
+                {'created_by': 1,
+                 'created_name': 'thomastest',
+                 'description': 'Gets all configuration from device',
+                 'detail': 'http://testserver/api/templates/5/',
+                 'file_name': 'get_configuration.py',
+                 'function_name': 'job_function',
+                 'id': 5,
+                 'name': 'Get Configuration',
+                 'package_path': '/web_nornir/job_templates/',
+                 'variables': []},
+                ]
 }
 
 expected_task_list = {
@@ -71,6 +93,7 @@ expected_task_list = {
                  'status': 0,
                  'template': 3,
                  'template_name': 'Get Interfaces',
+                 'is_template': False,
                  'variables': {}},
                 {'created_by': 2,
                  'created_name': 'norbert',
@@ -88,6 +111,7 @@ expected_task_list = {
                  'status': 0,
                  'template': 2,
                  'template_name': 'Get CDP Neighbors',
+                 'is_template': False,
                  'variables': {}},
                 {'created_by': 1,
                  'created_name': 'thomastest',
@@ -105,6 +129,7 @@ expected_task_list = {
                  'status': 0,
                  'template': 1,
                  'template_name': 'hello_world',
+                 'is_template': False,
                  'variables': {}}
                 ],
 }

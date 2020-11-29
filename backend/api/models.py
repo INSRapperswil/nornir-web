@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from web_nornir.nornir_handler import NornirHandler
 from celery import shared_task
+from celery.contrib.abortable import AsyncResult
 from backend.settings import BASE_DIR
 
 
@@ -73,6 +74,7 @@ class Task(models.Model):
     template = models.ForeignKey(JobTemplate, on_delete=models.SET_NULL, null=True)
     inventory = models.ForeignKey(Inventory, on_delete=models.SET_NULL, null=True)
     celery_task_id = models.CharField(blank=True, max_length=40)
+    is_template = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.id}: {self.name}'
@@ -113,6 +115,13 @@ class Task(models.Model):
         else:
             self.status = self.Status.FINISHED
         self.date_finished = timezone.now()
+    
+    def abort(self):
+        if self.celery_task_id == '' or self.status not in [self.Status.SCHEDULED, self.Status.RUNNING]:
+            return
+        AsyncResult(self.celery_task_id).revoke()
+        self.status = self.Status.ABORTED
+        self.save()
 
 
 class Configuration:

@@ -1,9 +1,12 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from api.models import Task, JobTemplate, Inventory
+from drf_dynamic_fields import DynamicFieldsMixin
 
 
-class TaskSerializer(serializers.ModelSerializer):
+class TaskSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     created_name = serializers.ReadOnlyField(source='created_by.username')
     detail = serializers.HyperlinkedIdentityField(view_name='task-detail', read_only=True)
     template_name = serializers.ReadOnlyField(source='template.name')
@@ -28,7 +31,8 @@ class TaskSerializer(serializers.ModelSerializer):
             'template',
             'template_name',
             'inventory',
-            'inventory_name'
+            'inventory_name',
+            'is_template'
         ]
 
 
@@ -68,9 +72,16 @@ class InventorySerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # Linking from User to all templates he created, not working right now.
-    # templates = serializers.HyperlinkedRelatedField(many=True, view_name='template-detail', read_only=True)
-
     class Meta:
         model = User
-        fields = ['id', 'username', 'groups']  # , 'templates']
+        fields = ['id', 'username', 'groups']
+
+
+class EnhancedTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        token['username'] = user.username
+        token['groups'] = list(user.groups.values_list('name', flat=True))
+        return token

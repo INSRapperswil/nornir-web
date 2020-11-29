@@ -45,6 +45,11 @@ class Command(BaseCommand):
         models.JobTemplate.objects.create(name='Get Interfaces',
                                           description='Gets brief information about all interfaces, sh ip int br',
                                           file_name='get_interfaces.py', created_by_id=1)
+        models.JobTemplate.objects.create(name='Ping Device',
+                                          description='Pings a chosen network device and reports if reachable',
+                                          file_name='ping.py', variables=['target'], created_by_id=1)
+        models.JobTemplate.objects.create(name='Get Configuration', description='Gets all configuration from device',
+                                          file_name='get_configuration.py', created_by_id=1)
 
         print('----    Creating Tasks    ----')
         models.Task.objects.create(name='Get Hello World', created_by_id=1, template_id=1, inventory_id=1)

@@ -1,7 +1,7 @@
 import pytest
 from django.contrib.auth.models import User
 from django.urls import reverse
-from pytest_drf import APIViewTest, AsUser, Returns200, Returns403, UsesGetMethod, UsesPostMethod
+from pytest_drf import APIViewTest, AsUser, Returns200, Returns401, Returns403, UsesGetMethod, UsesPostMethod
 from pytest_lambda import lambda_fixture, static_fixture
 
 pytestmark = pytest.mark.django_db
@@ -53,7 +53,7 @@ class TestPostConfigurationPermissionAsNetadmin(APIViewTest, UsesPostMethod, Ret
         assert {'detail': 'You do not have permission to perform this action.'} == actual
 
 
-class TestGetConfigurationPermissionNotAuthenticated(APIViewTest, UsesGetMethod, Returns403):
+class TestGetConfigurationPermissionNotAuthenticated(APIViewTest, UsesGetMethod, Returns401):
     url = lambda_fixture(lambda: reverse('configuration-list'))
 
     def test_configuration_list(self, json):

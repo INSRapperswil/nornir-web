@@ -1,13 +1,15 @@
 import yaml
 from nornir import InitNornir
 from nornir.core.inventory import Host
-from nornir.core.task import AggregatedResult
 from nornir.core.filter import F
 from pathlib import Path
 
+from .result_serializer import serialize_result
 from .job_discovery import JobDiscovery
 
-# Global defaults for all nornir inventories
+# default Nornir inventory and default settings
+HOST_FILE = 'web_nornir/nornir_config/example_config/hosts.yaml'
+GROUP_FILE = 'web_nornir/nornir_config/example_config/groups.yaml'
 DEFAULT_FILE = 'web_nornir/nornir_config/defaults.yaml'
 
 
@@ -15,9 +17,9 @@ class NornirHandler:
     def __init__(self, host_file, group_file, default_file=DEFAULT_FILE):
         # Load default configs if invalid file path given
         if not Path(host_file).is_file():
-            host_file = 'web_nornir/nornir_config/example_config/hosts.yaml'
+            host_file = HOST_FILE
         if not Path(group_file).is_file():
-            group_file = 'web_nornir/nornir_config/example_config/groups.yaml'
+            group_file = GROUP_FILE
         if default_file is None or not Path(default_file).is_file():
             default_file = DEFAULT_FILE
 
@@ -29,7 +31,9 @@ class NornirHandler:
                                             'defaults_file': default_file
                                         }}, )
 
-    def get_hosts(self, filter_arguments=[], search_fields=None, search_argument='') -> list:
+    def get_hosts(self, filter_arguments=None, search_fields=None, search_argument='') -> list:
+        if filter_arguments is None:
+            filter_arguments = []
         filtered = self.nr.filter()
         filtered = self.filter_hosts(filtered, filter_arguments)
         if search_argument and search_fields:
@@ -68,7 +72,7 @@ class NornirHandler:
         jd = JobDiscovery(job_template.get_package_path())
         params_copy['task'] = jd.get_job_function(job_template.file_name, job_template.function_name)
         result = selection.run(**params_copy)
-        return self.format_result(result)
+        return serialize_result(result)
 
     @staticmethod
     def get_job_template_definitions(package_path=None):
@@ -98,24 +102,6 @@ class NornirHandler:
 
         host.update({'data': data})
         return host
-
-    @staticmethod
-    def format_result(aggregated_result: AggregatedResult) -> dict:
-        result = {
-            'failed': aggregated_result.failed,
-            'hosts': []
-        }
-
-        for host_results in aggregated_result:
-            host_dict = {
-                'hostname': aggregated_result[host_results].host.hostname,
-                'name': aggregated_result[host_results].host.name,
-                'failed': aggregated_result[host_results].failed,
-                'result': aggregated_result[host_results].result[0].result
-            }
-            result['hosts'].append(host_dict)
-
-        return result
 
     @staticmethod
     def get_configuration() -> dict:

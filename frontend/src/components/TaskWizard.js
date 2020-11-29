@@ -1,39 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { getWizardTask, getWizard, getToken } from '../redux/reducers';
-import { updateTaskWizard, postTaskWizard } from '../redux/actions';
+import { getWizardTask } from '../redux/reducers';
+import { checkAndGetToken, updateTaskWizard, postTaskWizard, clearTaskWizard } from '../redux/actions';
 import { Stepper, Step, StepLabel, Button } from '@material-ui/core';
 import { runTask, runTaskAsync } from '../api';
 import TaskDetail from './TaskDetail';
+import { useHistory } from 'react-router-dom';
 
-function TaskWizard({ task, getSteps, postTaskWizard, wizard, token }) {
-  const [activeStep, setActiveStep] = useState(0);
+function TaskWizard({ checkAndGetToken, task, steps, postTaskWizard, clearTaskWizard, entryStep }) {
+  const initiallyValid = () => {
+    const step = parseInt(entryStep);
+    let isValid = false;
+    if(step) {
+      for(let i=0; i < step; i++) {
+        if(!('initiallyValid' in Object.keys(steps[i])) || steps[i].initiallyValid(task)) {
+          isValid = true;
+        } else {
+          return 0;
+        }
+      }
+    }
+    if(isValid) {
+      return step;
+    } else {
+      return 0;
+    }
+  }
+  const [activeStep, setActiveStep] = useState(initiallyValid());
   const [stepValid, setStepValid] = useState(false);
   const [createdTaskId, setCreatedTaskId] = useState(0);
-  const steps = getSteps(setStepValid);
+  const history = useHistory();
+  const onNext = useRef();
+
+  useEffect(() => {
+    return () => {
+      clearTaskWizard();
+    }
+  // empty dependencies array, so it only runs on mount.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleFinish = (event) => {
     postTaskWizard().then(result => {
-      setCreatedTaskId(result.id)
-      if(result.date_scheduled) {
-        runTaskAsync(token, result.id)
-      } else {
-        runTask(token, result.id);
-      }
+      checkAndGetToken().then((token) => {
+        setCreatedTaskId(result.id);
+        if (result.is_template) {
+          history.push('/preconfigured-tasks');
+        } else {
+          if (result.date_scheduled) {
+            runTaskAsync(token, result.id)
+          } else {
+            runTask(token, result.id);
+          }
+        }
+      });
     })
     handleNext(event);
   };
   const handleNext = (event) => {
+    if(onNext && onNext.current) {
+      onNext.current.onNext()
+    }
     setStepValid(false);
     setActiveStep(activeStep + 1);
   };
   const handleBack = (event) => {
-    if(activeStep > 0) {
+    if (activeStep > 0) {
       setActiveStep(activeStep - 1);
     }
   };
   const getCreatedTask = () => {
-    return (createdTaskId > 0) ? <TaskDetail taskId={createdTaskId}/> : '';
+    return (createdTaskId > 0) ? <TaskDetail taskId={createdTaskId} /> : '';
   }
 
   return (
@@ -51,7 +88,7 @@ function TaskWizard({ task, getSteps, postTaskWizard, wizard, token }) {
       { activeStep !== 0 && activeStep < steps.length ? <Button onClick={handleBack}>Back</Button> : '' }
       { activeStep < steps.length-1 ? <Button onClick={handleNext} disabled={!stepValid} variant="contained" color="primary">Next</Button> : '' }
       { activeStep === steps.length-1 ? <Button onClick={handleFinish} variant="contained" color="primary">Finish</Button> : '' }
-      { activeStep < steps.length ? steps[activeStep].component : getCreatedTask() }
+      { activeStep < steps.length ? steps[activeStep].component(setStepValid, onNext) : getCreatedTask() }
     </div>
   );
 }
@@ -59,13 +96,13 @@ function TaskWizard({ task, getSteps, postTaskWizard, wizard, token }) {
 const mapStateToProps = (state) => {
   return {
     task: getWizardTask(state),
-    wizard: getWizard(state),
-    token: getToken(state),
   };
 };
 const mapDispatchToProps = {
+  checkAndGetToken,
   updateTaskWizard,
   postTaskWizard,
+  clearTaskWizard,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TaskWizard);

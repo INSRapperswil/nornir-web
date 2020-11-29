@@ -36,32 +36,32 @@ function Login({ error, authenticate }) {
     });
   };
 
-  if(successRedirect) {
+  if (successRedirect) {
     return <Redirect to="/inventory" />
   }
 
   return (
     <div id="login">
       <h1>Login</h1>
-      <form noValidate className={classes.root} onSubmit={handleLogin} >
+      <form noValidate className={classes.root} onSubmit={handleLogin}>
         <TextField
           onChange={(e) => setUsername(e.target.value)}
           id="username"
           label="username"
           variant="outlined"
-          className={classes.textField}/>
+          className={classes.textField} />
         <TextField
           onChange={(e) => setPassword(e.target.value)}
           id="password"
           label="password"
           type="password"
           variant="outlined"
-          className={classes.textField}/>
-        <Button variant="contained" type="submit" >
-            Send
+          className={classes.textField} />
+        <Button variant="contained" type="submit">
+          Send
         </Button>
       </form>
-      { error ? <Alert severity="error" className={classes.alert}>login not sucessful</Alert> : '' }
+      { error ? <Alert severity="error" className={classes.alert}>login not sucessful</Alert> : ''}
     </div>
   );
 }

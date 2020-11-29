@@ -17,6 +17,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Logout from './components/Logout';
 import TaskWizardPage from './pages/TaskWizardPage';
 import Configuration from './pages/Configuration';
+import PreconfiguredTasks from './pages/PreconfiguredTasks';
 
 function App() {
   const paths = [
@@ -27,15 +28,21 @@ function App() {
       protected: true,
     },
     {
+      label: 'Job Templates',
+      value: '/job-templates',
+      component: <JobTemplates />,
+      protected: true,
+    },
+    {
       label: 'Tasks Dashboard',
       value: '/task-dashboard',
       component: <TaskDashboard />,
       protected: true,
     },
     {
-      label: 'Job Templates',
-      value: '/job-templates',
-      component: <JobTemplates />,
+      label: 'Preconfigured Tasks',
+      value: '/preconfigured-tasks',
+      component: <PreconfiguredTasks/>,
       protected: true,
     },
     {
@@ -43,6 +50,7 @@ function App() {
       value: '/wizard',
       component: <TaskWizardPage />,
       protected: true,
+      hidden: true,
     },
     {
       label: 'Configuration',

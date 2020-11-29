@@ -1,53 +1,40 @@
 import React, { useState } from 'react';
 import JobTemplatesSelectionTable from '../components/JobTemplatesSelectionTable';
 import { Button } from '@material-ui/core';
-import InventorySelectionTable from '../components/InventorySelectionTable';
-import VariableSetter from '../components/VariableSetter';
-import FinishTask from '../components/FinishTask';
-import TaskWizard from '../components/TaskWizard';
+import { useHistory } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { hasNetadminPermissions } from '../redux/reducers';
 
-function getSteps(setStepValid) {
-  return [
-    {
-      label: 'Select Inventory',
-      component: <InventorySelectionTable setStepValid={setStepValid}/>,
-      completed: false,
-    },
-    {
-      label: 'Set Variables',
-      component: <VariableSetter setStepValid={setStepValid}/>,
-      completed: false,
-    },
-    {
-      label: 'Finish',
-      component: <FinishTask setStepValid={setStepValid}/>,
-      completed: false,
-    },
-  ];
-}
-
-function JobTemplates() {
+function JobTemplates({ hasPermission }) {
   let [stepValid, setStepValid] = useState(false);
-  let [runTaskWizard, setRunTaskWizard] = useState(false);
+  const history = useHistory();
 
   const handleRunOnSelection = () => {
-    setRunTaskWizard(true);
+    history.push('/wizard?step=1&from-templates=true');
   };
 
   return (
     <div id="job-templates">
       <h1>Job Templates</h1>
-      <Button
-        onClick={handleRunOnSelection}
-        disabled={!stepValid}
-        variant="contained"
-        color="primary">
-          Run on Selection
+      {hasPermission ?
+        <Button
+          onClick={handleRunOnSelection}
+          disabled={!stepValid}
+          variant="contained"
+          color="primary">
+          Create Task with Selection
       </Button>
-      { runTaskWizard ? <TaskWizard getSteps={getSteps} /> :
-      <JobTemplatesSelectionTable style={{ marginTop: 10 }} setStepValid={setStepValid}/> }
+        : null}
+      <JobTemplatesSelectionTable style={{ marginTop: 10 }} setStepValid={setStepValid} />
     </div>
   );
 }
 
-export default JobTemplates;
+const mapStateToProps = (state) => {
+  return {
+    hasPermission: hasNetadminPermissions(state),
+  };
+}
+
+
+export default connect(mapStateToProps)(JobTemplates);

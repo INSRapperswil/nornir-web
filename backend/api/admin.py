@@ -62,7 +62,7 @@ class TaskAdmin(admin.ModelAdmin):
     readonly_fields = ['id', 'date_scheduled', 'date_started', 'date_finished', 'status', 'result']
 
     # Settings for Overview
-    list_display = ['id', 'name', 'status', 'created_by', 'template', 'inventory', 'celery_task_id']
+    list_display = ['id', 'name', 'status', 'created_by', 'template', 'inventory', 'is_template', 'celery_task_id']
     list_display_links = ['id', 'name']
     list_filter = ['created_by', 'template', 'inventory']
     ordering = ['id']
@@ -81,7 +81,7 @@ class TaskAdmin(admin.ModelAdmin):
         ),
         (
             'Filters, Variables, Results',
-            {'fields': ['filters', 'variables', 'result', 'result_host_selection']}
+            {'fields': ['is_template', 'filters', 'variables', 'result', 'result_host_selection']}
         ),
         (
             'Dependencies',

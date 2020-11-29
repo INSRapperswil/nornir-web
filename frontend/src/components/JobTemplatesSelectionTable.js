@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { updateTaskWizard } from '../redux/actions';
-import { getWizardTask, getToken } from '../redux/reducers';
+import { updateTaskWizard, checkAndGetToken } from '../redux/actions';
+import { getWizardTask } from '../redux/reducers';
 import { getJobTemplates } from '../api';
 import {
-  RadioGroup, Radio,
+  RadioGroup, Radio, Tooltip, Grid,
   Table, TableHead, TableBody, TableContainer, TableRow, TableCell, TablePagination,
-  Paper, Box, Typography, Collapse, IconButton, FormControlLabel, Button, TextField, 
+  Paper, Box, Typography, Collapse, IconButton, FormControlLabel, Button, TextField,
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -14,6 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import JobTemplateDetail from './JobTemplateDetail';
 import FilterDialog from './FilterDialog';
 import { SortableTableHead, newOrderName } from '../helperFunctions';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -32,7 +33,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.action.hover,
   },
   box: {
-    marginBottom: 20,
+    marginBottom: 10,
     display: 'flex',
     alignItems: 'center',
     '& > *': {
@@ -42,9 +43,15 @@ const useStyles = makeStyles(theme => ({
       marginLeft: 0,
     }
   },
+  filters: {
+    '& > *:last-child': {
+      marginRight: 0,
+    },
+    justifyContent: 'flex-end',
+  },
 }));
 
-function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepValid }) {
+function JobTemplatesSelectionTable({ checkAndGetToken, task, updateTaskWizard, setStepValid }) {
   let [templates, setTemplates] = useState([]);
   let [openRow, setOpenRow] = useState(-1);
   let [count, setCount] = useState(0);
@@ -52,25 +59,30 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
   let [rowsPerPage, setRowsPerPage] = useState(25);
   let [search, setSearch] = useState('');
   let [orderBy, setOrderBy] = useState('');
-  let [filters, setFilters] = useState([
-    { label: 'File Name', name: 'file_name', value: '' },
-    { label: 'Function Name', name: 'function_name', value: '' },
-    { label: 'Package Path', name: 'package_path', value: '' },
-    { label: 'Creator', name: 'created_by__username', value: '' },
-  ]);
+  const getDefaultFilters = () => {
+    return [
+      { label: 'File Name', name: 'file_name', value: '' },
+      { label: 'Function Name', name: 'function_name', value: '' },
+      { label: 'Package Path', name: 'package_path', value: '' },
+      { label: 'Creator', name: 'created_by__username', value: '' },
+    ];
+  };
+  let [filters, setFilters] = useState(getDefaultFilters());
 
   const classes = useStyles();
 
   useEffect(() => {
     if (templates.length === 0) {
-      getJobTemplates(token, rowsPerPage, 0).then((response) => {
-        setTemplates(response.results);
-        setCount(response.count);
-        setStepValid(task.template.id !== 0);
+      checkAndGetToken().then((token) => {
+        getJobTemplates(token, rowsPerPage, 0).then((response) => {
+          setTemplates(response.results);
+          setCount(response.count);
+          setStepValid(task.template.id !== 0);
+        })
       });
     }
-  // empty dependencies array, so it only runs on mount.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // empty dependencies array, so it only runs on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
@@ -107,7 +119,10 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
           <TableCell>{row.created_name}</TableCell>
           <TableCell align="right">
             <IconButton aria-label="expand row" size="small" onClick={handleOpen}>
-              {isOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              {
+                isOpen ? <Tooltip title="Close Details"><KeyboardArrowUpIcon /></Tooltip> : 
+                <Tooltip title="Show Details"><KeyboardArrowDownIcon /></Tooltip>
+              }
             </IconButton>
           </TableCell>
         </TableRow>
@@ -115,7 +130,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9} className={classes.detail}>
             <Collapse in={isOpen} timeout="auto" unmountOnExit style={{ paddingTop: 15, paddingBottom: 30 }}>
               <Box margin={1}>
-                <Typography variant="h6" gutterBottom component="div">Details</Typography>
+                <Typography variant="h5" gutterBottom component="div">Details</Typography>
                 <JobTemplateDetail jobTemplateId={row.id} />
               </Box>
             </Collapse>
@@ -125,12 +140,15 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     )
   }
 
-  const fetchAndSetTemplates = (page, pageSize, _filters=filters, _search=search, _orderBy=orderBy) => {
+  const fetchAndSetTemplates = (page, pageSize, _filters = filters, _search = search, _orderBy = orderBy) => {
     const offset = page * pageSize;
-    getJobTemplates(token, pageSize, offset, _filters, _search, _orderBy).then((response) => {
-      setTemplates(response.results);
-      setCount(response.count);
+    checkAndGetToken().then((token) => {
+      getJobTemplates(token, pageSize, offset, _filters, _search, _orderBy).then((response) => {
+        setTemplates(response.results);
+        setCount(response.count);
+      });
     });
+
   }
 
   const handleChangePage = (event, requestedPage) => {
@@ -146,7 +164,7 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     fetchAndSetTemplates(newPage, newPageSize);
   };
 
-  const handleFilterChange = (filters) => {
+  const handleFilterSubmit = (filters) => {
     setFilters(filters);
     setPage(0)
     fetchAndSetTemplates(page, rowsPerPage, filters);
@@ -156,13 +174,21 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
     fetchAndSetTemplates(0, rowsPerPage, filters, search);
   }
 
+  const handleClearSearchFilter = (event) => {
+    const newSearch = '';
+    const newFilters = getDefaultFilters();
+    setSearch(newSearch);
+    setFilters(newFilters);
+    fetchAndSetTemplates(page, rowsPerPage, newFilters, newSearch, orderBy);
+  };
+
   const headCells = [
     { label: '', name: '' },
     { label: '#', name: 'id', orderable: true },
     { label: 'Name', name: 'name', orderable: true },
     { label: 'Description', name: 'description', orderable: false },
     { label: 'Creator', name: 'created_by__username', orderable: true },
-    { label: '', name: '' },
+    { label: 'Detail View', name: '' },
   ];
 
   const handleSortChange = (event, name) => {
@@ -173,23 +199,31 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
 
   return (
     <div id="job-templates-selection-table" style={{ marginBottom: 20,  marginTop: 10 }}>
-      <Box className={classes.box}>
-        <TextField
-          label="Search Field"
-          variant="outlined"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <Button onClick={handleSearch} variant="outlined">Search</Button>
-        <FilterDialog filters={filters} onFilterChange={handleFilterChange}/>
-      </Box>
+      <Grid container>
+        <Grid item className={`${classes.box}`} xs={12}>
+          <Tooltip title="Clear Search and Filters">
+            <Button variant="outlined" onClick={handleClearSearchFilter}>
+              <HighlightOffIcon/>
+            </Button>
+          </Tooltip>
+          <FilterDialog filters={filters} onFilterSubmit={handleFilterSubmit}/>
+          <Button onClick={handleSearch} variant="outlined">Search</Button>
+          <TextField
+            label="Search Field"
+            variant="outlined"
+            value={search}
+            onKeyPress={(e) => e.key === 'Enter' ? handleSearch(e) : null}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </Grid>
+      </Grid>
       <TableContainer component={Paper}>
         <RadioGroup name="template-id" value={task.template.id} onChange={handleSelectionChange}>
           <Table aria-label="templates table">
             <TableHead>
               <TableRow>
-                { headCells.map((cell, index) => {
-                  return <SortableTableHead cell={cell} key={index} orderBy={orderBy} onSortChange={handleSortChange}/>
+                {headCells.map((cell, index) => {
+                  return <SortableTableHead cell={cell} key={index} orderBy={orderBy} onSortChange={handleSortChange} />
                 })}
               </TableRow>
             </TableHead>
@@ -216,10 +250,10 @@ function JobTemplatesSelectionTable({ token, task, updateTaskWizard, setStepVali
 const mapStateToProps = (state) => {
   return {
     task: getWizardTask(state),
-    token: getToken(state),
   };
 };
 const mapDispatchToProps = {
+  checkAndGetToken,
   updateTaskWizard,
 };
 

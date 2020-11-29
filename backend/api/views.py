@@ -5,10 +5,12 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from api.models import Task, JobTemplate, Inventory, Configuration
 from api.permissions import ConfigurationPermission
-from api.serializers import TaskSerializer, JobTemplateSerializer, InventorySerializer, UserSerializer
+from api.serializers import TaskSerializer, JobTemplateSerializer, InventorySerializer, UserSerializer, \
+    EnhancedTokenObtainPairSerializer
 from api.inventory_helpers import InventoryPagination, InventoryOrdering
 
 
@@ -20,7 +22,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [permissions.DjangoModelPermissions]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
-    filterset_fields = ['status', 'template__name', 'inventory__name', 'created_by__username']
+    filterset_fields = ['status', 'template__name', 'inventory__name', 'created_by__username', 'is_template']
     search_fields = ['name']
     ordering_fields = ['id', 'name', 'status', 'date_scheduled', 'date_started', 'date_finished', 'inventory']
 
@@ -36,6 +38,13 @@ class TaskViewSet(viewsets.ModelViewSet):
         task = self.get_object()
         task.schedule()
         return Response(status=status.HTTP_202_ACCEPTED)
+
+    @action(detail=True, methods=['PUT'])
+    def abort(self, request, pk):
+        task = self.get_object()
+        task.abort()
+        serializer = self.get_serializer(task)
+        return Response(serializer.data)
 
 
 class JobTemplateViewSet(viewsets.ModelViewSet):
@@ -116,3 +125,7 @@ class ConfigurationView(viewsets.ViewSet):
     def create(self, request, format=None):
         configuration = Configuration.set(request.data)
         return Response(configuration)
+
+
+class EnhancedTokenObtainPairView(TokenObtainPairView):
+    serializer_class = EnhancedTokenObtainPairSerializer
