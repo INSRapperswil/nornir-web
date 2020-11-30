@@ -21,6 +21,7 @@ import {
 import FilterDialog from './FilterDialog';
 import { useHistory } from 'react-router-dom';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import { textToStatusId } from '../helperFunctions';
 import { hasNetadminPermissions } from '../redux/reducers';
 
 const useStyles = makeStyles(theme => ({
@@ -190,6 +191,20 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
     });
   }
 
+  const headCells = [
+    { label: '#', name: 'id', orderable: true },
+    { label: 'Name', name: 'name', orderable: true },
+    { label: 'Status', name: 'status', orderable: true },
+    { label: 'Scheduled', name: 'date_scheduled', orderable: true, hiddenForTaskTemplates: true },
+    { label: 'Started', name: 'date_started', orderable: true, hiddenForTaskTemplates: true },
+    { label: 'Finished', name: 'date_finished', orderable: true, hiddenForTaskTemplates: true },
+    { label: 'Creator', name: 'creator' },
+    { label: 'Template', name: 'template' },
+    { label: 'Abort Task', name: '', hiddenForTaskTemplates: true },
+    { label: (onlyTemplates ? 'Run Task' : 'Rerun Task'), name: '' },
+    { label: 'Detail View', name: '' },
+  ];
+
   function Row(props) {
     const { row } = props;
     const [open, setOpen] = React.useState(false);
@@ -213,16 +228,20 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
           }
           <TableCell>{row.created_name}</TableCell>
           <TableCell>{row.template_name}</TableCell>
-          <TableCell>
-            {
-              [1, 2].includes(row.status) ?
-                <Tooltip title="Abort Task execution">
-                  <IconButton onClick={(e) => handleAbortConfirmation(e, row)}>
-                    <CancelIcon />
-                  </IconButton>
-                </Tooltip> : null
-            }
-          </TableCell>
+          {
+            !onlyTemplates ?
+            <TableCell>
+              {
+                [textToStatusId("SCHEDULED")].includes(row.status) ?
+                  <Tooltip title="Abort Task execution">
+                    <IconButton onClick={(e) => handleAbortConfirmation(e, row)}>
+                      <CancelIcon />
+                    </IconButton>
+                  </Tooltip> : null
+              }
+            </TableCell>
+            : null
+          }
           <TableCell>
             {
               onlyTemplates ?
@@ -249,7 +268,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
           </TableCell>
         </TableRow>
         <TableRow className={classes.detail}>
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={headCells.length}>
             <Collapse in={open} timeout="auto" unmountOnExit style={{ paddingTop: 15, paddingBottom: 30 }}>
               <Box margin={1}>
                 <TaskDetail taskId={row.id} />
@@ -260,20 +279,6 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
       </React.Fragment>
     );
   }
-
-  const headCells = [
-    { label: '#', name: 'id', orderable: true },
-    { label: 'Name', name: 'name', orderable: true },
-    { label: 'Status', name: 'status', orderable: true },
-    { label: 'Scheduled', name: 'date_scheduled', orderable: true, hiddenForTaskTemplates: true },
-    { label: 'Started', name: 'date_started', orderable: true, hiddenForTaskTemplates: true },
-    { label: 'Finished', name: 'date_finished', orderable: true, hiddenForTaskTemplates: true },
-    { label: 'Creator', name: 'creator' },
-    { label: 'Template', name: 'template' },
-    { label: 'Abort Task', name: '' },
-    { label: (onlyTemplates ? 'Run Task' : 'Rerun Task'), name: '' },
-    { label: 'Detail View', name: '' },
-  ];
 
   const handleSortChange = (event, name) => {
     const newName = newOrderName(orderBy, name);

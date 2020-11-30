@@ -31,7 +31,12 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
   let [isTemplate, setIsTemplate] = useState(false);
   let [name, setName] = useState(task.name);
   const classes = useStyles();
-  let [form, setForm] = useState({});
+  const getInitialVariables = () => {
+    let variables = task.variables;
+    delete variables['name'];
+    return variables;
+  };
+  let [form, setForm] = useState(task.variables ? getInitialVariables() : {});
 
   useEffect(() => {
     setStepValid(name !== '');
@@ -55,8 +60,14 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
       variables: {},
       is_template: isTemplate,
     };
-    for (let variable of task.template.variables) {
-      taskAttr.variables[variable] = form[variable];
+    if(Array.isArray(task.template.variables)) {
+      for (let variable of task.template.variables) {
+        taskAttr.variables[variable] = form[variable];
+      }
+    } else {
+      for (let variable of Object.keys(task.template.variables)) {
+        taskAttr.variables[variable] = form[variable];
+      }
     }
     if (!runNow) {
       const scheduledDate = new Date(form['scheduled-date'] + 'T' + form['scheduled-time']);
@@ -124,7 +135,16 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
               className={classes.textField}
               variant="outlined"
               label={variable} />
-          }) : ''
+          }) :
+          Object.entries(task.template.variables).map((variable) => {
+            return <TextField
+              key={variable[0]}
+              id={variable[0]}
+              defaultValue={variable[1]}
+              className={classes.textField}
+              variant="outlined"
+              label={variable[0]} />
+          })
         }
       </form>
     </div>

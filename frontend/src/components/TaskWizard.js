@@ -13,7 +13,7 @@ function TaskWizard({ checkAndGetToken, task, steps, postTaskWizard, clearTaskWi
     let isValid = false;
     if(step) {
       for(let i=0; i < step; i++) {
-        if(!('initiallyValid' in Object.keys(steps[i])) || steps[i].initiallyValid(task)) {
+        if(!(Object.keys(steps[i])).includes('initiallyValid') || steps[i].initiallyValid(task)) {
           isValid = true;
         } else {
           return 0;
