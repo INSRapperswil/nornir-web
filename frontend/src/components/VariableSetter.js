@@ -31,13 +31,19 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
   let [isTemplate, setIsTemplate] = useState(false);
   let [name, setName] = useState(task.name);
   const classes = useStyles();
-  let [form, setForm] = useState(task.variables ? task.variables : {});
+  const getInitialVariables = () => {
+    let variables = task.variables;
+    delete variables['name'];
+    return variables;
+  };
+  let [form, setForm] = useState(task.variables ? getInitialVariables() : {});
 
   useEffect(() => {
     setStepValid(name !== '');
   }, [name, setStepValid]);
 
   const handleFormChange = (event) => {
+    console.log(form);
     if(!form['scheduled-date'] && form['scheduled-time']) {
       form['scheduled-date'] = getDefaultDate();
     }
