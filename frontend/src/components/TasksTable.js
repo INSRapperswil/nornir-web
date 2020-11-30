@@ -212,16 +212,20 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
           }
           <TableCell>{row.created_name}</TableCell>
           <TableCell>{row.template_name}</TableCell>
-          <TableCell>
-            {
-              [1, 2].includes(row.status) ?
-                <Tooltip title="Abort Task execution">
-                  <IconButton onClick={(e) => handleAbortConfirmation(e, row)}>
-                    <CancelIcon />
-                  </IconButton>
-                </Tooltip> : null
-            }
-          </TableCell>
+          {
+            !onlyTemplates ?
+            <TableCell>
+              {
+                [1, 2].includes(row.status) ?
+                  <Tooltip title="Abort Task execution">
+                    <IconButton onClick={(e) => handleAbortConfirmation(e, row)}>
+                      <CancelIcon />
+                    </IconButton>
+                  </Tooltip> : null
+              }
+            </TableCell>
+            : null
+          }
           <TableCell>
             {
               onlyTemplates ?
@@ -269,7 +273,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
     { label: 'Finished', name: 'date_finished', orderable: true, hiddenForTaskTemplates: true },
     { label: 'Creator', name: 'creator' },
     { label: 'Template', name: 'template' },
-    { label: 'Abort Task', name: '' },
+    { label: 'Abort Task', name: '', hiddenForTaskTemplates: true },
     { label: (onlyTemplates ? 'Run Task' : 'Rerun Task'), name: '' },
     { label: 'Detail View', name: '' },
   ];
