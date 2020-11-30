@@ -21,6 +21,7 @@ import {
 import FilterDialog from './FilterDialog';
 import { useHistory } from 'react-router-dom';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import { textToStatusId } from '../helperFunctions';
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -189,6 +190,20 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
     });
   }
 
+  const headCells = [
+    { label: '#', name: 'id', orderable: true },
+    { label: 'Name', name: 'name', orderable: true },
+    { label: 'Status', name: 'status', orderable: true },
+    { label: 'Scheduled', name: 'date_scheduled', orderable: true, hiddenForTaskTemplates: true },
+    { label: 'Started', name: 'date_started', orderable: true, hiddenForTaskTemplates: true },
+    { label: 'Finished', name: 'date_finished', orderable: true, hiddenForTaskTemplates: true },
+    { label: 'Creator', name: 'creator' },
+    { label: 'Template', name: 'template' },
+    { label: 'Abort Task', name: '', hiddenForTaskTemplates: true },
+    { label: (onlyTemplates ? 'Run Task' : 'Rerun Task'), name: '' },
+    { label: 'Detail View', name: '' },
+  ];
+
   function Row(props) {
     const { row } = props;
     const [open, setOpen] = React.useState(false);
@@ -216,7 +231,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
             !onlyTemplates ?
             <TableCell>
               {
-                [1, 2].includes(row.status) ?
+                [textToStatusId("SCHEDULED")].includes(row.status) ?
                   <Tooltip title="Abort Task execution">
                     <IconButton onClick={(e) => handleAbortConfirmation(e, row)}>
                       <CancelIcon />
@@ -252,7 +267,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
           </TableCell>
         </TableRow>
         <TableRow className={classes.detail}>
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={headCells.length}>
             <Collapse in={open} timeout="auto" unmountOnExit style={{ paddingTop: 15, paddingBottom: 30 }}>
               <Box margin={1}>
                 <TaskDetail taskId={row.id} />
@@ -263,20 +278,6 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates }) {
       </React.Fragment>
     );
   }
-
-  const headCells = [
-    { label: '#', name: 'id', orderable: true },
-    { label: 'Name', name: 'name', orderable: true },
-    { label: 'Status', name: 'status', orderable: true },
-    { label: 'Scheduled', name: 'date_scheduled', orderable: true, hiddenForTaskTemplates: true },
-    { label: 'Started', name: 'date_started', orderable: true, hiddenForTaskTemplates: true },
-    { label: 'Finished', name: 'date_finished', orderable: true, hiddenForTaskTemplates: true },
-    { label: 'Creator', name: 'creator' },
-    { label: 'Template', name: 'template' },
-    { label: 'Abort Task', name: '', hiddenForTaskTemplates: true },
-    { label: (onlyTemplates ? 'Run Task' : 'Rerun Task'), name: '' },
-    { label: 'Detail View', name: '' },
-  ];
 
   const handleSortChange = (event, name) => {
     const newName = newOrderName(orderBy, name);

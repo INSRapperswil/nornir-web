@@ -120,6 +120,24 @@ export function statusIdToText(statusId) {
       break;
   }
 }
+export function textToStatusId(text) {
+  switch (text) {
+    case "CREATED":
+      return 0;
+    case "SCHEDULED":
+      return 1;
+    case "RUNNING":
+      return 2;
+    case "FINISHED":
+      return 3;
+    case "FAILED":
+      return 4;
+    case "ABORTED":
+      return 5;
+    default:
+      break;
+  }
+}
 
 export function isOrderActive(active, testOrder) {
   return testOrder === active || ('-' + testOrder) === active;
