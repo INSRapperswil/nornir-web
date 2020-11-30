@@ -21,8 +21,8 @@ import {
 import FilterDialog from './FilterDialog';
 import { useHistory } from 'react-router-dom';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { textToStatusId } from '../helperFunctions';
 import { hasNetadminPermissions } from '../redux/reducers';
+import { textToStatusId, statusToChip } from '../helperFunctions';
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -217,7 +217,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
             {row.id}
           </TableCell>
           <TableCell>{row.name}</TableCell>
-          <TableCell>{statusIdToText(row.status)}</TableCell>
+          <TableCell>{statusToChip(row.status)}</TableCell>
           {
             onlyTemplates ? null :
               <React.Fragment>
