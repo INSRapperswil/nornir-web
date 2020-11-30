@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Table, TableHead, TableRow, TableCell, TableBody, TableSortLabel
+  Table, TableHead, TableRow, TableCell, TableBody, TableSortLabel, Chip,
 } from '@material-ui/core';
 import jwt_decode from "jwt-decode";
 
@@ -109,6 +109,20 @@ export function statusIdToText(statusId) {
 }
 export function textToStatusId(text) {
   return statusArray.indexOf(text);
+}
+function getStatusChip(color, label) {
+  return <Chip style={{ backgroundColor: color }} label={label} />;
+}
+export function statusToChip(status) {
+  switch (status) {
+    case 3:
+      return getStatusChip('rgb(237, 247, 237)', statusIdToText(status));
+    case 4:
+    case 5:
+      return getStatusChip('rgb(253, 236, 234)', statusIdToText(status));
+    default:
+      return getStatusChip('rgb(232, 244, 253)', statusIdToText(status));
+  }
 }
 
 export function isOrderActive(active, testOrder) {
