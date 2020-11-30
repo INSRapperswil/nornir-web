@@ -75,10 +75,6 @@ class NornirHandler:
         return serialize_result(result)
 
     @staticmethod
-    def get_job_template_definitions(package_path=None):
-        return JobDiscovery(package_path).get_job_definitions()
-
-    @staticmethod
     def format_host(nornir_host: Host) -> dict:
         # remove unwanted or critical properties
         host = nornir_host.dict()
