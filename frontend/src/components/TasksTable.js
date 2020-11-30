@@ -217,7 +217,6 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
             {row.id}
           </TableCell>
           <TableCell>{row.name}</TableCell>
-          {/* <TableCell>{statusIdToText(row.status)}</TableCell> */}
           <TableCell>{statusToChip(row.status)}</TableCell>
           {
             onlyTemplates ? null :
