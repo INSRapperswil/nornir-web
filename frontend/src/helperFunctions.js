@@ -102,41 +102,13 @@ export function objectToTable(data) {
   );
 }
 
+
+const statusArray =  ["CREATED", "SCHEDULED", "RUNNING", "FINISHED", "FAILED", "ABORTED"];
 export function statusIdToText(statusId) {
-  switch (statusId) {
-    case 0:
-      return "CREATED";
-    case 1:
-      return "SCHEDULED";
-    case 2:
-      return "RUNNING";
-    case 3:
-      return "FINISHED";
-    case 4:
-      return "FAILED";
-    case 5:
-      return "ABORTED";
-    default:
-      break;
-  }
+  return statusArray[statusId];
 }
 export function textToStatusId(text) {
-  switch (text) {
-    case "CREATED":
-      return 0;
-    case "SCHEDULED":
-      return 1;
-    case "RUNNING":
-      return 2;
-    case "FINISHED":
-      return 3;
-    case "FAILED":
-      return 4;
-    case "ABORTED":
-      return 5;
-    default:
-      break;
-  }
+  return statusArray.indexOf(text);
 }
 
 export function isOrderActive(active, testOrder) {
