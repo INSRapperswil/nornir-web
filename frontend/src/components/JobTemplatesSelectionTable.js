@@ -200,7 +200,8 @@ function JobTemplatesSelectionTable({ checkAndGetToken, task, updateTaskWizard, 
   return (
     <div id="job-templates-selection-table" style={{ marginBottom: 20,  marginTop: 10 }}>
       <Grid container>
-        <Grid item className={`${classes.box}`} xs={12}>
+        <Grid item className={`${classes.box}`} xs={6}></Grid>
+        <Grid item className={`${classes.box} ${classes.filters}`} xs={6}>
           <Tooltip title="Clear Search and Filters">
             <Button variant="outlined" onClick={handleClearSearchFilter}>
               <HighlightOffIcon/>
