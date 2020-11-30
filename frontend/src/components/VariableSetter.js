@@ -43,7 +43,6 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
   }, [name, setStepValid]);
 
   const handleFormChange = (event) => {
-    console.log(form);
     if(!form['scheduled-date'] && form['scheduled-time']) {
       form['scheduled-date'] = getDefaultDate();
     }
