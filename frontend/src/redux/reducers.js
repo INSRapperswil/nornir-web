@@ -144,3 +144,11 @@ export function getIsAuthenticated(state) {
 export function getUser(state) {
   return state.user;
 }
+
+export function hasSuperuserPermission(state) {
+  return state.user.groups.includes('superuser');
+}
+
+export function hasNetadminPermissions(state) {
+  return state.user.groups.includes('superuser') || state.user.groups.includes('netadmin');
+}
