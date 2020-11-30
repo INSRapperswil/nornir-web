@@ -2,18 +2,6 @@ import * as api from "../api";
 import { buildUserState } from "../helperFunctions";
 import jwt_decode from "jwt-decode";
 
-export function fetchTasks() {
-  return (dispatch, getState) => {
-    dispatch({ type: "FETCH_TASKS_STARTED" });
-
-    return api.getTasks()
-      .then(({ result: tasks }) => {
-        dispatch({ type: "FETCH_TASKS_SUCCEEDED", tasks })
-      })
-      .catch((error) => dispatch({ type: "FETCH_TASKS_FAILED", error }));
-  };
-}
-
 export function postTaskWizard() {
   return (dispatch, getState) => {
     dispatch({ type: "POST_TASK_WIZARD_STARTED" });

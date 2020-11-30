@@ -1,25 +1,6 @@
 import { combineReducers } from "redux";
 import { buildUserState } from "../helperFunctions";
 
-const initialTasksState = {
-  tasks: null,
-  isLoading: false,
-  error: null,
-};
-
-function tasks(state = initialTasksState, action) {
-  switch (action.type) {
-    case "FETCH_TASKS_STARTED":
-      return { ...state, isLoading: true, error: null };
-    case "FETCH_TASKS_SUCCEEDED":
-      return { ...state, isLoading: false, tasks: action.tasks };
-    case "FETCH_TASKS_FAILED":
-      return { ...state, isLoading: false, error: action.error };
-    default:
-      return state;
-  }
-}
-
 const initialUser = {
   user_id: 0,
   refresh_token: '',
@@ -114,16 +95,11 @@ function inventorySelection(state = initialInventory, action) {
 
 const reducers = combineReducers({
   inventorySelection,
-  tasks,
   taskWizard,
   user,
 });
 
 export default reducers;
-
-export function getTasks(state) {
-  return state.tasks.tasks;
-}
 
 export function getWizardTask(state) {
   return state.taskWizard.task;
