@@ -1,11 +1,12 @@
-import yaml
-from nornir import InitNornir
-from nornir.core.inventory import Host
-from nornir.core.filter import F
 from pathlib import Path
 
-from .result_serializer import serialize_result
+import yaml
+from nornir import InitNornir
+from nornir.core.filter import F
+from nornir.core.inventory import Host
+
 from .job_discovery import JobDiscovery
+from .result_serializer import serialize_result
 
 # default Nornir inventory and default settings
 HOST_FILE = 'web_nornir/nornir_config/example_config/hosts.yaml'

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+
 import { getJobTemplateDetails } from '../api';
 import { checkAndGetToken } from '../redux/actions';
-import { connect } from 'react-redux';
 import DetailTable from './DetailTable';
 
 function JobTemplateDetail({ checkAndGetToken, jobTemplateId }) {

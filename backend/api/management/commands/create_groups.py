@@ -1,8 +1,8 @@
 """
 Create permission groups.
 """
-from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission
+from django.core.management.base import BaseCommand
 
 GROUPS = ['superuser', 'netadmin', 'support']
 PERMISSIONS_ALL = Permission.objects.filter(content_type__app_label='api').all()

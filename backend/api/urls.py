@@ -1,8 +1,9 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+
 from api import views
 
-# Create a router and register our viewsets with it.
+# Only registered Viewsets will show in browsable API
 router = DefaultRouter()
 router.register(r'configuration', views.ConfigurationView, basename='configuration')
 router.register(r'inventories', views.InventoryViewSet)

@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { checkAndGetToken, clearTaskWizard, updateTaskWizard } from '../redux/actions';
-import { getWizardTask, getInventorySelectionId } from '../redux/reducers';
 import { connect } from 'react-redux';
+import { Button, Grid, TextField, Tooltip } from '@material-ui/core';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import { makeStyles } from '@material-ui/styles';
+
 import { getInventoryHosts } from '../api';
+import { checkAndGetToken, clearTaskWizard, updateTaskWizard } from '../redux/actions';
+import { getInventorySelectionId, getWizardTask, } from '../redux/reducers';
+import { beautifyJson, newOrderName } from '../helperFunctions';
 import { EnhancedTable } from './EnhancedTable';
 import InventoryHostDetail from './InventoryHostDetail';
 import InventorySelector from './InventorySelector';
 import FilterDialog from './FilterDialog';
-import { beautifyJson, newOrderName } from '../helperFunctions';
-import {
-  Grid, TextField, Button, Tooltip,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 const useStyles = makeStyles({
   box: {
@@ -56,7 +55,7 @@ function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, cle
   const getDefaultFilters = () => {
     return [
       { label: 'Name', name: 'name__contains', value: '' },
-      { label: 'hostname', name: 'hostname__contains', value: '' },
+      { label: 'Hostname', name: 'hostname__contains', value: '' },
       { label: 'Groups', name: 'groups__contains', value: '' },
       { label: 'Platform', name: 'platform__contains', value: '' },
     ];

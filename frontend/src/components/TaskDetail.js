@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { getTaskDetails } from '../api';
-import { checkAndGetToken } from '../redux/actions'
-import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { Button, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import RefreshIcon from '@material-ui/icons/Refresh';
+
+import { getTaskDetails } from '../api';
+import { checkAndGetToken } from '../redux/actions'
 import { beautifyJson } from '../helperFunctions';
 import DetailTable from './DetailTable';
-import RefreshIcon from '@material-ui/icons/Refresh';
 
 const useStyles = makeStyles({
   code:

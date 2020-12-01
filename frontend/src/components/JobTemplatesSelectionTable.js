@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { updateTaskWizard, checkAndGetToken } from '../redux/actions';
-import { getWizardTask } from '../redux/reducers';
-import { getJobTemplates } from '../api';
 import {
-  RadioGroup, Radio, Tooltip, Grid,
-  Table, TableHead, TableBody, TableContainer, TableRow, TableCell, TablePagination,
-  Paper, Box, Typography, Collapse, IconButton, FormControlLabel, Button, TextField,
+  Box, Button, Collapse, FormControlLabel, Grid, IconButton, Paper, Radio, RadioGroup,
+  Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow,
+  TextField, Tooltip, Typography,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import { makeStyles } from '@material-ui/core/styles';
+
+import { getJobTemplates } from '../api';
+import { checkAndGetToken, updateTaskWizard, } from '../redux/actions';
+import { getWizardTask } from '../redux/reducers';
+import { newOrderName, SortableTableHead, } from '../helperFunctions';
 import JobTemplateDetail from './JobTemplateDetail';
 import FilterDialog from './FilterDialog';
-import { SortableTableHead, newOrderName } from '../helperFunctions';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -120,8 +121,8 @@ function JobTemplatesSelectionTable({ checkAndGetToken, task, updateTaskWizard, 
           <TableCell align="right">
             <IconButton aria-label="expand row" size="small" onClick={handleOpen}>
               {
-                isOpen ? <Tooltip title="Close Details"><KeyboardArrowUpIcon /></Tooltip> : 
-                <Tooltip title="Show Details"><KeyboardArrowDownIcon /></Tooltip>
+                isOpen ? <Tooltip title="Close Details"><KeyboardArrowUpIcon /></Tooltip> :
+                  <Tooltip title="Show Details"><KeyboardArrowDownIcon /></Tooltip>
               }
             </IconButton>
           </TableCell>
@@ -198,16 +199,16 @@ function JobTemplatesSelectionTable({ checkAndGetToken, task, updateTaskWizard, 
   };
 
   return (
-    <div id="job-templates-selection-table" style={{ marginBottom: 20,  marginTop: 10 }}>
+    <div id="job-templates-selection-table" style={{ marginBottom: 20, marginTop: 10 }}>
       <Grid container>
         <Grid item className={`${classes.box}`} xs={6}></Grid>
         <Grid item className={`${classes.box} ${classes.filters}`} xs={6}>
           <Tooltip title="Clear Search and Filters">
             <Button variant="outlined" onClick={handleClearSearchFilter}>
-              <HighlightOffIcon/>
+              <HighlightOffIcon />
             </Button>
           </Tooltip>
-          <FilterDialog filters={filters} onFilterSubmit={handleFilterSubmit}/>
+          <FilterDialog filters={filters} onFilterSubmit={handleFilterSubmit} />
           <Button onClick={handleSearch} variant="outlined">Search</Button>
           <TextField
             label="Search Field"

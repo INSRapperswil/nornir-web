@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import JobTemplatesSelectionTable from '../components/JobTemplatesSelectionTable';
-import { Button } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { Button } from '@material-ui/core';
+
 import { hasNetadminPermissions } from '../redux/reducers';
+import JobTemplatesSelectionTable from '../components/JobTemplatesSelectionTable';
 
 function JobTemplates({ hasPermission }) {
   let [stepValid, setStepValid] = useState(false);

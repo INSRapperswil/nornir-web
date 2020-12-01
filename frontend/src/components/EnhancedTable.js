@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import {
-  Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
-  TablePagination, TableSortLabel, Tooltip,
-  Checkbox, Paper, Typography, Collapse, Box, IconButton,
+  Table, TableBody, TableHead, TableCell, TableContainer, TablePagination, TableRow, TableSortLabel,
+  Box, Checkbox, Collapse, IconButton, Paper, Typography, Tooltip,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import { orderDirection, isOrderActive } from '../helperFunctions';
+
+import { isOrderActive, orderDirection, } from '../helperFunctions';
 
 function EnhancedTableHead({
   headCells,
@@ -30,25 +30,25 @@ function EnhancedTableHead({
         </TableCell>
         {headCells.map((headCell) => (
           headCell.orderable ?
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'default'}
-            sortDirection={orderDirection(orderBy, headCell.id)}
-            onClick={(e) => onSortChange(e, headCell.id)}
-          >
-            <TableSortLabel active={isOrderActive(orderBy, headCell.id)} direction={orderDirection(orderBy, headCell.id)}>
+            <TableCell
+              key={headCell.id}
+              align={headCell.numeric ? 'right' : 'left'}
+              padding={headCell.disablePadding ? 'none' : 'default'}
+              sortDirection={orderDirection(orderBy, headCell.id)}
+              onClick={(e) => onSortChange(e, headCell.id)}
+            >
+              <TableSortLabel active={isOrderActive(orderBy, headCell.id)} direction={orderDirection(orderBy, headCell.id)}>
+                {headCell.label}
+              </TableSortLabel>
+            </TableCell>
+            :
+            <TableCell
+              key={headCell.id}
+              align={headCell.numeric ? 'right' : 'left'}
+              padding={headCell.disablePadding ? 'none' : 'default'}
+            >
               {headCell.label}
-            </TableSortLabel>
-          </TableCell>
-          :
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'default'}
-          >
-            {headCell.label}
-          </TableCell>
+            </TableCell>
         ))}
         <TableCell align="right">Detail View</TableCell>
       </TableRow>
@@ -197,8 +197,8 @@ export default function EnhancedTable({
                             onClick={(event) => setOpen(event, row[selectionKey])}
                           >
                             {
-                              isItemOpen ? <Tooltip title="Close Details"><KeyboardArrowUpIcon /></Tooltip> : 
-                              <Tooltip title="Show Details"><KeyboardArrowDownIcon /></Tooltip>
+                              isItemOpen ? <Tooltip title="Close Details"><KeyboardArrowUpIcon /></Tooltip> :
+                                <Tooltip title="Show Details"><KeyboardArrowDownIcon /></Tooltip>
                             }
                           </IconButton>
                         </TableCell>
@@ -231,7 +231,7 @@ export default function EnhancedTable({
             count={count}
             onChangePage={handleChangePage}
             onChangeRowsPerPage={handleRowsPerPage}
-            component="div"/>
+            component="div" />
         </TableContainer>
       </Paper>
     </div>

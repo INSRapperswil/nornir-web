@@ -73,10 +73,6 @@ export function postConfiguration(token, configuration) {
   return postAuthenticatedJson(`/api/configuration/`, token, configuration).then(parseJson);
 }
 
-export function getUser(id, token) {
-  return getAuthenticatedJson(`/api/users/${id}/`, token).then(parseJson);
-}
-
 export function authenticate(username, password) {
   return postJson('/api/token/', { username, password }).then(parseJson);
 }

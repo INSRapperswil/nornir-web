@@ -1,26 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { getWizardTask } from '../redux/reducers';
-import { checkAndGetToken, updateTaskWizard, postTaskWizard, clearTaskWizard } from '../redux/actions';
-import { Stepper, Step, StepLabel, Button } from '@material-ui/core';
-import { runTask, runTaskAsync } from '../api';
-import TaskDetail from './TaskDetail';
 import { useHistory } from 'react-router-dom';
+import { Button, Step, StepLabel, Stepper, } from '@material-ui/core';
+
+import { runTask, runTaskAsync } from '../api';
+import { checkAndGetToken, clearTaskWizard, postTaskWizard, updateTaskWizard, } from '../redux/actions';
+import { getWizardTask } from '../redux/reducers';
+import TaskDetail from './TaskDetail';
 
 function TaskWizard({ checkAndGetToken, task, steps, postTaskWizard, clearTaskWizard, entryStep }) {
   const initiallyValid = () => {
     const step = parseInt(entryStep);
     let isValid = false;
-    if(step) {
-      for(let i=0; i < step; i++) {
-        if(!(Object.keys(steps[i])).includes('initiallyValid') || steps[i].initiallyValid(task)) {
+    if (step) {
+      for (let i = 0; i < step; i++) {
+        if (!(Object.keys(steps[i])).includes('initiallyValid') || steps[i].initiallyValid(task)) {
           isValid = true;
         } else {
           return 0;
         }
       }
     }
-    if(isValid) {
+    if (isValid) {
       return step;
     } else {
       return 0;
@@ -36,8 +37,8 @@ function TaskWizard({ checkAndGetToken, task, steps, postTaskWizard, clearTaskWi
     return () => {
       clearTaskWizard();
     }
-  // empty dependencies array, so it only runs on mount.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // empty dependencies array, so it only runs on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleFinish = (event) => {
@@ -58,7 +59,7 @@ function TaskWizard({ checkAndGetToken, task, steps, postTaskWizard, clearTaskWi
     handleNext(event);
   };
   const handleNext = (event) => {
-    if(onNext && onNext.current) {
+    if (onNext && onNext.current) {
       onNext.current.onNext()
     }
     setStepValid(false);
@@ -85,10 +86,10 @@ function TaskWizard({ checkAndGetToken, task, steps, postTaskWizard, clearTaskWi
           );
         })}
       </Stepper>
-      { activeStep !== 0 && activeStep < steps.length ? <Button onClick={handleBack}>Back</Button> : '' }
-      { activeStep < steps.length-1 ? <Button onClick={handleNext} disabled={!stepValid} variant="contained" color="primary">Next</Button> : '' }
-      { activeStep === steps.length-1 ? <Button onClick={handleFinish} variant="contained" color="primary">Finish</Button> : '' }
-      { activeStep < steps.length ? steps[activeStep].component(setStepValid, onNext) : getCreatedTask() }
+      { activeStep !== 0 && activeStep < steps.length ? <Button onClick={handleBack}>Back</Button> : ''}
+      { activeStep < steps.length - 1 ? <Button onClick={handleNext} disabled={!stepValid} variant="contained" color="primary">Next</Button> : ''}
+      { activeStep === steps.length - 1 ? <Button onClick={handleFinish} variant="contained" color="primary">Finish</Button> : ''}
+      { activeStep < steps.length ? steps[activeStep].component(setStepValid, onNext) : getCreatedTask()}
     </div>
   );
 }

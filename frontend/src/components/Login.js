@@ -1,10 +1,11 @@
-import { Button, TextField } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { authenticate } from '../redux/actions';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+import { Button, TextField } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Alert } from '@material-ui/lab';
+
+import { authenticate } from '../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
   root: {

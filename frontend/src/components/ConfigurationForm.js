@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { getConfiguration, postConfiguration } from '../api';
-import { checkAndGetToken } from '../redux/actions';
 import { connect } from 'react-redux';
 import {
-  Button, Checkbox, FormControl, FormControlLabel, InputLabel, Select, MenuItem, TextField
+  Button, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select, TextField
 } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
+import { Alert } from '@material-ui/lab';
+
+import { getConfiguration, postConfiguration } from '../api';
+import { checkAndGetToken } from '../redux/actions';
 import { hasSuperuserPermission } from '../redux/reducers';
 
 const useStyles = makeStyles((theme) => ({

@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useImperativeHandle } from 'react';
-import {
-  Checkbox, TextField, FormControlLabel,
-} from '@material-ui/core';
-import { getWizardTask } from '../redux/reducers';
-import { updateTaskWizard } from '../redux/actions';
 import { connect } from 'react-redux';
+import { Checkbox, FormControlLabel, TextField, } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+
+import { updateTaskWizard } from '../redux/actions';
+import { getWizardTask } from '../redux/reducers';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,7 +42,7 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
   }, [name, setStepValid]);
 
   const handleFormChange = (event) => {
-    if(!form['scheduled-date'] && form['scheduled-time']) {
+    if (!form['scheduled-date'] && form['scheduled-time']) {
       form['scheduled-date'] = getDefaultDate();
     }
     if (!form['scheduled-time'] && form['scheduled-date']) {
@@ -60,7 +59,7 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
       variables: {},
       is_template: isTemplate,
     };
-    if(Array.isArray(task.template.variables)) {
+    if (Array.isArray(task.template.variables)) {
       for (let variable of task.template.variables) {
         taskAttr.variables[variable] = form[variable];
       }
@@ -136,15 +135,15 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
               variant="outlined"
               label={variable} />
           }) :
-          Object.entries(task.template.variables).map((variable) => {
-            return <TextField
-              key={variable[0]}
-              id={variable[0]}
-              defaultValue={variable[1]}
-              className={classes.textField}
-              variant="outlined"
-              label={variable[0]} />
-          })
+            Object.entries(task.template.variables).map((variable) => {
+              return <TextField
+                key={variable[0]}
+                id={variable[0]}
+                defaultValue={variable[1]}
+                className={classes.textField}
+                variant="outlined"
+                label={variable[0]} />
+            })
         }
       </form>
     </div>
