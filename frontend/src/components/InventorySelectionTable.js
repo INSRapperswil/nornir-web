@@ -105,7 +105,7 @@ function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, cle
   };
 
   const handleInventoryChange = (inventoryId) => {
-    clearTaskWizard();
+    updateTaskWizard({ filters: { hosts: [] } });
     setStepValid(false);
     checkAndGetToken().then((token) => {
       getInventoryHosts(token, inventoryId, rowsPerPage, 0).then((response) => {
