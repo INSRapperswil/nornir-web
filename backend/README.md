@@ -11,26 +11,60 @@ pip install -r requirements.txt
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py create_groups
-python manage.py collectstatic
 ```
 
 During development you can use the `python manage.py create_testdb` command to put some sample data into your database.
 
 ## Running
 
-The backend requires a nginx server, redis server and celery worker running. nginx configuration is provided in this repository. For detailed configuration consult the SA documentation.
-```
-docker run --name redis -p 6379:6379 -d redis
-celery -A backend worker
-daphne backend.asgi:application -b 0.0.0.0
-```
+The backend requires a redis server and celery worker running.
 
-In develoopment, you can also use the command  `python manage.py runserver` instead of running it with daphne.
+```bash
+docker run --name redis -p 6379:6379 -d redis # or start redis-server locally
+celery -A backend worker
+python manage.py runserver
+```
 
 Server is accessible at http://127.0.0.1:8000/api
 
 For api definition check out http://127.0.0.1:8000/swagger-ui.
 You can also have a look at the openapi yaml at http://127.0.0.1:8000/openapi
+
+## Testing & Coverage
+
+To run tests, execute `coverage run -m pytest -vv`
+
+To get a coverage report, run `coverage report`
+
+## Deployment
+
+To deploy the application, make sure you have a nginx server installed or any other server to serve the static files.
+
+Collect the static files, then configure your nginx server according the `nginx.conf` in this repository.
+```
+source venv/bin/activate
+python manage.py collectstatic
+```
+
+Change the `celeryworker.service` and `daphne.service` files to match your systems user, group and path to the project.
+
+Example with `daphne.service`
+```
+User=yourusername
+Group=yourgroupname
+WorkingDirectory=/path/to/project/web-app-nornir/backend
+Environment="VIRTUAL_ENV=/path/to/project/web-app-nornir/backend/venv"
+Environment="PATH=$VIRTUAL_ENV/bin"
+ExecStart=/path/to/project/web-app-nornir/backend/venv/bin/daphne backend.asgi:application -b 0.0.0.0
+```
+
+Once these files are modified, copy them to `/etc/systemd/system` and enable and start the services.
+```
+sudo systemctl enable celeryworker.service
+sudo systemctl enable daphne.service
+sudo systemctl start celeryworker.service
+sudo systemctl start daphne.service
+```
 
 ## API Authentication
 *Reference: https://django-rest-framework-simplejwt.readthedocs.io/en/latest/*
