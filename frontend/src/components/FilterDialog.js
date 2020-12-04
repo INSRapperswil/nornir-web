@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
-  Dialog, DialogTitle, DialogContent, DialogActions,
-  Button, TextField, Badge,
+  Badge, Button, TextField,
+  Dialog, DialogActions, DialogContent, DialogTitle,
 } from '@material-ui/core';
 
 function FilterDialog({ filters, onFilterSubmit }) {
@@ -40,13 +40,13 @@ function FilterDialog({ filters, onFilterSubmit }) {
               return <React.Fragment key={index}>
                 {
                   filter.component ? filter.component(filter.value) :
-                  <div>
-                    <TextField
-                      label={filter.label}
-                      name={filter.name}
-                      defaultValue={filter.value}
-                    />
-                  </div>
+                    <div>
+                      <TextField
+                        label={filter.label}
+                        name={filter.name}
+                        defaultValue={filter.value}
+                      />
+                    </div>
                 }
               </React.Fragment>
             })}

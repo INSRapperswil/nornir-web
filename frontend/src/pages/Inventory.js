@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import InventorySelectionTable from '../components/InventorySelectionTable';
-import { Button, Badge } from '@material-ui/core';
-import { getWizardTask, hasNetadminPermissions } from '../redux/reducers';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { Badge, Button, } from '@material-ui/core';
+
+import { getWizardTask, hasNetadminPermissions } from '../redux/reducers';
+import InventorySelectionTable from '../components/InventorySelectionTable';
 
 function Inventory({ hasPermission, task }) {
   let [stepValid, setStepValid] = useState(false);

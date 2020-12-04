@@ -1,7 +1,8 @@
 import React from 'react';
-import { getWizardTask } from '../redux/reducers';
 import { connect } from 'react-redux';
-import { Table, TableRow, TableCell, Paper, TableBody } from '@material-ui/core';
+import { Paper, Table, TableCell, TableBody, TableRow, } from '@material-ui/core';
+
+import { getWizardTask } from '../redux/reducers';
 
 function FinishTask({ task }) {
   return (
@@ -16,23 +17,23 @@ function FinishTask({ task }) {
             </TableRow>
             {
               task.is_template ?
-              <TableRow>
-                <TableCell><strong>Is Template:</strong></TableCell>
-                <TableCell>
-                  <p>True</p>
-                </TableCell>
-              </TableRow>
-              :
-              <TableRow>
-                <TableCell><strong>Scheduled:</strong></TableCell>
-                <TableCell>
-                  { 
-                    task.date_scheduled ?
-                    <p>{new Date(task.date_scheduled).toLocaleString()}</p> :
-                    <p>run now</p>
-                  }   
-                </TableCell>
-              </TableRow>
+                <TableRow>
+                  <TableCell><strong>Is Template:</strong></TableCell>
+                  <TableCell>
+                    <p>True</p>
+                  </TableCell>
+                </TableRow>
+                :
+                <TableRow>
+                  <TableCell><strong>Scheduled:</strong></TableCell>
+                  <TableCell>
+                    {
+                      task.date_scheduled ?
+                        <p>{new Date(task.date_scheduled).toLocaleString()}</p> :
+                        <p>run now</p>
+                    }
+                  </TableCell>
+                </TableRow>
             }
             <TableRow>
               <TableCell><strong>Template:</strong></TableCell>

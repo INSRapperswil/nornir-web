@@ -1,4 +1,5 @@
 import { combineReducers } from "redux";
+
 import { buildUserState } from "../helperFunctions";
 
 const initialUser = {
@@ -115,10 +116,6 @@ export function getInventorySelectionId(state) {
 
 export function getIsAuthenticated(state) {
   return state.user.refresh_token !== '';
-}
-
-export function getUser(state) {
-  return state.user;
 }
 
 export function hasSuperuserPermission(state) {

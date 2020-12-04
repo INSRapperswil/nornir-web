@@ -1,9 +1,9 @@
 from django.contrib.auth.models import User
+from drf_dynamic_fields import DynamicFieldsMixin
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from api.models import Task, JobTemplate, Inventory
-from drf_dynamic_fields import DynamicFieldsMixin
 
 
 class TaskSerializer(DynamicFieldsMixin, serializers.ModelSerializer):

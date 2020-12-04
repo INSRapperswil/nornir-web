@@ -1,10 +1,10 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
+import FinishTask from '../components/FinishTask';
 import InventorySelectionTable, { checkStepValidity } from '../components/InventorySelectionTable';
 import JobTemplatesSelectionTable from '../components/JobTemplatesSelectionTable';
-import VariableSetter from '../components/VariableSetter';
-import FinishTask from '../components/FinishTask';
 import TaskWizard from '../components/TaskWizard';
-import { useLocation } from 'react-router-dom';
+import VariableSetter from '../components/VariableSetter';
 
 function getSteps(fromTemplates) {
   let steps =  [

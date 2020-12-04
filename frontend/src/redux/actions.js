@@ -1,6 +1,7 @@
+import jwt_decode from "jwt-decode";
+
 import * as api from "../api";
 import { buildUserState } from "../helperFunctions";
-import jwt_decode from "jwt-decode";
 
 export function postTaskWizard() {
   return (dispatch, getState) => {

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
 import { getInventoryList } from '../api';
 import { checkAndGetToken, updateInventorySelection } from '../redux/actions';
 import { getInventorySelectionId } from '../redux/reducers';
-import { connect } from 'react-redux';
-import {
-  FormControl, InputLabel, MenuItem, Select
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 
 function InventorySelector({ checkAndGetToken, inventory, onInventoryChange, updateInventorySelection }) {
   let [inventoryList, setInventoryList] = useState([{ "id": 1, "name": "Loading...", "notLoaded": true }]);

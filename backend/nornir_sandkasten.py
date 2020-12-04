@@ -1,4 +1,5 @@
 import json
+
 from web_nornir.nornir_handler import NornirHandler
 
 
@@ -14,7 +15,8 @@ def main():
     nh = NornirHandler('web_nornir/nornir_config/inslab_config/hosts.yaml',
                        'web_nornir/nornir_config/inslab_config/groups.yaml')
 
-    result = nh.execute_task(TestTemplate(), {'name': 'ping unreachable', 'target': 'vrf mgmt 10.20.0.202'}, {'hosts': ['spine1']})
+    result = nh.execute_task(TestTemplate(), {'name': 'ping unreachable', 'target': 'vrf mgmt 10.20.0.202'},
+                             {'hosts': ['spine1']})
     print(json.dumps(result))
 
 

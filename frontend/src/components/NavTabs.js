@@ -1,8 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Tabs, Tab } from '@material-ui/core';
+
 import { getIsAuthenticated } from '../redux/reducers';
-import { connect } from 'react-redux';
 
 function NavTabs({ paths, history, isAuthenticated, props }) {
   const handleCallToRouter = (event, value) => {

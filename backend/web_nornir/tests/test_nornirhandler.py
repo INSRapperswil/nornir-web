@@ -1,5 +1,3 @@
-import pytest
-
 from web_nornir.nornir_handler import NornirHandler
 
 host_file = 'web_nornir/nornir_config/test_config/hosts.yaml'

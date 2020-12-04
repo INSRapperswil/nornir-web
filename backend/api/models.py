@@ -1,13 +1,11 @@
-from django.db import models
-from django.utils import timezone
-from django.contrib.auth.models import User
-from web_nornir.nornir_handler import NornirHandler
 from celery import shared_task
 from celery.contrib.abortable import AsyncResult
+from django.contrib.auth.models import User
+from django.db import models
+from django.utils import timezone
+
 from backend.settings import BASE_DIR
-
-
-# Create your models here.
+from web_nornir.nornir_handler import NornirHandler
 
 
 class JobTemplate(models.Model):
@@ -115,7 +113,7 @@ class Task(models.Model):
         else:
             self.status = self.Status.FINISHED
         self.date_finished = timezone.now()
-    
+
     def abort(self):
         if self.celery_task_id == '' or self.status not in [self.Status.SCHEDULED, self.Status.RUNNING]:
             return

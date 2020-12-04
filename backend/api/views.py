@@ -1,17 +1,17 @@
 from django.contrib.auth.models import User
 from django.http import Http404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import filters
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from api.inventory_helpers import InventoryPagination, InventoryOrdering
 from api.models import Task, JobTemplate, Inventory, Configuration
 from api.permissions import ConfigurationPermission
 from api.serializers import TaskSerializer, JobTemplateSerializer, InventorySerializer, UserSerializer, \
     EnhancedTokenObtainPairSerializer
-from api.inventory_helpers import InventoryPagination, InventoryOrdering
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -73,13 +73,13 @@ class InventoryViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['GET'])
     def hosts(self, request, pk):
-        self.search_fields = ['name__contains', 'hostname__contains']
+        search_fields = ['name__contains', 'hostname__contains']
         inventory = self.get_object()
         query_params = []
         for key, value in request.query_params.items():
             query_params.append({key: value}) if key in self.filterset_fields and value else None
         search = request.query_params['search'] if 'search' in request.query_params else ''
-        queryset = inventory.get_hosts(query_params, self.search_fields, search)
+        queryset = inventory.get_hosts(query_params, search_fields, search)
         queryset = InventoryOrdering().filter_queryset(request, queryset, self)
         paginator = self.pagination_class()
         data = paginator.paginate_queryset(queryset=queryset, request=request)

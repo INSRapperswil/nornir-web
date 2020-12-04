@@ -1,28 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { getTasks, abortTask, getTaskDetails } from '../api';
+import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  Box, Collapse, IconButton, Paper, Tooltip, Grid,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField,
-  Button, Select, MenuItem, InputLabel, FormControl, Dialog, DialogTitle, DialogActions,
+  Box, Button, Collapse, Dialog, DialogActions, DialogTitle,
+  FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select,
+  Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField,
+  Tooltip,
 } from '@material-ui/core';
+import CancelIcon from '@material-ui/icons/Cancel';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import RepeatIcon from '@material-ui/icons/Repeat';
-import RefreshIcon from '@material-ui/icons/Refresh';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
-import CancelIcon from '@material-ui/icons/Cancel';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import RepeatIcon from '@material-ui/icons/Repeat';
+
 import { checkAndGetToken, setRerunTask } from '../redux/actions';
-import { connect } from 'react-redux';
+import { hasNetadminPermissions } from '../redux/reducers';
+import { abortTask, getTasks, getTaskDetails } from '../api';
 import TaskDetail from './TaskDetail';
 import {
-  beautifyDate, statusIdToText, newOrderName, SortableTableHead,
+  beautifyDate, newOrderName, SortableTableHead, statusIdToText, statusToChip, textToStatusId,
 } from '../helperFunctions';
 import FilterDialog from './FilterDialog';
-import { useHistory } from 'react-router-dom';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { hasNetadminPermissions } from '../redux/reducers';
-import { textToStatusId, statusToChip } from '../helperFunctions';
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -230,17 +231,17 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
           <TableCell>{row.template_name}</TableCell>
           {
             !onlyTemplates ?
-            <TableCell>
-              {
-                [textToStatusId("SCHEDULED")].includes(row.status) ?
-                  <Tooltip title="Abort Task execution">
-                    <IconButton onClick={(e) => handleAbortConfirmation(e, row)}>
-                      <CancelIcon />
-                    </IconButton>
-                  </Tooltip> : null
-              }
-            </TableCell>
-            : null
+              <TableCell>
+                {
+                  [textToStatusId("SCHEDULED")].includes(row.status) ?
+                    <Tooltip title="Abort Task execution">
+                      <IconButton onClick={(e) => handleAbortConfirmation(e, row)}>
+                        <CancelIcon />
+                      </IconButton>
+                    </Tooltip> : null
+                }
+              </TableCell>
+              : null
           }
           <TableCell>
             {
