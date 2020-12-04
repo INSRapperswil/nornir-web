@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Button, Grid, TextField, Tooltip } from '@material-ui/core';
+import { Button, Grid, Tooltip } from '@material-ui/core';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { makeStyles } from '@material-ui/styles';
 
@@ -12,6 +12,7 @@ import { EnhancedTable } from './EnhancedTable';
 import InventoryHostDetail from './InventoryHostDetail';
 import InventorySelector from './InventorySelector';
 import FilterDialog from './FilterDialog';
+import Search from './Search';
 
 const useStyles = makeStyles({
   box: {
@@ -129,8 +130,9 @@ function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, cle
     fetchAndSetHosts(page, rowsPerPage, filters);
   };
 
-  const handleSearch = (event) => {
-    fetchAndSetHosts(0, rowsPerPage, filters, search);
+  const handleSearch = (newSearch) => {
+    setSearch(newSearch);
+    fetchAndSetHosts(0, rowsPerPage, filters, newSearch);
   };
 
   const handleClearSearchFilter = (event) => {
@@ -160,14 +162,7 @@ function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, cle
             </Button>
           </Tooltip>
           <FilterDialog filters={filters} onFilterSubmit={handleFilterSubmit} />
-          <Button onClick={handleSearch} variant="outlined">Search</Button>
-          <TextField
-            label="Search Field"
-            variant="outlined"
-            value={search}
-            onKeyPress={(e) => e.key === 'Enter' ? handleSearch(e) : null}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <Search onSearchSubmit={handleSearch} />
         </Grid>
       </Grid>
       <EnhancedTable

@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
   Box, Button, Collapse, Dialog, DialogActions, DialogTitle,
   FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select,
-  Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField,
+  Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow,
   Tooltip,
 } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
@@ -24,6 +24,7 @@ import {
   beautifyDate, newOrderName, SortableTableHead, statusIdToText, statusToChip, textToStatusId,
 } from '../helperFunctions';
 import FilterDialog from './FilterDialog';
+import Search from './Search';
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -130,8 +131,9 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
     );
   };
 
-  const handleSearch = (event) => {
-    fetchAndSetTasks(0, rowsPerPage, filters, search, orderBy);
+  const handleSearch = (newSearch) => {
+    setSearch(newSearch);
+    fetchAndSetTasks(0, rowsPerPage, filters, newSearch, orderBy);
   };
 
   const handleFilterSubmit = (newFilters) => {
@@ -302,14 +304,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
             </Button>
           </Tooltip>
           <FilterDialog filters={filters} setFilters={setFilters} onFilterSubmit={handleFilterSubmit} />
-          <Button onClick={handleSearch} variant="outlined">Search</Button>
-          <TextField
-            label="Search Field"
-            variant="outlined"
-            value={search}
-            onKeyPress={(e) => e.key === 'Enter' ? handleSearch(e) : null}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <Search onSearchSubmit={handleSearch} />
         </Grid>
       </Grid>
       <TableContainer component={Paper}>

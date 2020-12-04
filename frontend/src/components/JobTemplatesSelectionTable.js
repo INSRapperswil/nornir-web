@@ -3,19 +3,19 @@ import { connect } from 'react-redux';
 import {
   Box, Button, Collapse, FormControlLabel, Grid, IconButton, Paper, Radio, RadioGroup,
   Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow,
-  TextField, Tooltip, Typography,
+  Tooltip, Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-
 import { getJobTemplates } from '../api';
 import { checkAndGetToken, updateTaskWizard, } from '../redux/actions';
 import { getWizardTask } from '../redux/reducers';
 import { newOrderName, SortableTableHead, } from '../helperFunctions';
 import JobTemplateDetail from './JobTemplateDetail';
 import FilterDialog from './FilterDialog';
+import Search from './Search';
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -167,13 +167,14 @@ function JobTemplatesSelectionTable({ checkAndGetToken, task, updateTaskWizard, 
 
   const handleFilterSubmit = (filters) => {
     setFilters(filters);
-    setPage(0)
+    setPage(0);
     fetchAndSetTemplates(page, rowsPerPage, filters);
   }
 
-  const handleSearch = (event) => {
-    fetchAndSetTemplates(0, rowsPerPage, filters, search);
-  }
+  const handleSearch = (newSearch) => {
+    setSearch(newSearch);
+    fetchAndSetTemplates(0, rowsPerPage, filters, newSearch);
+  };
 
   const handleClearSearchFilter = (event) => {
     const newSearch = '';
@@ -209,14 +210,7 @@ function JobTemplatesSelectionTable({ checkAndGetToken, task, updateTaskWizard, 
             </Button>
           </Tooltip>
           <FilterDialog filters={filters} onFilterSubmit={handleFilterSubmit} />
-          <Button onClick={handleSearch} variant="outlined">Search</Button>
-          <TextField
-            label="Search Field"
-            variant="outlined"
-            value={search}
-            onKeyPress={(e) => e.key === 'Enter' ? handleSearch(e) : null}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <Search onSearchSubmit={handleSearch} />
         </Grid>
       </Grid>
       <TableContainer component={Paper}>
