@@ -5,7 +5,7 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { makeStyles } from '@material-ui/styles';
 
 import { getInventoryHosts } from '../api';
-import { checkAndGetToken, clearTaskWizard, updateTaskWizard } from '../redux/actions';
+import { checkAndGetToken, updateTaskWizard } from '../redux/actions';
 import { getInventorySelectionId, getWizardTask, } from '../redux/reducers';
 import { beautifyJson, newOrderName } from '../helperFunctions';
 import { EnhancedTable } from './EnhancedTable';
@@ -46,7 +46,7 @@ export function checkStepValidity(filters) {
   return (filters !== undefined && filters.length > 0);
 }
 
-function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, clearTaskWizard, setStepValid, inventorySelectionId }) {
+function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, setStepValid, inventorySelectionId }) {
   let [inventory, setInventory] = useState([]);
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
@@ -191,7 +191,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   checkAndGetToken,
   updateTaskWizard,
-  clearTaskWizard,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(InventorySelectionTable);

@@ -82,7 +82,6 @@ function taskWizard(state = initialTaskWizardState(), action) {
 const initialInventory = {
   inventory: 1,
   isLoading: false,
-  error: null,
 }
 
 function inventorySelection(state = initialInventory, action) {

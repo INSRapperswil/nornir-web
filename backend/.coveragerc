@@ -1,7 +1,7 @@
 [run]
 source = .
 branch = True
-omit=backend/settings.py,manage.py,backend/asgi.py,backend/wsgi.py,api/apps.py,api/migrations/*,venv/*,nornir_sandkasten.py
+omit=backend/settings.py,manage.py,backend/asgi.py,backend/wsgi.py,api/apps.py,api/migrations/*,venv/*
 
 [report]
-#fail_under = 80
+fail_under = 80

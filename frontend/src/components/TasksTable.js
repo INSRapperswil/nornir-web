@@ -21,7 +21,7 @@ import { hasNetadminPermissions } from '../redux/reducers';
 import { abortTask, getTasks, getTaskDetails } from '../api';
 import TaskDetail from './TaskDetail';
 import {
-  beautifyDate, newOrderName, SortableTableHead, statusIdToText, statusToChip, textToStatusId,
+  beautifyDate, getPaginationOptions, newOrderName, SortableTableHead, statusIdToText, statusToChip, textToStatusId,
 } from '../helperFunctions';
 import FilterDialog from './FilterDialog';
 import Search from './Search';
@@ -163,25 +163,27 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
 
   const onRefresh = (e) => {
     fetchAndSetTasks(page, rowsPerPage, filters, search, orderBy);
-  }
+  };
 
   const handleReRun = (e, task) => {
     checkAndGetToken().then((token) => {
       getTaskDetails(token, task.id).then((task) => {
         setRerunTask(task);
-        history.push('/wizard?step=2')
-      })
-    })
+        history.push('/wizard?step=2');
+      });
+    });
   };
 
   const handleAbortConfirmation = (e, task) => {
     setTaskToAbort(task);
     setAbortConfirmationOpen(true);
   };
+
   const handleCancelAbort = (e) => {
     setTaskToAbort({});
     setAbortConfirmationOpen(false);
   };
+
   const handleAbortTask = (e) => {
     setAbortConfirmationOpen(false);
     checkAndGetToken().then((token) => {
@@ -192,7 +194,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
         setTasks(updatedTasks);
       });
     });
-  }
+  };
 
   const headCells = [
     { label: '#', name: 'id', orderable: true },
@@ -327,7 +329,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
           </TableBody>
         </Table>
         <TablePagination
-          rowsPerPageOptions={[2, 10, 25, 50]}
+          rowsPerPageOptions={getPaginationOptions()}
           rowsPerPage={rowsPerPage}
           page={page}
           count={count}

@@ -12,7 +12,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { getJobTemplates } from '../api';
 import { checkAndGetToken, updateTaskWizard, } from '../redux/actions';
 import { getWizardTask } from '../redux/reducers';
-import { newOrderName, SortableTableHead, } from '../helperFunctions';
+import { getPaginationOptions, newOrderName, SortableTableHead, } from '../helperFunctions';
 import JobTemplateDetail from './JobTemplateDetail';
 import FilterDialog from './FilterDialog';
 import Search from './Search';
@@ -105,7 +105,7 @@ function JobTemplatesSelectionTable({ checkAndGetToken, task, updateTaskWizard, 
       <React.Fragment>
         <TableRow
           hover
-          onClick={(event) => handleSelectionChange({ target: { value: row.id } })}
+          onClick={() => handleSelectionChange({ target: { value: row.id } })}
           selected={row.id === task.template.id}
           key={row.id}
           className={classes.root}>
@@ -230,7 +230,7 @@ function JobTemplatesSelectionTable({ checkAndGetToken, task, updateTaskWizard, 
             </TableBody>
           </Table>
           <TablePagination
-            rowsPerPageOptions={[2, 10, 25, 50]}
+            rowsPerPageOptions={getPaginationOptions()}
             rowsPerPage={rowsPerPage}
             page={page}
             count={count}

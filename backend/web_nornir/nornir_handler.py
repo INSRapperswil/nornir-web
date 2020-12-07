@@ -41,12 +41,14 @@ class NornirHandler:
             filtered = self.search_hosts(filtered, search_fields, search_argument)
         return list(map(lambda host: self.get_host_detail(host), filtered.inventory.hosts))
 
-    def filter_hosts(self, nornir, filter_arguments: list):
-        for filter in filter_arguments:
-            nornir = nornir.filter(F(**filter))
+    @staticmethod
+    def filter_hosts(nornir, filter_arguments: list):
+        for f in filter_arguments:
+            nornir = nornir.filter(F(**f))
         return nornir
 
-    def search_hosts(self, nornir, search_fields, search_argument):
+    @staticmethod
+    def search_hosts(nornir, search_fields, search_argument):
         if len(search_fields) == 0:
             return nornir
         query = F(**{search_fields.pop(): search_argument})
@@ -96,6 +98,10 @@ class NornirHandler:
                 if k not in processed:
                     processed.append(k)
                     data[k] = v
+        for k, v in nornir_host.defaults.data.items():
+            if k not in processed:
+                processed.append(k)
+                data[k] = v
 
         host.update({'data': data})
         return host

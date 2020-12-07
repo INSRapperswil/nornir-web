@@ -81,7 +81,7 @@ class TaskAdmin(admin.ModelAdmin):
         ),
         (
             'Filters, Variables, Results',
-            {'fields': ['is_template', 'filters', 'variables', 'result', 'result_host_selection']}
+            {'fields': ['is_template', 'filters', 'variables', 'result']}
         ),
         (
             'Dependencies',
