@@ -84,10 +84,10 @@ function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, cle
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchAndSetHosts = (page, pageSize, _filters = filters, _search = search, _orderBy = orderBy) => {
-    const offset = pageSize * page;
+  const fetchAndSetHosts = ({ _page=page, _pageSize=rowsPerPage, _filters=filters, _search=search, _orderBy=orderBy }) => {
+    const offset = _pageSize * _page;
     checkAndGetToken().then((token) => {
-      getInventoryHosts(token, inventorySelectionId, pageSize, offset, _filters, _search, _orderBy).then((response) => {
+      getInventoryHosts(token, inventorySelectionId, _pageSize, offset, _filters, _search, _orderBy).then((response) => {
         setInventory(response.results);
         setCount(response.count);
       });
@@ -101,7 +101,7 @@ function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, cle
   };
   const handleChangePage = (event, requestedPage) => {
     setPage(requestedPage);
-    fetchAndSetHosts(requestedPage, rowsPerPage);
+    fetchAndSetHosts({ _page: requestedPage });
   };
 
   const handleInventoryChange = (inventoryId) => {
@@ -121,18 +121,17 @@ function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, cle
     const newPage = parseInt(rowsPerPage * page / newPageSize);
     setPage(newPage);
     setRowsPerPage(newPageSize);
-    fetchAndSetHosts(newPage, newPageSize);
+    fetchAndSetHosts({ _page: newPage, _pageSize: newPageSize });
   };
 
   const handleFilterSubmit = () => {
-    setFilters(filters);
     setPage(0);
-    fetchAndSetHosts(page, rowsPerPage, filters);
+    fetchAndSetHosts({ _page: 0 });
   };
 
   const handleSearch = (newSearch) => {
     setSearch(newSearch);
-    fetchAndSetHosts(0, rowsPerPage, filters, newSearch);
+    fetchAndSetHosts({ _page: 0, _search: newSearch });
   };
 
   const handleClearSearchFilter = (event) => {
@@ -140,12 +139,13 @@ function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, cle
     const newFilters = getDefaultFilters();
     setSearch(newSearch);
     setFilters(newFilters);
-    fetchAndSetHosts(page, rowsPerPage, newFilters, newSearch, orderBy);
+    setPage(0);
+    fetchAndSetHosts({ _page: 0, _filters: newFilters, _search: newSearch });
   };
 
   const handleOrderChange = (event, name) => {
     const newName = newOrderName(orderBy, name);
-    fetchAndSetHosts(page, rowsPerPage, filters, search, newName);
+    fetchAndSetHosts({ _orderBy: newName });
     setOrderBy(newName);
   }
 

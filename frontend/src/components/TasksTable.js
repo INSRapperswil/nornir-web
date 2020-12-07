@@ -117,29 +117,29 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
 
   const classes = useStyles();
 
-  const fetchAndSetTasks = (page, pageSize, filters, search, order) => {
-    const offset = page * pageSize;
+  const fetchAndSetTasks = ({ _page=page, _pageSize=rowsPerPage, _filters=filters, _search=search, _orderBy=orderBy }) => {
+    const offset = _page * _pageSize;
     setIsLoading(true);
     checkAndGetToken().then((token) => {
-      getTasks(token, pageSize, offset, aggregateFilters(filters), search, order).then((response) => {
+      getTasks(token, _pageSize, offset, aggregateFilters(_filters), _search, _orderBy).then((response) => {
         setTasks(response.results);
         setCount(response.count);
         setIsLoading(false);
       });
-      setPage(page);
+      setPage(_page);
     }
     );
   };
 
   const handleSearch = (newSearch) => {
     setSearch(newSearch);
-    fetchAndSetTasks(0, rowsPerPage, filters, newSearch, orderBy);
+    fetchAndSetTasks({ _search: newSearch });
   };
 
   const handleFilterSubmit = (newFilters) => {
     setPage(0);
     setFilters(newFilters);
-    fetchAndSetTasks(0, rowsPerPage, newFilters, search, orderBy);
+    fetchAndSetTasks({_page: 0, _filters: newFilters });
   };
 
   const handleClearSearchFilter = (event) => {
@@ -147,22 +147,23 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
     const newFilters = getDefaultFilters();
     setSearch(newSearch);
     setFilters(newFilters);
-    fetchAndSetTasks(page, rowsPerPage, newFilters, newSearch, orderBy);
+    setPage(0);
+    fetchAndSetTasks({ _page: 0, _filters:  newFilters, _search: newSearch });
   };
 
   const handleChangePage = (event, requestedPage) => {
-    fetchAndSetTasks(requestedPage, rowsPerPage, filters, search, orderBy);
+    fetchAndSetTasks({ _page: requestedPage });
   }
 
   const handleRowsPerPage = (event) => {
     const newPageSize = event.target.value;
     const newPage = parseInt(rowsPerPage * page / newPageSize);
-    fetchAndSetTasks(newPage, newPageSize, filters, search, orderBy);
+    fetchAndSetTasks({ _page: newPage, _pageSize: newPageSize });
     setRowsPerPage(newPageSize);
   };
 
   const onRefresh = (e) => {
-    fetchAndSetTasks(page, rowsPerPage, filters, search, orderBy);
+    fetchAndSetTasks({});
   }
 
   const handleReRun = (e, task) => {
@@ -285,7 +286,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
 
   const handleSortChange = (event, name) => {
     const newName = newOrderName(orderBy, name);
-    fetchAndSetTasks(page, rowsPerPage, filters, search, newName);
+    fetchAndSetTasks({ _orderBy: newName });
     setOrderBy(newName);
   };
 
