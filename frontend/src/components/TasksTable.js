@@ -28,7 +28,7 @@ import Search from './Search';
 
 const useStyles = makeStyles(theme => ({
   table: {
-    minWidth: 650,
+    minWidth: 750,
   },
   root: {
     '& > *': {

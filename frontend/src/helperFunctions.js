@@ -48,6 +48,7 @@ export function beautifyJson(jsonString) {
   string = string.replace(/\]/g, "");
   string = string.replace(/{/g, "");
   string = string.replace(/}/g, "");
+  string = string.replace(/\\n/g, "\n");
   string = string.replace(/\\/g, "");
   string = string.replace(/\s+\n/g, "");
   string = string.replace(/ {2},/g, "");

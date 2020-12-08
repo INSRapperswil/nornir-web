@@ -16,7 +16,8 @@ from api.serializers import TaskSerializer, JobTemplateSerializer, InventorySeri
 
 class TaskViewSet(viewsets.ModelViewSet):
     """
-    ViewSet which lists all tasks known to the system
+    The Task endpoint lists all tasks or view a single task. It also provides options to run a task sync/asyc
+    and you can abort scheduled tasks
     """
     queryset = Task.objects.all().order_by('-id')
     serializer_class = TaskSerializer
@@ -49,7 +50,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 
 class JobTemplateViewSet(viewsets.ModelViewSet):
     """
-    ViewSet lists all job templates available for usage
+    The JobTemplate endpoint lists all available JobTemplates as well as details of a single JobTemplate
     """
     queryset = JobTemplate.objects.all()
     serializer_class = JobTemplateSerializer
@@ -62,7 +63,8 @@ class JobTemplateViewSet(viewsets.ModelViewSet):
 
 class InventoryViewSet(viewsets.ModelViewSet):
     """
-    Inventory ViewSet which shows configured inventories and allows to list hosts and groups information
+    Inventory endpoint. List all inventories, list all or a single host for a defined inventory. List all groups of
+    an inventory.
     """
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
@@ -104,7 +106,7 @@ class InventoryViewSet(viewsets.ModelViewSet):
 
 class UserViewSet(viewsets.ModelViewSet):
     """
-    This viewset automatically provides 'list' and 'detail' actions
+    The user endpoint provides a list of all users and lets you view single users
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -113,7 +115,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class ConfigurationView(viewsets.ViewSet):
     """
-    Shows the global Nornir configuration and allows to set the configuration
+    Shows the global Nornir configuration. Users of group superuser can also post a new configuration.
     """
 
     permission_classes = [ConfigurationPermission]
@@ -128,4 +130,7 @@ class ConfigurationView(viewsets.ViewSet):
 
 
 class EnhancedTokenObtainPairView(TokenObtainPairView):
+    """
+    API endpoint used to get and renew JWT
+    """
     serializer_class = EnhancedTokenObtainPairSerializer
