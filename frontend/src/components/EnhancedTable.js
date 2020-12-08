@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
-import { isOrderActive, orderDirection, } from '../helperFunctions';
+import { getPaginationOptions, isOrderActive, orderDirection, } from '../helperFunctions';
 
 function EnhancedTableHead({
   headCells,
@@ -225,7 +225,7 @@ export default function EnhancedTable({
             </TableBody>
           </Table>
           <TablePagination
-            rowsPerPageOptions={[2, 10, 25, 50]}
+            rowsPerPageOptions={getPaginationOptions()}
             rowsPerPage={rowsPerPage}
             page={page}
             count={count}

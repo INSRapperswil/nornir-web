@@ -37,7 +37,7 @@ export function beautifyDate(isoDate) {
   if (Date.parse(date) === 0) {
     return null;
   }
-  return date.toLocaleString('de-DE');
+  return date.toLocaleString();
 }
 
 export function beautifyJson(jsonString) {
@@ -169,4 +169,8 @@ export function SortableTableHead({ cell, orderBy, onSortChange }) {
       :
       <TableCell key={cell.name}>{cell.label}</TableCell>
   );
+}
+
+export function getPaginationOptions() {
+  return [2, 10, 25, 50];
 }

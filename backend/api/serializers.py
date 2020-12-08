@@ -23,7 +23,6 @@ class TaskSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
             'date_started',
             'date_finished',
             'variables',
-            'result_host_selection',
             'filters',
             'result',
             'created_by',

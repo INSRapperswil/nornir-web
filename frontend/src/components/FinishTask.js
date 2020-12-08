@@ -39,14 +39,16 @@ function FinishTask({ task }) {
               <TableCell><strong>Template:</strong></TableCell>
               <TableCell>{task.template.name}</TableCell>
             </TableRow>
-            <TableRow>
-              <TableCell><strong>Variables:</strong></TableCell>
-              <TableCell>
-                {Object.keys(task.variables).map(item => {
-                  return <p key={item}>{item}: {task.variables[item]}</p>
-                })}
-              </TableCell>
-            </TableRow>
+            {task.variables.length === 0 ? null :
+              <TableRow>
+                <TableCell><strong>Variables:</strong></TableCell>
+                <TableCell>
+                  {Object.keys(task.variables).map(item => {
+                    return <p key={item}>{item}: {task.variables[item]}</p>
+                  })}
+                </TableCell>
+              </TableRow>
+            }
             <TableRow>
               <TableCell><strong>Hosts:</strong></TableCell>
               <TableCell>

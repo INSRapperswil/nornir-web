@@ -135,6 +135,7 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
               variant="outlined"
               label={variable} />
           }) :
+            // in case of rerun, tasks already have set values, therefore the structure is an object
             Object.entries(task.template.variables).map((variable) => {
               return <TextField
                 key={variable[0]}

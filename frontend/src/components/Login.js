@@ -48,13 +48,13 @@ function Login({ error, authenticate }) {
         <TextField
           onChange={(e) => setUsername(e.target.value)}
           id="username"
-          label="username"
+          label="Username"
           variant="outlined"
           className={classes.textField} />
         <TextField
           onChange={(e) => setPassword(e.target.value)}
           id="password"
-          label="password"
+          label="Password"
           type="password"
           variant="outlined"
           className={classes.textField} />

@@ -66,7 +66,6 @@ class Task(models.Model):
     date_finished = models.DateTimeField('Date Finished', null=True)
     variables = models.JSONField(default=dict, blank=True, null=True)
     filters = models.JSONField(default=dict, blank=True, null=True)
-    result_host_selection = models.TextField(blank=True, null=True)
     result = models.JSONField(default=dict, blank=True, null=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     template = models.ForeignKey(JobTemplate, on_delete=models.SET_NULL, null=True)
@@ -79,7 +78,6 @@ class Task(models.Model):
 
     def schedule(self):
         self.status = self.Status.SCHEDULED
-        self.save()
         if self.date_scheduled:
             self.celery_task_id = self.run_task_async.apply_async(eta=self.date_scheduled, args=[self.id])
         else:

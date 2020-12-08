@@ -89,7 +89,7 @@ function TaskDetail({ checkAndGetToken, taskId }) {
           {Object.values(hosts).map((host) => (
             <React.Fragment key={host.name}>
               <Typography variant="h6" gutterBottom component="div">{host["name"]} / {host["hostname"]}</Typography>
-              <code className={classes.code + ' ' + classes.collapsed} onDoubleClick={handleExpansion}>
+              <code className={`${classes.code} ${classes.collapsed}`} onDoubleClick={handleExpansion}>
                 {Array.isArray(host["result"]) ?
                   host["result"].map((value) => {
                     return (
