@@ -25,7 +25,6 @@ const beautifulKeys = {
   "package_path": "Package Path",
   "platform": "Platform",
   "port": "Port",
-  "result_host_selection": "Result Host Selection",
   "status": "Status",
   "template_name": "Template",
   "type": "Type",
