@@ -1,4 +1,4 @@
-const backend = "http://localhost:8000";
+const backend = "http://sr-000105.network.garden:8000";
 
 function createFilterString(filters) {
   let filterString = '';
