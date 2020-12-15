@@ -1,23 +1,24 @@
 import React from 'react';
-import './App.css';
-import { AppBar, Container } from '@material-ui/core';
 import {
   BrowserRouter as Router,
   Route,
   Switch,
   Redirect,
 } from 'react-router-dom';
-import NavTabs from './components/NavTabs';
-import Inventory from './pages/Inventory';
-import TaskDashboard from './pages/TaskDashboard';
-import JobTemplates from './pages/JobTemplates';
-import Site404 from './pages/Site404';
-import LoginPage from './pages/LoginPage';
-import ProtectedRoute from './components/ProtectedRoute';
-import Logout from './components/Logout';
-import TaskWizardPage from './pages/TaskWizardPage';
+import { AppBar, Container } from '@material-ui/core';
+
+import './App.css';
 import Configuration from './pages/Configuration';
+import Inventory from './pages/Inventory';
+import JobTemplates from './pages/JobTemplates';
+import LoginPage from './pages/LoginPage';
+import Logout from './components/Logout';
+import NavTabs from './components/NavTabs';
 import PreconfiguredTasks from './pages/PreconfiguredTasks';
+import ProtectedRoute from './components/ProtectedRoute';
+import Site404 from './pages/Site404';
+import TaskDashboard from './pages/TaskDashboard';
+import TaskWizardPage from './pages/TaskWizardPage';
 
 function App() {
   const paths = [
@@ -42,7 +43,7 @@ function App() {
     {
       label: 'Preconfigured Tasks',
       value: '/preconfigured-tasks',
-      component: <PreconfiguredTasks/>,
+      component: <PreconfiguredTasks />,
       protected: true,
     },
     {

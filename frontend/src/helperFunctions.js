@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Table, TableHead, TableRow, TableCell, TableBody, TableSortLabel
+  Table, TableHead, TableRow, TableCell, TableBody, TableSortLabel, Chip,
 } from '@material-ui/core';
 import jwt_decode from "jwt-decode";
 
@@ -25,7 +25,6 @@ const beautifulKeys = {
   "package_path": "Package Path",
   "platform": "Platform",
   "port": "Port",
-  "result_host_selection": "Result Host Selection",
   "status": "Status",
   "template_name": "Template",
   "type": "Type",
@@ -37,11 +36,12 @@ export function beautifyDate(isoDate) {
   if (Date.parse(date) === 0) {
     return null;
   }
-  return date.toLocaleString('de-DE');
+  return date.toLocaleString();
 }
 
 export function beautifyJson(jsonString) {
   let string = JSON.stringify(jsonString, null, 2);
+  string = string.replace(/\\n/g, "\n");
   string = string.replace(/"/g, "");
   string = string.replace(/:/g, ": ");
   string = string.replace(/,/g, ", ");
@@ -102,22 +102,26 @@ export function objectToTable(data) {
   );
 }
 
+
+const statusArray =  ["CREATED", "SCHEDULED", "RUNNING", "FINISHED", "FAILED", "ABORTED"];
 export function statusIdToText(statusId) {
-  switch (statusId) {
-    case 0:
-      return "CREATED";
-    case 1:
-      return "SCHEDULED";
-    case 2:
-      return "RUNNING";
+  return statusArray[statusId];
+}
+export function textToStatusId(text) {
+  return statusArray.indexOf(text);
+}
+function getStatusChip(color, label) {
+  return <Chip style={{ backgroundColor: color }} label={label} />;
+}
+export function statusToChip(status) {
+  switch (status) {
     case 3:
-      return "FINISHED";
+      return getStatusChip('rgb(237, 247, 237)', statusIdToText(status));
     case 4:
-      return "FAILED";
     case 5:
-      return "ABORTED";
+      return getStatusChip('rgb(253, 236, 234)', statusIdToText(status));
     default:
-      break;
+      return getStatusChip('rgb(232, 244, 253)', statusIdToText(status));
   }
 }
 
@@ -165,4 +169,8 @@ export function SortableTableHead({ cell, orderBy, onSortChange }) {
       :
       <TableCell key={cell.name}>{cell.label}</TableCell>
   );
+}
+
+export function getPaginationOptions() {
+  return [2, 10, 25, 50];
 }

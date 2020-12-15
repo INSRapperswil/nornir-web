@@ -1,18 +1,7 @@
-import * as api from "../api";
-import { buildUserState } from "../helperFunctions";
 import jwt_decode from "jwt-decode";
 
-export function fetchTasks() {
-  return (dispatch, getState) => {
-    dispatch({ type: "FETCH_TASKS_STARTED" });
-
-    return api.getTasks()
-      .then(({ result: tasks }) => {
-        dispatch({ type: "FETCH_TASKS_SUCCEEDED", tasks })
-      })
-      .catch((error) => dispatch({ type: "FETCH_TASKS_FAILED", error }));
-  };
-}
+import * as api from "../api";
+import { buildUserState } from "../helperFunctions";
 
 export function postTaskWizard() {
   return (dispatch, getState) => {
@@ -63,7 +52,6 @@ export function setRerunTask(task) {
     dispatch({ type: "SET_RERUN_TASK" });
     let variables = task.variables;
     delete variables.name;
-    variables = Object.entries(variables).map((entry) => { return { [entry[0]]: entry[1] }; });
     const newTask = {
       name: (task.is_template ? task.name : getRerunName(task.name)),
       date_scheduled: '',

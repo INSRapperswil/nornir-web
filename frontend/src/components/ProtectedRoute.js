@@ -1,8 +1,8 @@
 import React from 'react';
-import { Redirect, Route } from 'react-router-dom';
 import { connect  } from 'react-redux';
-import { getIsAuthenticated } from '../redux/reducers';
+import { Redirect, Route } from 'react-router-dom';
 
+import { getIsAuthenticated } from '../redux/reducers';
 
 function ProtectedRoute({children, isAuthenticated, ...props}) {
   return (

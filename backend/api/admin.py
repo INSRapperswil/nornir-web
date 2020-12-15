@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
+from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User, Group
-from django.contrib.auth.admin import UserAdmin, GroupAdmin
 
 from api import models
 
@@ -81,7 +81,7 @@ class TaskAdmin(admin.ModelAdmin):
         ),
         (
             'Filters, Variables, Results',
-            {'fields': ['is_template', 'filters', 'variables', 'result', 'result_host_selection']}
+            {'fields': ['is_template', 'filters', 'variables', 'result']}
         ),
         (
             'Dependencies',

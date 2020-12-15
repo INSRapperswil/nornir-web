@@ -1,10 +1,10 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
+import FinishTask from '../components/FinishTask';
 import InventorySelectionTable, { checkStepValidity } from '../components/InventorySelectionTable';
 import JobTemplatesSelectionTable from '../components/JobTemplatesSelectionTable';
-import VariableSetter from '../components/VariableSetter';
-import FinishTask from '../components/FinishTask';
 import TaskWizard from '../components/TaskWizard';
-import { useLocation } from 'react-router-dom';
+import VariableSetter from '../components/VariableSetter';
 
 function getSteps(fromTemplates) {
   let steps =  [
@@ -17,7 +17,7 @@ function getSteps(fromTemplates) {
     {
       label: 'Select Template',
       component: (setStepValid, onNext) => <JobTemplatesSelectionTable setStepValid={setStepValid}/>,
-      initiallyValid: (task) => task.template.id !== 0,
+      initiallyValid: (task) => task.template.id > 0,
       completed: false,
     },
     {

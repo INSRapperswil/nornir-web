@@ -2,9 +2,10 @@
 Setup DB with example data for tests
 """
 
-from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User, Group
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User, Group
+from django.core.management.base import BaseCommand
+
 from api import models
 
 

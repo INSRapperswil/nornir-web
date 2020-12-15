@@ -1,11 +1,12 @@
-import yaml
-from nornir import InitNornir
-from nornir.core.inventory import Host
-from nornir.core.filter import F
 from pathlib import Path
 
-from .result_serializer import serialize_result
+import yaml
+from nornir import InitNornir
+from nornir.core.filter import F
+from nornir.core.inventory import Host
+
 from .job_discovery import JobDiscovery
+from .result_serializer import serialize_result
 
 # default Nornir inventory and default settings
 HOST_FILE = 'web_nornir/nornir_config/example_config/hosts.yaml'
@@ -40,12 +41,14 @@ class NornirHandler:
             filtered = self.search_hosts(filtered, search_fields, search_argument)
         return list(map(lambda host: self.get_host_detail(host), filtered.inventory.hosts))
 
-    def filter_hosts(self, nornir, filter_arguments: list):
-        for filter in filter_arguments:
-            nornir = nornir.filter(F(**filter))
+    @staticmethod
+    def filter_hosts(nornir, filter_arguments: list):
+        for f in filter_arguments:
+            nornir = nornir.filter(F(**f))
         return nornir
 
-    def search_hosts(self, nornir, search_fields, search_argument):
+    @staticmethod
+    def search_hosts(nornir, search_fields, search_argument):
         if len(search_fields) == 0:
             return nornir
         query = F(**{search_fields.pop(): search_argument})
@@ -75,10 +78,6 @@ class NornirHandler:
         return serialize_result(result)
 
     @staticmethod
-    def get_job_template_definitions(package_path=None):
-        return JobDiscovery(package_path).get_job_definitions()
-
-    @staticmethod
     def format_host(nornir_host: Host) -> dict:
         # remove unwanted or critical properties
         host = nornir_host.dict()
@@ -99,6 +98,10 @@ class NornirHandler:
                 if k not in processed:
                     processed.append(k)
                     data[k] = v
+        for k, v in nornir_host.defaults.data.items():
+            if k not in processed:
+                processed.append(k)
+                data[k] = v
 
         host.update({'data': data})
         return host

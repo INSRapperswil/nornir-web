@@ -1,14 +1,13 @@
 import pytest
 from django.contrib.auth.models import User
+from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-from django.test import TestCase
 from mixer.backend.django import mixer
 from pytest_drf import APIViewTest, UsesGetMethod, Returns200, AsUser
 from pytest_lambda import lambda_fixture
 
 from api.models import Task
-
 from api.tests.expected_data import *
 
 pytestmark = pytest.mark.django_db

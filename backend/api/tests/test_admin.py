@@ -2,7 +2,6 @@ import pytest
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User, Group, Permission
 from django.test import TestCase, Client
-from pytest_lambda import lambda_fixture
 
 pytestmark = pytest.mark.django_db
 

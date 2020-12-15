@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { checkAndGetToken, clearTaskWizard, updateTaskWizard } from '../redux/actions';
-import { getWizardTask, getInventorySelectionId } from '../redux/reducers';
 import { connect } from 'react-redux';
+import { Button, Grid, Tooltip } from '@material-ui/core';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import { makeStyles } from '@material-ui/styles';
+
 import { getInventoryHosts } from '../api';
+import { checkAndGetToken, updateTaskWizard } from '../redux/actions';
+import { getInventorySelectionId, getWizardTask, } from '../redux/reducers';
+import { beautifyJson, newOrderName } from '../helperFunctions';
 import { EnhancedTable } from './EnhancedTable';
 import InventoryHostDetail from './InventoryHostDetail';
 import InventorySelector from './InventorySelector';
 import FilterDialog from './FilterDialog';
-import { beautifyJson, newOrderName } from '../helperFunctions';
-import {
-  Grid, TextField, Button, Tooltip,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import Search from './Search';
 
 const useStyles = makeStyles({
   box: {
@@ -46,7 +46,7 @@ export function checkStepValidity(filters) {
   return (filters !== undefined && filters.length > 0);
 }
 
-function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, clearTaskWizard, setStepValid, inventorySelectionId }) {
+function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, setStepValid, inventorySelectionId }) {
   let [inventory, setInventory] = useState([]);
   let [count, setCount] = useState(0);
   let [page, setPage] = useState(0);
@@ -56,7 +56,7 @@ function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, cle
   const getDefaultFilters = () => {
     return [
       { label: 'Name', name: 'name__contains', value: '' },
-      { label: 'hostname', name: 'hostname__contains', value: '' },
+      { label: 'Hostname', name: 'hostname__contains', value: '' },
       { label: 'Groups', name: 'groups__contains', value: '' },
       { label: 'Platform', name: 'platform__contains', value: '' },
     ];
@@ -84,10 +84,10 @@ function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, cle
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchAndSetHosts = (page, pageSize, _filters = filters, _search = search, _orderBy = orderBy) => {
-    const offset = pageSize * page;
+  const fetchAndSetHosts = ({ _page=page, _pageSize=rowsPerPage, _filters=filters, _search=search, _orderBy=orderBy }) => {
+    const offset = _pageSize * _page;
     checkAndGetToken().then((token) => {
-      getInventoryHosts(token, inventorySelectionId, pageSize, offset, _filters, _search, _orderBy).then((response) => {
+      getInventoryHosts(token, inventorySelectionId, _pageSize, offset, _filters, _search, _orderBy).then((response) => {
         setInventory(response.results);
         setCount(response.count);
       });
@@ -101,11 +101,11 @@ function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, cle
   };
   const handleChangePage = (event, requestedPage) => {
     setPage(requestedPage);
-    fetchAndSetHosts(requestedPage, rowsPerPage);
+    fetchAndSetHosts({ _page: requestedPage });
   };
 
   const handleInventoryChange = (inventoryId) => {
-    clearTaskWizard();
+    updateTaskWizard({ filters: { hosts: [] } });
     setStepValid(false);
     checkAndGetToken().then((token) => {
       getInventoryHosts(token, inventoryId, rowsPerPage, 0).then((response) => {
@@ -121,17 +121,17 @@ function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, cle
     const newPage = parseInt(rowsPerPage * page / newPageSize);
     setPage(newPage);
     setRowsPerPage(newPageSize);
-    fetchAndSetHosts(newPage, newPageSize);
+    fetchAndSetHosts({ _page: newPage, _pageSize: newPageSize });
   };
 
   const handleFilterSubmit = () => {
-    setFilters(filters);
     setPage(0);
-    fetchAndSetHosts(page, rowsPerPage, filters);
+    fetchAndSetHosts({ _page: 0 });
   };
 
-  const handleSearch = (event) => {
-    fetchAndSetHosts(0, rowsPerPage, filters, search);
+  const handleSearch = (newSearch) => {
+    setSearch(newSearch);
+    fetchAndSetHosts({ _page: 0, _search: newSearch });
   };
 
   const handleClearSearchFilter = (event) => {
@@ -139,12 +139,13 @@ function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, cle
     const newFilters = getDefaultFilters();
     setSearch(newSearch);
     setFilters(newFilters);
-    fetchAndSetHosts(page, rowsPerPage, newFilters, newSearch, orderBy);
+    setPage(0);
+    fetchAndSetHosts({ _page: 0, _filters: newFilters, _search: newSearch });
   };
 
   const handleOrderChange = (event, name) => {
     const newName = newOrderName(orderBy, name);
-    fetchAndSetHosts(page, rowsPerPage, filters, search, newName);
+    fetchAndSetHosts({ _orderBy: newName });
     setOrderBy(newName);
   }
 
@@ -161,14 +162,7 @@ function InventorySelectionTable({ checkAndGetToken, task, updateTaskWizard, cle
             </Button>
           </Tooltip>
           <FilterDialog filters={filters} onFilterSubmit={handleFilterSubmit} />
-          <Button onClick={handleSearch} variant="outlined">Search</Button>
-          <TextField
-            label="Search Field"
-            variant="outlined"
-            value={search}
-            onKeyPress={(e) => e.key === 'Enter' ? handleSearch(e) : null}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <Search onSearchSubmit={handleSearch} />
         </Grid>
       </Grid>
       <EnhancedTable
@@ -197,7 +191,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   checkAndGetToken,
   updateTaskWizard,
-  clearTaskWizard,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(InventorySelectionTable);

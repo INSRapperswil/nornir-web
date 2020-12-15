@@ -11,7 +11,7 @@ function createFilterString(filters) {
 }
 
 export function getTasks(token, limit = 25, offset = 0, filters = [], search = '', ordering = '') {
-  const omit = 'detail,variables,result_host_selection,filters,result,inventory,inventory_name';
+  const omit = 'detail,variables,filters,result,inventory,inventory_name';
   return getAuthenticatedJson(`/api/tasks/?limit=${limit}&offset=${offset}&ordering=${ordering}&search=${search}${createFilterString(filters)}&omit=${omit}`, token)
     .then(parseJson);
 }
@@ -71,10 +71,6 @@ export function getConfiguration(token) {
 
 export function postConfiguration(token, configuration) {
   return postAuthenticatedJson(`/api/configuration/`, token, configuration).then(parseJson);
-}
-
-export function getUser(id, token) {
-  return getAuthenticatedJson(`/api/users/${id}/`, token).then(parseJson);
 }
 
 export function authenticate(username, password) {

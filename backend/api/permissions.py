@@ -1,5 +1,5 @@
-from rest_framework import permissions
 from django.contrib.auth.models import Group
+from rest_framework import permissions
 
 
 class ConfigurationPermission(permissions.BasePermission):

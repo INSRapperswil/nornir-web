@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useImperativeHandle } from 'react';
-import {
-  Checkbox, TextField, FormControlLabel,
-} from '@material-ui/core';
-import { getWizardTask } from '../redux/reducers';
-import { updateTaskWizard } from '../redux/actions';
 import { connect } from 'react-redux';
+import { Checkbox, FormControlLabel, TextField, } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+
+import { updateTaskWizard } from '../redux/actions';
+import { getWizardTask } from '../redux/reducers';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,14 +30,19 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
   let [isTemplate, setIsTemplate] = useState(false);
   let [name, setName] = useState(task.name);
   const classes = useStyles();
-  let [form, setForm] = useState({});
+  const getInitialVariables = () => {
+    let variables = task.variables;
+    delete variables['name'];
+    return variables;
+  };
+  let [form, setForm] = useState(task.variables ? getInitialVariables() : {});
 
   useEffect(() => {
     setStepValid(name !== '');
   }, [name, setStepValid]);
 
   const handleFormChange = (event) => {
-    if(!form['scheduled-date'] && form['scheduled-time']) {
+    if (!form['scheduled-date'] && form['scheduled-time']) {
       form['scheduled-date'] = getDefaultDate();
     }
     if (!form['scheduled-time'] && form['scheduled-date']) {
@@ -55,8 +59,14 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
       variables: {},
       is_template: isTemplate,
     };
-    for (let variable of task.template.variables) {
-      taskAttr.variables[variable] = form[variable];
+    if (Array.isArray(task.template.variables)) {
+      for (let variable of task.template.variables) {
+        taskAttr.variables[variable] = form[variable];
+      }
+    } else {
+      for (let variable of Object.keys(task.template.variables)) {
+        taskAttr.variables[variable] = form[variable];
+      }
     }
     if (!runNow) {
       const scheduledDate = new Date(form['scheduled-date'] + 'T' + form['scheduled-time']);
@@ -124,7 +134,17 @@ function VariableSetter({ task, updateTaskWizard, setStepValid, onNext }) {
               className={classes.textField}
               variant="outlined"
               label={variable} />
-          }) : ''
+          }) :
+            // in case of rerun, tasks already have set values, therefore the structure is an object
+            Object.entries(task.template.variables).map((variable) => {
+              return <TextField
+                key={variable[0]}
+                id={variable[0]}
+                defaultValue={variable[1]}
+                className={classes.textField}
+                variant="outlined"
+                label={variable[0]} />
+            })
         }
       </form>
     </div>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+
 import { getHostDetails } from '../api';
 import { checkAndGetToken } from '../redux/actions';
-import { connect } from 'react-redux';
 import DetailTable from './DetailTable';
 
 function InventoryHostDetail({ checkAndGetToken, inventoryId, name }) {

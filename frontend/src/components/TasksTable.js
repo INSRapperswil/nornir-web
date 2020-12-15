@@ -1,31 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { getTasks, abortTask, getTaskDetails } from '../api';
+import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  Box, Collapse, IconButton, Paper, Tooltip, Grid,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField,
-  Button, Select, MenuItem, InputLabel, FormControl, Dialog, DialogTitle, DialogActions,
+  Box, Button, Collapse, Dialog, DialogActions, DialogTitle,
+  FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select,
+  Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow,
+  Tooltip,
 } from '@material-ui/core';
+import CancelIcon from '@material-ui/icons/Cancel';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import RepeatIcon from '@material-ui/icons/Repeat';
-import RefreshIcon from '@material-ui/icons/Refresh';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
-import CancelIcon from '@material-ui/icons/Cancel';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import RepeatIcon from '@material-ui/icons/Repeat';
+
 import { checkAndGetToken, setRerunTask } from '../redux/actions';
-import { connect } from 'react-redux';
+import { hasNetadminPermissions } from '../redux/reducers';
+import { abortTask, getTasks, getTaskDetails } from '../api';
 import TaskDetail from './TaskDetail';
 import {
-  beautifyDate, statusIdToText, newOrderName, SortableTableHead,
+  beautifyDate, getPaginationOptions, newOrderName, SortableTableHead, statusIdToText, statusToChip, textToStatusId,
 } from '../helperFunctions';
 import FilterDialog from './FilterDialog';
-import { useHistory } from 'react-router-dom';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { hasNetadminPermissions } from '../redux/reducers';
+import Search from './Search';
 
 const useStyles = makeStyles(theme => ({
   table: {
-    minWidth: 650,
+    minWidth: 750,
   },
   root: {
     '& > *': {
@@ -114,28 +117,29 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
 
   const classes = useStyles();
 
-  const fetchAndSetTasks = (page, pageSize, filters, search, order) => {
-    const offset = page * pageSize;
+  const fetchAndSetTasks = ({ _page=page, _pageSize=rowsPerPage, _filters=filters, _search=search, _orderBy=orderBy }) => {
+    const offset = _page * _pageSize;
     setIsLoading(true);
     checkAndGetToken().then((token) => {
-      getTasks(token, pageSize, offset, aggregateFilters(filters), search, order).then((response) => {
+      getTasks(token, _pageSize, offset, aggregateFilters(_filters), _search, _orderBy).then((response) => {
         setTasks(response.results);
         setCount(response.count);
         setIsLoading(false);
       });
-      setPage(page);
+      setPage(_page);
     }
     );
   };
 
-  const handleSearch = (event) => {
-    fetchAndSetTasks(0, rowsPerPage, filters, search, orderBy);
+  const handleSearch = (newSearch) => {
+    setSearch(newSearch);
+    fetchAndSetTasks({ _search: newSearch });
   };
 
   const handleFilterSubmit = (newFilters) => {
     setPage(0);
     setFilters(newFilters);
-    fetchAndSetTasks(0, rowsPerPage, newFilters, search, orderBy);
+    fetchAndSetTasks({_page: 0, _filters: newFilters });
   };
 
   const handleClearSearchFilter = (event) => {
@@ -143,41 +147,44 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
     const newFilters = getDefaultFilters();
     setSearch(newSearch);
     setFilters(newFilters);
-    fetchAndSetTasks(page, rowsPerPage, newFilters, newSearch, orderBy);
+    setPage(0);
+    fetchAndSetTasks({ _page: 0, _filters:  newFilters, _search: newSearch });
   };
 
   const handleChangePage = (event, requestedPage) => {
-    fetchAndSetTasks(requestedPage, rowsPerPage, filters, search, orderBy);
+    fetchAndSetTasks({ _page: requestedPage });
   }
 
   const handleRowsPerPage = (event) => {
     const newPageSize = event.target.value;
     const newPage = parseInt(rowsPerPage * page / newPageSize);
-    fetchAndSetTasks(newPage, newPageSize, filters, search, orderBy);
+    fetchAndSetTasks({ _page: newPage, _pageSize: newPageSize });
     setRowsPerPage(newPageSize);
   };
 
   const onRefresh = (e) => {
-    fetchAndSetTasks(page, rowsPerPage, filters, search, orderBy);
+    fetchAndSetTasks({});
   }
 
   const handleReRun = (e, task) => {
     checkAndGetToken().then((token) => {
       getTaskDetails(token, task.id).then((task) => {
         setRerunTask(task);
-        history.push('/wizard?step=2')
-      })
-    })
+        history.push('/wizard?step=2');
+      });
+    });
   };
 
   const handleAbortConfirmation = (e, task) => {
     setTaskToAbort(task);
     setAbortConfirmationOpen(true);
   };
+
   const handleCancelAbort = (e) => {
     setTaskToAbort({});
     setAbortConfirmationOpen(false);
   };
+
   const handleAbortTask = (e) => {
     setAbortConfirmationOpen(false);
     checkAndGetToken().then((token) => {
@@ -188,7 +195,21 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
         setTasks(updatedTasks);
       });
     });
-  }
+  };
+
+  const headCells = [
+    { label: '#', name: 'id', orderable: true },
+    { label: 'Name', name: 'name', orderable: true },
+    { label: 'Status', name: 'status', orderable: true },
+    { label: 'Scheduled', name: 'date_scheduled', orderable: true, hiddenForTaskTemplates: true },
+    { label: 'Started', name: 'date_started', orderable: true, hiddenForTaskTemplates: true },
+    { label: 'Finished', name: 'date_finished', orderable: true, hiddenForTaskTemplates: true },
+    { label: 'Creator', name: 'creator' },
+    { label: 'Template', name: 'template' },
+    { label: 'Abort Task', name: '', hiddenForTaskTemplates: true },
+    { label: (onlyTemplates ? 'Run Task' : 'Rerun Task'), name: '' },
+    { label: 'Detail View', name: '' },
+  ];
 
   function Row(props) {
     const { row } = props;
@@ -202,7 +223,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
             {row.id}
           </TableCell>
           <TableCell>{row.name}</TableCell>
-          <TableCell>{statusIdToText(row.status)}</TableCell>
+          <TableCell>{statusToChip(row.status)}</TableCell>
           {
             onlyTemplates ? null :
               <React.Fragment>
@@ -213,16 +234,20 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
           }
           <TableCell>{row.created_name}</TableCell>
           <TableCell>{row.template_name}</TableCell>
-          <TableCell>
-            {
-              [1, 2].includes(row.status) ?
-                <Tooltip title="Abort Task execution">
-                  <IconButton onClick={(e) => handleAbortConfirmation(e, row)}>
-                    <CancelIcon />
-                  </IconButton>
-                </Tooltip> : null
-            }
-          </TableCell>
+          {
+            !onlyTemplates ?
+              <TableCell>
+                {
+                  [textToStatusId("SCHEDULED")].includes(row.status) ?
+                    <Tooltip title="Abort Task execution">
+                      <IconButton onClick={(e) => handleAbortConfirmation(e, row)}>
+                        <CancelIcon />
+                      </IconButton>
+                    </Tooltip> : null
+                }
+              </TableCell>
+              : null
+          }
           <TableCell>
             {
               onlyTemplates ?
@@ -249,7 +274,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
           </TableCell>
         </TableRow>
         <TableRow className={classes.detail}>
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={headCells.length}>
             <Collapse in={open} timeout="auto" unmountOnExit style={{ paddingTop: 15, paddingBottom: 30 }}>
               <Box margin={1}>
                 <TaskDetail taskId={row.id} />
@@ -261,23 +286,9 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
     );
   }
 
-  const headCells = [
-    { label: '#', name: 'id', orderable: true },
-    { label: 'Name', name: 'name', orderable: true },
-    { label: 'Status', name: 'status', orderable: true },
-    { label: 'Scheduled', name: 'date_scheduled', orderable: true, hiddenForTaskTemplates: true },
-    { label: 'Started', name: 'date_started', orderable: true, hiddenForTaskTemplates: true },
-    { label: 'Finished', name: 'date_finished', orderable: true, hiddenForTaskTemplates: true },
-    { label: 'Creator', name: 'creator' },
-    { label: 'Template', name: 'template' },
-    { label: 'Abort Task', name: '' },
-    { label: (onlyTemplates ? 'Run Task' : 'Rerun Task'), name: '' },
-    { label: 'Detail View', name: '' },
-  ];
-
   const handleSortChange = (event, name) => {
     const newName = newOrderName(orderBy, name);
-    fetchAndSetTasks(page, rowsPerPage, filters, search, newName);
+    fetchAndSetTasks({ _orderBy: newName });
     setOrderBy(newName);
   };
 
@@ -296,14 +307,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
             </Button>
           </Tooltip>
           <FilterDialog filters={filters} setFilters={setFilters} onFilterSubmit={handleFilterSubmit} />
-          <Button onClick={handleSearch} variant="outlined">Search</Button>
-          <TextField
-            label="Search Field"
-            variant="outlined"
-            value={search}
-            onKeyPress={(e) => e.key === 'Enter' ? handleSearch(e) : null}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <Search onSearchSubmit={handleSearch} />
         </Grid>
       </Grid>
       <TableContainer component={Paper}>
@@ -326,7 +330,7 @@ function TasksTable({ checkAndGetToken, setRerunTask, onlyTemplates, hasPermissi
           </TableBody>
         </Table>
         <TablePagination
-          rowsPerPageOptions={[2, 10, 25, 50]}
+          rowsPerPageOptions={getPaginationOptions()}
           rowsPerPage={rowsPerPage}
           page={page}
           count={count}

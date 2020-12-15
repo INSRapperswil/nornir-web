@@ -29,6 +29,24 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.<br />
 Your app is ready to be deployed!
 
+## Deployment
+To deploy the frontend project, run the install and build command from above.
+
+Remeber to change the user, group and working directory in the `serve.service` file to the user, group and path on your production server.
+```
+User=[username]
+Group=[groupname]
+WorkingDirectory=/path/to/project/web-app-nornir/frontend
+```
+
+Once you saved the changes, copy the `serve.service` file to `/etc/systemd/system/`
+
+Enable and start the service with the following commands:
+```
+sudo systemctl enable serve.service
+sudo systemctl start serve.service
+```
+
 ## Learn More
 
 To learn React, check out the [React documentation](https://reactjs.org/).

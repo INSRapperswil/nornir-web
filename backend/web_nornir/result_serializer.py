@@ -26,7 +26,7 @@ def serialize_result(aggregated_result: AggregatedResult) -> dict:
             result['hosts'].append(host_dict)
         return result
     except:
-        return {'exception': 'Exception thrown, please check backend log'}
+        return {'failed': True, 'exception': 'Exception thrown, please check backend log'}
 
 
 def _get_formatted_result(result: Result, attr: str):

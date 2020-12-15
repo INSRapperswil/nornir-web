@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { logout } from '../redux/actions';
-import { Button } from '@material-ui/core';
 import { Redirect } from 'react-router-dom';
+import { Button } from '@material-ui/core';
+
+import { logout } from '../redux/actions';
 
 function Logout({ logout }) {
   const [loggedOut, setLoggedOut] = useState(false);
